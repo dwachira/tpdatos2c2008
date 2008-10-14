@@ -1,15 +1,15 @@
 #include "LossyCompressStegoBusiness.h"
 
-LossyCompressStegoBusiness::LossyCompressStegoBusiness()
+LossyCompressStegoBusiness::LossyCompressStegoBusiness(std::string filename):StegoBusiness(filename)
 {
 }
 /**
  * Comprime mas la imagen y la rellena con ceros para que no cambie su tamanio
  */
-bool LossyCompressStegoBusiness::generarEspacio()
+bool LossyCompressStegoBusiness::generarEspacio(float perc)
 {
 /*Cargo la imagen */
-FIBITMAP *imagen = FreeImage_Load(this->format,this->filename.c_str(), 0);
+FIBITMAP *imagen = FreeImage_Load(this->format,this->filename.c_str(),0);
 /*Si la imagen se cargo correctamente*/
  if(imagen){
  	 unsigned int tamanio_original;
@@ -22,16 +22,18 @@ FIBITMAP *imagen = FreeImage_Load(this->format,this->filename.c_str(), 0);
 	   /* Guardo la imagen cambiandole el nivel de compresion para generar
 	    * espacio al final de la misma
 	    */
-	    
+	   
 	   //VER QUE NUMERO SE LE PASA AL ULT PARAMETRO 
-	   FreeImage_Save(this->format,imagen,this->filename.c_str(),0);
+	   FreeImage_Save(this->format,imagen,filename.c_str(),perc);
 	   /*Reabro la imagen y me posiciono al final para completar el espacio 
 	    * que le falta*/
 	 }else return false;
-	 imageFile.open(this->filename.c_str(), std::fstream::in |std::fstream::out| std::fstream::binary);
+
+	 imageFile.open(filename.c_str(), std::fstream::in |std::fstream::out| std::fstream::binary);
 	 if(imageFile.is_open()){
 	   imageFile.seekg(0, std::ios::end); // Ir al final del fichero
-       free_space=tamanio_original-imageFile.tellg();
+	   original_size=imageFile.tellg();
+       free_space=tamanio_original-original_size;
        /*Completar con bytes en cero*/
        for(unsigned int i=0;i<free_space;i++) imageFile<<"0";	 
        imageFile.close();
@@ -45,9 +47,13 @@ FIBITMAP *imagen = FreeImage_Load(this->format,this->filename.c_str(), 0);
 bool LossyCompressStegoBusiness::setMensaje(Pixel& pixel,std::string mensaje)
 {
 std::fstream imageFile;
-imageFile.open(this->filename.c_str(), std::fstream::in |std::fstream::out| std::fstream::binary);
+
+imageFile.open(filename.c_str(), std::fstream::in |std::fstream::out| std::fstream::binary);
 	 if(imageFile.is_open()){
 	 	 /*Deberia posicionarme en el archivo y escribir sobre el mismo*/
+	 imageFile.seekg(original_size);
+	 for(unsigned int i=0;i<mensaje.size();i++)
+	 imageFile<<mensaje.at(i);
 	 imageFile.close();
 	 return true;
  }	
@@ -56,7 +62,18 @@ imageFile.open(this->filename.c_str(), std::fstream::in |std::fstream::out| std:
 
 std::string LossyCompressStegoBusiness::getMensaje(Pixel& pixel,unsigned int longitud){
 std::string mensaje;	
-	
+std::fstream imageFile;
+
+imageFile.open(filename.c_str(), std::fstream::in| std::fstream::binary);
+imageFile.seekg(original_size);
+char car;
+    for(unsigned int i=0;i<longitud;i++){
+     	
+	 imageFile>>car;
+	 
+	 mensaje.append(1,car);
+    }
+	 imageFile.close();	
 return mensaje;	
 }
 LossyCompressStegoBusiness::~LossyCompressStegoBusiness()

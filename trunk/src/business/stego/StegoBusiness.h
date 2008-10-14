@@ -11,7 +11,7 @@ protected:
     FREE_IMAGE_FORMAT format;
 
 public:
-	StegoBusiness();
+	StegoBusiness(std::string filename);
 	virtual bool setMensaje(Pixel& pixel,std::string mensaje)=0;
 	virtual std::string getMensaje(Pixel& pixel,unsigned int longitud)=0;
   

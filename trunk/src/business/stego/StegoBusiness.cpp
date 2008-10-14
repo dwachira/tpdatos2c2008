@@ -1,6 +1,6 @@
 #include "StegoBusiness.h"
 
-StegoBusiness::StegoBusiness()
+StegoBusiness::StegoBusiness(std::string filename):filename(filename)
 {
 	
 }

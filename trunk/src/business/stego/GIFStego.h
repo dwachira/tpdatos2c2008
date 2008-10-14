@@ -5,6 +5,7 @@ class GIFStego: public LSBStegoBusiness
 {
 public:
 	GIFStego();
+	GIFStego(std::string filename);
 	virtual ~GIFStego();
 };
 

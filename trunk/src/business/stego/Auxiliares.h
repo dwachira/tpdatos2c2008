@@ -5,6 +5,6 @@
 
 
 void toBase(int num,int base,std::string&  binario);
-void complete8Bits(std::string& binario);
+void completeNBits(std::string& binario,unsigned int n);
 
 #endif /*AUXILIARES_H_*/
