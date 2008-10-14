@@ -6,6 +6,7 @@ class BMPStego:public LSBStegoBusiness
 {
 public:
 	BMPStego();
+	BMPStego(std::string filename);
 	virtual ~BMPStego();
 };
 

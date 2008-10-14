@@ -1,6 +1,6 @@
 #include "GIFStego.h"
 
-GIFStego::GIFStego()
+GIFStego::GIFStego(std::string filename):LSBStegoBusiness(filename)
 {
 	 this->format=FIF_GIF;
 }

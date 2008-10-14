@@ -5,7 +5,7 @@
 class JPGStego: public LossyCompressStegoBusiness
 {
 public:
-	JPGStego();
+	JPGStego(std::string filename);
 	virtual ~JPGStego();
 };
 
