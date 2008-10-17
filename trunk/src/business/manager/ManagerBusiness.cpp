@@ -7,7 +7,7 @@ ManagerBusiness::ManagerBusiness(){
 
 	this->managerDAO = new dao::ManagerDAO();
 	this->nameFileTrie = new Trie();
-	this->cryptoBusiness  = new CryptoBusiness();
+	this->cryptoBusiness  = new BlowfishCrypto();
 }
 
 ManagerBusiness::~ManagerBusiness()
