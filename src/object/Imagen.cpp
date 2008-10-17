@@ -15,6 +15,17 @@ Imagen::Imagen() {
 	this->espacio_libre = 0;
 	this->hash_value = 0;
 }
+
+Imagen::Imagen(const Imagen &img){
+
+	this->ID = img.ID;
+	this->ID_Dir = img.ID_Dir;
+	this->nombre = img.nombre;
+	this->tamanio = img.tamanio;
+	this->espacio_libre = img.espacio_libre;
+	this->hash_value = img.hash_value;
+}
+
 /*
 Imagen::Imagen(unsigned int ID, unsigned int ID_Dir, string nombre, unsigned int tamanio,
 		unsigned int espacio_libre, unsigned long int hash_value){

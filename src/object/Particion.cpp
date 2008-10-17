@@ -15,6 +15,17 @@ Particion::Particion(){
 	this->longitud = 0;
 	this->libre = true;
 }
+
+Particion::Particion(const Particion &part){
+
+	this->ID_Img = part.ID_Img;
+	this->ID_Txt = part.ID_Txt;
+	this->posicion = part.posicion;
+	this->bit_inicio = part.bit_inicio;
+	this->longitud = part.longitud;
+	this->libre = part.libre;
+}
+
 /*
 Particion::Particion(unsigned int ID_Img, unsigned int ID_Txt, unsigned int posicion,
 		unsigned int bit_inicio, unsigned int longitud, bool libre){

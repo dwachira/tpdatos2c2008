@@ -27,6 +27,7 @@ class Imagen{
 	public:
 
 		Imagen();
+		Imagen(const Imagen &img);
 		Imagen(unsigned int pID, unsigned int pID_Dir, unsigned int pEspacio_Libre,
 				unsigned long int pHash_Value, unsigned int pTamanio, string pNombre):
 							ID(pID),ID_Dir(pID_Dir),espacio_libre(pEspacio_Libre),

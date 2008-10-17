@@ -25,6 +25,7 @@ class Mensaje{
 	public:
 
 		Mensaje();
+		Mensaje(const Mensaje &msj);
 		Mensaje(unsigned int newID, string newNombre, unsigned int newTamanio,
 				int newCant): ID(newID),nombre(newNombre),tamanio(newTamanio),
 														cant_partes(newCant){}
