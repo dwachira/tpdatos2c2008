@@ -25,6 +25,7 @@ class Particion{
 	public:
 
 		Particion();
+		Particion(const Particion &part);
 		Particion(unsigned int newID_Img,unsigned int newID_Txt,unsigned int newPosicion,
 				unsigned int newBit_inicio,unsigned int newLongitud,bool newLibre):
 						ID_Img(newID_Img),ID_Txt(newID_Txt),posicion(newPosicion),

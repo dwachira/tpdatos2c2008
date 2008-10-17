@@ -29,6 +29,7 @@ class Directorio{
 	public:
 
 		Directorio();
+		Directorio(const Directorio &dir);
 		Directorio(unsigned int newID,string newPath,unsigned int newDia,unsigned int newMes,
 				unsigned int newAnio, unsigned int newHora,unsigned int newMin):
 						ID(newID), path(newPath),dia(newDia),mes(newMes),anio(newAnio),
