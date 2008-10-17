@@ -2,6 +2,7 @@
 #include <config.h>
 #endif
 #include "../../business/directories/DirectoryManager.h"
+#include "../test/blowfish/BlowfishTest.h"
 using namespace business;
 
 
@@ -9,6 +10,9 @@ int main(int argc, char* argv[]){
 
 	DirectoryManager manager;
 	manager.addDirectory("/home/gsenno/Documents");
+
+/*	BlowfishTest bfTest;
+	bfTest.test();*/
 	return 0;
 }
 

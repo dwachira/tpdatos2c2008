@@ -2,8 +2,9 @@
  * Contiene todos los digitos PI en hexadecimal
  *
  */
+#include "TypeData.h"
 //Digitos de PI para el vector de subclaves P, 18 es la cantidad de rondas del algoritmos (16) + las necesarias al final (12)
-static Doble DIGITS_PI_P[18] = {
+static DWord DIGITS_PI_P[18] = {
   0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
   0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
   0x452821e6, 0x38d01377, 0xbe5466cf, 0x34e90c6c,
@@ -12,7 +13,7 @@ static Doble DIGITS_PI_P[18] = {
 };
 
 //Digitos de PI para las 4 cajas-S, 256 por cada una
-static Doble DIGITS_PI_S[4][256] = {
+static DWord DIGITS_PI_S[4][256] = {
 		//S=0
 		{
 		  0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
