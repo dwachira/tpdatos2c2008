@@ -1,8 +1,7 @@
 #include "LSBStegoBusiness.h"
 #include <iostream>
-LSBStegoBusiness::LSBStegoBusiness(std::string filename):StegoBusiness(filename),enable_bpp(1)
+LSBStegoBusiness::LSBStegoBusiness(std::string filename):StegoBusiness(filename),error(false),enable_bpp(1)
 {
-	
 }
 
 std::string LSBStegoBusiness::getMensajeFromPixel(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados){
@@ -18,8 +17,8 @@ int byte;
 
   while((pos_pixel<bpp/8)&&(bits_procesados<longitud)){
       byte=(int)pixels[pos_pixel];
-      toBase(byte,2,binario);
-	  completeNBits(binario,8);
+      util::BitsUtils::toBase(byte,2,binario);
+	  util::BitsUtils::completeNBits(binario,8);
 	  /*Ciclo en caso de modificar mas de un bit por byte*/
 	  while((bits_por_byte<this->enable_bpp)&&(pos<8)&&(bits_procesados<longitud)){
           car=binario.at(pos);
@@ -35,9 +34,11 @@ int byte;
   }//while de los bytes de un pixel
       return mensaje;      
 }
+
 void LSBStegoBusiness::changePixel(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados){
 	doLSBStego(pixels,mensaje,pos,bits_procesados);
 }
+
 void LSBStegoBusiness::doLSBStego(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados){
 int new_byte;
 char* aux;
@@ -47,9 +48,9 @@ unsigned int pos_pixel=0;
 
 /*Mientras queden bytes por pixel para recorrer*/              
 while((pos_pixel<bpp/8)&&(bits_procesados<mensaje.size())){
-   toBase((int)pixels[pos_pixel],2,binario);
+   util::BitsUtils::toBase((int)pixels[pos_pixel],2,binario);
   /*Completo el binario para que sea mas facil el proceso*/
-  completeNBits(binario,8);
+   util::BitsUtils::completeNBits(binario,8);
   /*Ciclo en caso de modificar mas de un bit por byte*/
   while((bits_por_byte<this->enable_bpp)&&(pos<8)&&(bits_procesados<mensaje.size())){
       /*Guardo un bit de informacion en el LSB del byte*/       
@@ -70,104 +71,166 @@ while((pos_pixel<bpp/8)&&(bits_procesados<mensaje.size())){
   
   
 }
+
+void LSBStegoBusiness::loadImagen()
+{
+/*Cargo la imagen */
+imagen = FreeImage_Load(this->format, filename.c_str(), 0);
+
+  if(imagen){
+  	   /*Cantidad de bits por pixel*/
+       bpp = FreeImage_GetBPP(imagen);
+       pitch = FreeImage_GetPitch(imagen);   
+       height=FreeImage_GetHeight(imagen);
+       width=FreeImage_GetWidth(imagen); 
+       color_type=FreeImage_GetColorType(imagen);
+       error=false;
+  }else error=true;
+
+}
 /**
- * Permite ocultar el mensaje correspondiente dentro de la image
+ * Permite ocultar el mensaje correspondiente dentro de la imagen
  * 
  */
-bool LSBStegoBusiness::setMensaje(Pixel& pixel,std::string mensaje)
+bool LSBStegoBusiness::setMessage(Pixel& pixel,std::string mensaje)
 {
-
-/*Cantidad de bits que ya se han insertado en la image*/
+std::string binario;char* aux;
+/*Cantidad de bits que ya se han insertado en la imagen*/
 unsigned int bits_procesados=0;
 
 /*Posicion inicial del mensaje dentro del pixel*/
 unsigned int pos=pixel.getNumero_de_bit();
-
-/*Cargo la image */
-FIBITMAP *image = FreeImage_Load(this->format, filename.c_str(), 0);
- 
-/*Si la image se cargo correctamente*/
-if(image){
-  	   /*Cantidad de bits por pixel*/
-       bpp = FreeImage_GetBPP(image);
-       pitch = FreeImage_GetPitch(image);   
-       height=FreeImage_GetHeight(image);
-       width=FreeImage_GetWidth(image); 
-       color_type=FreeImage_GetColorType(image);
-  	 
-       std::cout<<"se crea la image de bpp = "<<bpp<<std::endl;
-     
-       BYTE *bits = (BYTE*)FreeImage_GetBits(image);
-       /*Me posiciono desde el comienzo de la image*/
+if(!error){
+       std::cout<<"se crea la imagen de bpp = "<<bpp<<std::endl;
+       std::cout<<"color_type = "<<color_type<<std::endl;
+       BYTE *bits = (BYTE*)FreeImage_GetBits(imagen);
+       /*Me posiciono desde el comienzo de la imagen*/
        bits+=pitch*(height-1);
-       
+       unsigned int tamanio_paleta=FreeImage_GetColorsUsed(imagen);
+       std::cout<<"Tamaño de la paleta"<<tamanio_paleta<<std::endl;
+       /*SOlucion temporal!!!*/
+       if((bpp<=8)&&(color_type>1)){
+            RGBQUAD *paleta_colores = FreeImage_GetPalette(imagen);
+            for (unsigned int i = 0; i < tamanio_paleta; i++) {
+                if(bits_procesados<mensaje.size()){
+                   util::BitsUtils::toBase((int)paleta_colores[i].rgbRed,2,binario);
+                   util::BitsUtils::completeNBits(binario,8);
+                   /*Guardo un bit de informacion en el LSB del byte*/       
+                   binario.at(7)=mensaje.at(bits_procesados); 
+                   bits_procesados++;
+                   paleta_colores[i].rgbRed=strtol(binario.c_str(),&aux,2);
+                   binario="";
+   	            }else i=tamanio_paleta;
+       			if(bits_procesados<mensaje.size()){
+       	      		util::BitsUtils::toBase((int)paleta_colores[i].rgbGreen,2,binario);
+    				util::BitsUtils::completeNBits(binario,8);
+       				/*Guardo un bit de informacion en el LSB del byte*/       
+       				binario.at(7)=mensaje.at(bits_procesados); 
+       				bits_procesados++;
+       				paleta_colores[i].rgbGreen=strtol(binario.c_str(),&aux,2);
+       				binario="";
+       			}else i=tamanio_paleta;
+       			if(bits_procesados<mensaje.size()){
+             		util::BitsUtils::toBase((int)paleta_colores[i].rgbBlue,2,binario);
+       				util::BitsUtils::completeNBits(binario,8);
+       				/*Guardo un bit de informacion en el LSB del byte*/       
+      				binario.at(7)=mensaje.at(bits_procesados); 
+       				bits_procesados++;
+       				paleta_colores[i].rgbBlue=strtol(binario.c_str(),&aux,2);
+       				binario="";
+       			}else i=tamanio_paleta;
+            }
+       }else{//se puede trabajar con los pixeles
 	   for (unsigned int y = pixel.getPosY(); y <height; y ++){
-		  /*Primer linea de pixels de la image*/
+		  /*Primer linea de pixels de la imagen*/
 		  BYTE *pixels = (BYTE*)bits;
 		  for (unsigned int x = pixel.getPosX(); x < width; x ++){
-		  
-             if(bits_procesados<mensaje.size()){
+		    
+             if(bits_procesados<mensaje.size()){ 
              	/*VEr que hacer aca!!!*/
-             	if((bpp==8)&&(color_type>1)){
-             	   
-             	}else{
+             	
              	    changePixel(pixels,mensaje,pos,bits_procesados);	
              	   	pixels += (bpp/8);//siguiente pixel
-                }
+             
             }else{ //para terminar el ciclo for 
             	  x=width;
             	  y=height;
              }
 		}//fin for_x
-      bits -= pitch;//siguiente linea de la image
+      bits -= pitch;//siguiente linea de la imagen
 		
 	}//fin for_y
-
-	/*Guardo los cambios realizados en la image*/
-	FreeImage_Save(this->format,image,this->filename.c_str(),0);
+       }
+	/*Guardo los cambios realizados en la imagen*/
+	FreeImage_Save(this->format,imagen,this->filename.c_str(),0);
+	
     return true;
   }
   return false;	
 }
 
-std::string LSBStegoBusiness::getMensaje(Pixel& pixel,unsigned int longitud){
+std::string LSBStegoBusiness::getMessage(Pixel& pixel,unsigned int longitud){
 std::string mensaje;	
 
 unsigned int bits_procesados=0;
 /*posicion inicial*/
 unsigned int pos=pixel.getNumero_de_bit();
-
-/*Cargo la image */
-FIBITMAP *image = FreeImage_Load(this->format,this->filename.c_str(), 0);
-/*Si la image se cargo correctamente*/
-if(image){
+std::string binario;
+if(!error){
   	         
-       BYTE *bits = (BYTE*)FreeImage_GetBits(image);
+  	  /*VEr que hacer aca!!!*/
+      if((bpp==8)&&(color_type>1)){
+      	    unsigned int tamanio_paleta=FreeImage_GetColorsUsed(imagen);
+            RGBQUAD *paleta_colores = FreeImage_GetPalette(imagen);
+            for (unsigned int i = 0; i < tamanio_paleta; i++) {
+                if(bits_procesados<mensaje.size()){
+                   util::BitsUtils::toBase((int)paleta_colores[i].rgbRed,2,binario);
+                   util::BitsUtils::completeNBits(binario,8);
+                   mensaje.append(1,binario.at(7)); 
+                   bits_procesados++;
+                   binario="";
+   	            }else i=tamanio_paleta;
+       			if(bits_procesados<mensaje.size()){
+       	      		util::BitsUtils::toBase((int)paleta_colores[i].rgbGreen,2,binario);
+    				util::BitsUtils::completeNBits(binario,8);
+       				mensaje.append(1,binario.at(7)); 
+       				bits_procesados++;
+       				binario="";
+       			}else i=tamanio_paleta;
+       			if(bits_procesados<mensaje.size()){
+             		util::BitsUtils::toBase((int)paleta_colores[i].rgbBlue,2,binario);
+       				util::BitsUtils::completeNBits(binario,8);
+       				mensaje.append(1,binario.at(7)); 
+       				bits_procesados++;
+       				binario="";
+       			}else i=tamanio_paleta;
+            }
+       }else{
+       BYTE *bits = (BYTE*)FreeImage_GetBits(imagen);
 	   bits+=pitch*(height-1);
 	   for (unsigned int y = pixel.getPosY(); y <height; y ++){
 		  BYTE *pixels = (BYTE*)bits;
 		  for (unsigned int x = pixel.getPosX(); x < width; x ++){
 		 	   
             if(bits_procesados<longitud){ 
-            	/*VEr que hacer aca!!!*/
-             	if((bpp==8)&&(color_type>1)){
-             	   
-             	}else{
+            	
             	   mensaje.append(getMensajeFromPixel(pixels,pos,longitud,bits_procesados));
                    pixels += (bpp/8); 
-               	}
+               
            }else{//para terminar el ciclo for 
             	  x=width;
             	  y=height;
            }
 		}//fin for_x
-        bits -= pitch;//proxima linea de la image
+        bits -= pitch;//proxima linea de la imagen
 	}//fin for_y
+	 
   }
-	
+ }
 return mensaje;	
 }
 
 LSBStegoBusiness::~LSBStegoBusiness()
 {
+	FreeImage_Unload(imagen);
 }

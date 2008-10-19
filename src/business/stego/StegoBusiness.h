@@ -4,6 +4,7 @@
 
 #include "FreeImage.h"
 #include "Pixel.h"
+
 class StegoBusiness
 {
 protected:
@@ -12,9 +13,12 @@ protected:
 
 public:
 	StegoBusiness(std::string filename);
-	virtual bool setMensaje(Pixel& pixel,std::string mensaje)=0;
-	virtual std::string getMensaje(Pixel& pixel,unsigned int longitud)=0;
-  
+	
+	/*A implementar por las clases hijas: */
+	virtual bool setMessage(Pixel& pixel,std::string mensaje)=0;
+	virtual std::string getMessage(Pixel& pixel,unsigned int longitud)=0;
+    virtual unsigned int getFreeSpace()=0;
+    
 	std::string& getFilename();
 	FREE_IMAGE_FORMAT getImageFormat();
 	void setFilename(std::string file);
@@ -22,5 +26,4 @@ public:
 		
 	virtual ~StegoBusiness();
 };
-
 #endif /*STEGOBUSINESS_H_*/
