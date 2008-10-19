@@ -3,11 +3,14 @@
 #include "LSBStegoBusiness.h"
 class PNGStego:public LSBStegoBusiness
 {
+private:	
+    unsigned int getTransparentPixels();
 public:
 	PNGStego();
 	PNGStego(std::string filename);
 	virtual void changePixel(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados)	;
-	virtual std::string getMensajeFromPixel(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados);
+	virtual std::string getMessageFromPixel(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados);
+	virtual unsigned int getFreeSpace();
 	virtual ~PNGStego();
 };
 
