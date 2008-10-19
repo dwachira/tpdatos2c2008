@@ -5,18 +5,23 @@
  *      Author: andres
  */
 #include "DirectorioDAO.h"
+#include <stdlib.h>
+
+using namespace util;
+
+namespace dao {
 
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR
  *******************************************************/
 
-DirectorioDAO::DirectorioDAO(string baseDir){
+DirectorioDAO::DirectorioDAO(){
 
-	this->index_Prim = new Indice((baseDir+"/INDEX_DIR_Prim.idx").c_str(), false);
-	this->index_FechaModif = new Indice((baseDir+"/INDEX_DIR_FechaModif.idx").c_str(), true);
+	this->index_Prim = new Indice((__BASE_DIR__"/INDEX_DIR_Prim.idx"), false);
+	this->index_FechaModif = new Indice((__BASE_DIR__"/INDEX_DIR_FechaModif.idx"), true);
 
-	this->archivo = new StreamFijo((baseDir+"/STREAMFIJO_DIR.str").c_str(), sizeof(REG_DIR));
-	this->stream = new StreamVariable((baseDir+"/STREAM_DIR.str").c_str());
+	this->archivo = new StreamFijo((__BASE_DIR__"/STREAMFIJO_DIR.str"), sizeof(REG_DIR));
+	this->stream = new StreamVariable((__BASE_DIR__"/STREAM_DIR.str"));
 }
 
 DirectorioDAO::~DirectorioDAO(){
@@ -33,7 +38,7 @@ DirectorioDAO::~DirectorioDAO(){
  * METODOS PUBLICOS
  *******************************************************/
 
-bool DirectorioDAO::insert(Directorio dir){
+bool DirectorioDAO::insert(Directorio& dir){
 
 	//almaceno el nombre en el stream que maneja registros de longitud
 	//variable y recupero el offset de insercion
@@ -76,7 +81,7 @@ bool DirectorioDAO::insert(Directorio dir){
 	return true;
 }
 
-Directorio DirectorioDAO::getDirById(unsigned int newID){
+Directorio* DirectorioDAO::getDirById(unsigned int newID){
 
 	//obtengo la pag candidata y armo el arbol con la misma
 	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) newID);
@@ -94,8 +99,7 @@ Directorio DirectorioDAO::getDirById(unsigned int newID){
 	}
 
 	if(!encontrado){
-		Directorio dir(0,"",0,0,0,0,0);
-		return dir;
+		return NULL;
 	}
 
 	RegPagina reg = candidata[i];
@@ -105,8 +109,10 @@ Directorio DirectorioDAO::getDirById(unsigned int newID){
 	this->archivo->cerrar();
 
 	string nombre = this->recuperarPath(buffer->offset_path);
-	Directorio dir(buffer->ID,nombre,buffer->dia,buffer->mes,buffer->anio,
+	Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
 			buffer->hora,buffer->min);
+	Directorio* dir = new Directorio(nombre,*lastModification);
+	dir->setID(buffer->ID);
 	return dir;
 }
 
@@ -139,16 +145,20 @@ string DirectorioDAO::recuperarPath(unsigned long int offset){
 	return nombre;
 }
 
-REG_DIR* DirectorioDAO::aStruct(Directorio dir, unsigned long int offset_path){
+REG_DIR* DirectorioDAO::aStruct(const Directorio& dir, unsigned long int offset_path){
 
 	REG_DIR* buffer = new REG_DIR();
+	util::Date fechaUltimaModificacion = dir.getFechaUltimaModificacion();
+
 	buffer->ID = dir.getID();
-	buffer->anio = dir.getAnio();
-	buffer->mes = dir.getMes();
-	buffer->dia = dir.getDia();
-	buffer->hora = dir.getHora();
-	buffer->min = dir.getMin();
+	buffer->anio = fechaUltimaModificacion.getYear();
+	buffer->mes = fechaUltimaModificacion.getMonth();
+	buffer->dia = fechaUltimaModificacion.getDay();
+	buffer->hora = fechaUltimaModificacion.getHour();
+	buffer->min = fechaUltimaModificacion.getMinute();
 	buffer->offset_path = offset_path;
 
 	return buffer;
+}
+
 }

@@ -6,6 +6,8 @@
  */
 #include <iostream>
 #include "Indice.h"
+#include <string.h>
+#include <stdlib.h>
 
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR

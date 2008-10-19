@@ -8,7 +8,6 @@
 #ifndef MENSAJEDAO_H_
 #define MENSAJEDAO_H_
 
-
 #include "../db/file/StreamFijo.h"
 #include "../db/file/StreamVariable.h"
 #include "../db/file/Indice.h"
@@ -18,6 +17,7 @@
 #include <vector>
 using namespace std;
 
+namespace dao {
 
 typedef struct{
 	unsigned int ID;
@@ -61,7 +61,7 @@ class MensajeDAO{
 
 	public:
 
-		MensajeDAO(string baseDir);
+		MensajeDAO();
 		~MensajeDAO();
 
 		/*
@@ -85,5 +85,6 @@ class MensajeDAO{
 //podria usarse un indice por tamanio de mensaje. aun no le encuentro utilidad
 };
 
+}
 
 #endif /* MENSAJEDAO_H_ */

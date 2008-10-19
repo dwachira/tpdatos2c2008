@@ -5,18 +5,21 @@
  *      Author: andres
  */
 #include "MensajeDAO.h"
+#include <stdlib.h>
+
+namespace dao {
 
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR
  *******************************************************/
 
-MensajeDAO::MensajeDAO(string baseDir){
+MensajeDAO::MensajeDAO(){
 
-	this->index_Prim = new Indice((baseDir+"/INDEX_MSJ_Prim.idx").c_str(), false);
-	this->index_Tamanio = new Indice((baseDir+"/INDEX_MSJ_Tamanio.idx").c_str(), true);
+	this->index_Prim = new Indice(__BASE_DIR__"/INDEX_MSJ_Prim.idx", false);
+	this->index_Tamanio = new Indice(__BASE_DIR__"/INDEX_MSJ_Tamanio.idx", true);
 
-	this->archivo = new StreamFijo((baseDir+"/STREAMFIJO_MSJ.str").c_str(), sizeof(REG_MSJ));
-	this->stream = new StreamVariable((baseDir+"/STREAM_MSJ.str").c_str());
+	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_MSJ.str", sizeof(REG_MSJ));
+	this->stream = new StreamVariable(__BASE_DIR__"/STREAM_MSJ.str");
 }
 
 MensajeDAO::~MensajeDAO(){
@@ -148,3 +151,6 @@ REG_MSJ* MensajeDAO::aStruct(Mensaje msj, unsigned long int offset_nombre){
 
 	return buffer;
 }
+
+}
+

@@ -5,23 +5,26 @@
  *      Author: andres
  */
 #include "ImagenDAO.h"
+#include <stdlib.h>
+
+namespace dao {
 
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR
  *******************************************************/
 
-ImagenDAO::ImagenDAO(string baseDir){
+ImagenDAO::ImagenDAO(){
 
-	this->index_Prim = new Indice((baseDir+"/INDEX_IMG_Prim.idx").c_str(), false);
-	this->index_Espacio = new Indice((baseDir+"/INDEX_IMG_Espacio.idx").c_str(), true);
-	this->index_Directorio = new Indice((baseDir+"/INDEX_IMG_Directorio.idx").c_str(), true);
+	this->index_Prim = new Indice(__BASE_DIR__"/INDEX_IMG_Prim.idx", false);
+	this->index_Espacio = new Indice(__BASE_DIR__"/INDEX_IMG_Espacio.idx", true);
+	this->index_Directorio = new Indice(__BASE_DIR__"/INDEX_IMG_Directorio.idx", true);
 
 	this->arbol = new AVL();
 	this->minID = 0;
 	this->maxID = 0;
 
-	this->archivo = new StreamFijo((baseDir+"/STREAMFIJO_IMG.str").c_str(), sizeof(REG_IMG));
-	this->stream = new StreamVariable((baseDir+"/STREAM_IMG.str").c_str());
+	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_IMG.str", sizeof(REG_IMG));
+	this->stream = new StreamVariable(__BASE_DIR__"/STREAM_IMG.str");
 }
 
 ImagenDAO::~ImagenDAO(){
@@ -41,7 +44,7 @@ ImagenDAO::~ImagenDAO(){
  * METODOS PUBLICOS
  *******************************************************/
 
-bool ImagenDAO::insert(Imagen img){
+bool ImagenDAO::insert(Imagen& img){
 
 	//almaceno el nombre en el stream que maneja registros de longitud
 	//variable y recupero el offset de insercion
@@ -204,4 +207,6 @@ REG_IMG* ImagenDAO::aStruct(Imagen img, unsigned long int offset_nombre){
 	buffer->offset_nombre = offset_nombre;
 
 	return buffer;
+}
+
 }

@@ -64,17 +64,11 @@ public:
 		return minute;
 	}
 
-    //friend std::ostream& operator<<(std::ostream& os, const util::Date& date);
+    friend std::ostream& operator<<(std::ostream& os, const util::Date& date);
 
 };
 
 }
-//std::ostream& operator<<(std::ostream& os, const util::Date& date) {
-//	std::stringstream stringBuff;
-//	stringBuff << date.getDay() << "/" << date.getMonth() << "/"
-//			   << date.getYear() << "	" << date.getHour() << ":" << date.getMinute();
-//	os << stringBuff.str();
-//	return os;
-//}
+
 
 #endif /* DATE_H_ */

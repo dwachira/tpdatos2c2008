@@ -6,6 +6,8 @@
  */
 
 #include "StreamVariable.h"
+#include <string.h>
+#include <stdlib.h>
 
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR
@@ -30,7 +32,6 @@ StreamVariable::~StreamVariable(){
 	delete(this->archivoVacios);
 	if(this->archivo.is_open())
 		cerrar();
-	free(this->archivo);
 }
 
 

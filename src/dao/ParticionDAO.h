@@ -8,7 +8,6 @@
 #ifndef PARTICIONDAO_H_
 #define PARTICIONDAO_H_
 
-
 #include "../db/file/StreamFijo.h"
 #include "../db/file/Indice.h"
 #include "../db/file/AVL.h"
@@ -17,6 +16,8 @@
 #include <vector>
 #include <list>
 using namespace std;
+
+namespace dao {
 
 typedef struct{
 	unsigned int ID_Img;
@@ -50,7 +51,7 @@ class ParticionDAO{
 
 	public:
 
-		ParticionDAO(string baseDir);
+		ParticionDAO();
 		~ParticionDAO();
 
 		/*
@@ -80,5 +81,6 @@ class ParticionDAO{
 		list<Particion> getPartsByTxt(unsigned int newTxt);
 };
 
+}
 
 #endif /* PARTICIONDAO_H_ */
