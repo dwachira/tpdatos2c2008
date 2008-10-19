@@ -6,6 +6,8 @@
  */
 
 #include "StreamFijo.h"
+#include <string.h>
+#include <stdlib.h>
 
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR
@@ -46,7 +48,6 @@ StreamFijo::~StreamFijo(){
 	free(nombre);
 	if (this->archivo.is_open())
 		cerrar();
-	free(this->archivo);
 }
 
 

@@ -1,18 +1,16 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include "../../business/directories/DirectoryManager.h"
-#include "../test/blowfish/BlowfishTest.h"
-using namespace business;
 
+#include "../test/blowfish/BlowfishTest.h"
+#include "../test/TestAddDirectory.h"
+#include <iostream>
 
 int main(int argc, char* argv[]){
 
-	DirectoryManager manager;
-	manager.addDirectory("/home/gsenno/Documents");
-
-/*	BlowfishTest bfTest;
-	bfTest.test();*/
+	TestCase* tests[] = { new TestAddDirectory() };
+	for (int i = 0; i < 1 ; i++)
+		tests[i]->test();
 	return 0;
 }
 

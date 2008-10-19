@@ -8,7 +8,6 @@
 #ifndef DIRECTORIODAO_H_
 #define DIRECTORIODAO_H_
 
-
 #include "../db/file/StreamFijo.h"
 #include "../db/file/StreamVariable.h"
 #include "../db/file/Indice.h"
@@ -17,6 +16,7 @@
 #include <vector>
 using namespace std;
 
+namespace dao {
 
 typedef struct{
 	unsigned int ID;
@@ -31,7 +31,7 @@ typedef struct{
 
 class DirectorioDAO{
 
-	public:
+	private:
 
 		Indice*						index_Prim;
 		Indice*						index_FechaModif;
@@ -55,11 +55,11 @@ class DirectorioDAO{
 		/*
 		 * Transformacion a struct de una instancia de clase 'Directorio'
 		 */
-		REG_DIR* aStruct(Directorio dir, unsigned long int offset_path);
+		REG_DIR* aStruct(const Directorio& dir, unsigned long int offset_path);
 
-	private:
+	public:
 
-		DirectorioDAO(string baseDir);
+		DirectorioDAO();
 		~DirectorioDAO();
 
 		/*
@@ -69,7 +69,7 @@ class DirectorioDAO{
 		 * fija y se recupera su offset. Finalmente, para cada indice a usar
 		 * se genera la clave que corresponde y se almacena con el offset
 		 */
-		bool insert(Directorio dir);
+		bool insert(Directorio& dir);
 
 		/*
 		 * Se accede al indice primario, ordenado por ID, y se recupera el
@@ -78,10 +78,11 @@ class DirectorioDAO{
 		 * offset. Por ultimo, se accede al archivo para regs de long variable
 		 * y se recupera el path del directorio, ultimo dato necesario.
 		 */
-		Directorio getDirById(unsigned int newID);
+		Directorio* getDirById(unsigned int newID);
 
 //podria hacerse un get por fecha de moficacion, pero no le veo sentido aun
 };
 
+}
 
 #endif /* DIRECTORIODAO_H_ */

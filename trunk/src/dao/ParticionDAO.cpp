@@ -5,19 +5,22 @@
  *      Author: andres
  */
 #include "ParticionDAO.h"
+#include <stdlib.h>
+
+namespace dao {
 
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR
  *******************************************************/
 
-ParticionDAO::ParticionDAO(string baseDir){
+ParticionDAO::ParticionDAO(){
 
-	this->index_Prim = new Indice((baseDir+"/INDEX_PART_Prim.idx").c_str(), false);
-	this->index_Img = new Indice((baseDir+"/INDEX_PART_Img.idx").c_str(), true);
-	this->index_Txt = new Indice((baseDir+"/INDEX_PART_Txt.idx").c_str(), true);
-	this->index_Libres = new Indice((baseDir+"/INDEX_PART_Lib.idx").c_str(), true);
+	this->index_Prim = new Indice(__BASE_DIR__"/INDEX_PART_Prim.idx", false);
+	this->index_Img = new Indice(__BASE_DIR__"/INDEX_PART_Img.idx", true);
+	this->index_Txt = new Indice(__BASE_DIR__"/INDEX_PART_Txt.idx", true);
+	this->index_Libres = new Indice(__BASE_DIR__"/INDEX_PART_Lib.idx", true);
 
-	this->archivo = new StreamFijo((baseDir+"/STREAMFIJO_PART.str").c_str(), sizeof(REG_PART));
+	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_PART.str", sizeof(REG_PART));
 }
 
 ParticionDAO::~ParticionDAO(){
@@ -173,4 +176,6 @@ REG_PART* ParticionDAO::aStruct(Particion part){
 	buffer->posicion = part.getPosicion();
 
 	return buffer;
+}
+
 }

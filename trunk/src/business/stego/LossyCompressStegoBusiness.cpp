@@ -4,14 +4,14 @@ LossyCompressStegoBusiness::LossyCompressStegoBusiness(std::string filename):Ste
 {
 }
 /**
- * Comprime mas la imagen y la rellena con ceros para que no cambie su tamanio
+ * Comprime mas la image y la rellena con ceros para que no cambie su tamanio
  */
 bool LossyCompressStegoBusiness::generarEspacio(float perc)
 {
-/*Cargo la imagen */
-FIBITMAP *imagen = FreeImage_Load(this->format,this->filename.c_str(),0);
-/*Si la imagen se cargo correctamente*/
- if(imagen){
+/*Cargo la image */
+FIBITMAP *image = FreeImage_Load(this->format,this->filename.c_str(),0);
+/*Si la image se cargo correctamente*/
+ if(image){
  	 unsigned int tamanio_original;
  	 std::fstream imageFile;
 	 imageFile.open(this->filename.c_str(), std::fstream::in | std::fstream::binary);
@@ -19,13 +19,13 @@ FIBITMAP *imagen = FreeImage_Load(this->format,this->filename.c_str(),0);
 	   imageFile.seekg(0, std::ios::end); // Ir al final del fichero
        tamanio_original=imageFile.tellg();
        imageFile.close();	
-	   /* Guardo la imagen cambiandole el nivel de compresion para generar
+	   /* Guardo la image cambiandole el nivel de compresion para generar
 	    * espacio al final de la misma
 	    */
 	   
 	   //VER QUE NUMERO SE LE PASA AL ULT PARAMETRO 
-	   FreeImage_Save(this->format,imagen,filename.c_str(),perc);
-	   /*Reabro la imagen y me posiciono al final para completar el espacio 
+	   FreeImage_Save(this->format,image,filename.c_str(),perc);
+	   /*Reabro la image y me posiciono al final para completar el espacio 
 	    * que le falta*/
 	 }else return false;
 

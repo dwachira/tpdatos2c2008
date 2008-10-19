@@ -9,8 +9,9 @@
 #define BLOWFISHTEST_H_
 
 #include "../../../config/Config.h"
+#include "../TestCase.h"
 #include "../../../business/crypto/blowfish/BlowfishCrypto.h"
-class BlowfishTest {
+class BlowfishTest : public TestCase {
 public:
 	BlowfishTest();
 	virtual ~BlowfishTest();

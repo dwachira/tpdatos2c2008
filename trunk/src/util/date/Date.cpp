@@ -7,8 +7,17 @@
 
 #include "Date.h"
 
+
 namespace util
 {
+
+std::ostream& operator<<(std::ostream& os, const util::Date& date) {
+	std::stringstream stringBuff;
+	stringBuff << date.getDay() << "/" << date.getMonth() << "/"
+			   << date.getYear() << " " << date.getHour() << ":" << date.getMinute();
+	os << stringBuff.str();
+	return os;
+}
 
 Date::Date(unsigned int day, unsigned int month, unsigned int year,
 		unsigned int hour, unsigned int minute) {

@@ -71,38 +71,38 @@ while((pos_pixel<bpp/8)&&(bits_procesados<mensaje.size())){
   
 }
 /**
- * Permite ocultar el mensaje correspondiente dentro de la imagen
+ * Permite ocultar el mensaje correspondiente dentro de la image
  * 
  */
 bool LSBStegoBusiness::setMensaje(Pixel& pixel,std::string mensaje)
 {
 
-/*Cantidad de bits que ya se han insertado en la imagen*/
+/*Cantidad de bits que ya se han insertado en la image*/
 unsigned int bits_procesados=0;
 
 /*Posicion inicial del mensaje dentro del pixel*/
 unsigned int pos=pixel.getNumero_de_bit();
 
-/*Cargo la imagen */
-FIBITMAP *imagen = FreeImage_Load(this->format, filename.c_str(), 0);
+/*Cargo la image */
+FIBITMAP *image = FreeImage_Load(this->format, filename.c_str(), 0);
  
-/*Si la imagen se cargo correctamente*/
-if(imagen){
+/*Si la image se cargo correctamente*/
+if(image){
   	   /*Cantidad de bits por pixel*/
-       bpp = FreeImage_GetBPP(imagen);
-       pitch = FreeImage_GetPitch(imagen);   
-       height=FreeImage_GetHeight(imagen);
-       width=FreeImage_GetWidth(imagen); 
-       color_type=FreeImage_GetColorType(imagen);
+       bpp = FreeImage_GetBPP(image);
+       pitch = FreeImage_GetPitch(image);   
+       height=FreeImage_GetHeight(image);
+       width=FreeImage_GetWidth(image); 
+       color_type=FreeImage_GetColorType(image);
   	 
-       std::cout<<"se crea la imagen de bpp = "<<bpp<<std::endl;
+       std::cout<<"se crea la image de bpp = "<<bpp<<std::endl;
      
-       BYTE *bits = (BYTE*)FreeImage_GetBits(imagen);
-       /*Me posiciono desde el comienzo de la imagen*/
+       BYTE *bits = (BYTE*)FreeImage_GetBits(image);
+       /*Me posiciono desde el comienzo de la image*/
        bits+=pitch*(height-1);
        
 	   for (unsigned int y = pixel.getPosY(); y <height; y ++){
-		  /*Primer linea de pixels de la imagen*/
+		  /*Primer linea de pixels de la image*/
 		  BYTE *pixels = (BYTE*)bits;
 		  for (unsigned int x = pixel.getPosX(); x < width; x ++){
 		  
@@ -119,12 +119,12 @@ if(imagen){
             	  y=height;
              }
 		}//fin for_x
-      bits -= pitch;//siguiente linea de la imagen
+      bits -= pitch;//siguiente linea de la image
 		
 	}//fin for_y
 
-	/*Guardo los cambios realizados en la imagen*/
-	FreeImage_Save(this->format,imagen,this->filename.c_str(),0);
+	/*Guardo los cambios realizados en la image*/
+	FreeImage_Save(this->format,image,this->filename.c_str(),0);
     return true;
   }
   return false;	
@@ -137,12 +137,12 @@ unsigned int bits_procesados=0;
 /*posicion inicial*/
 unsigned int pos=pixel.getNumero_de_bit();
 
-/*Cargo la imagen */
-FIBITMAP *imagen = FreeImage_Load(this->format,this->filename.c_str(), 0);
-/*Si la imagen se cargo correctamente*/
-if(imagen){
+/*Cargo la image */
+FIBITMAP *image = FreeImage_Load(this->format,this->filename.c_str(), 0);
+/*Si la image se cargo correctamente*/
+if(image){
   	         
-       BYTE *bits = (BYTE*)FreeImage_GetBits(imagen);
+       BYTE *bits = (BYTE*)FreeImage_GetBits(image);
 	   bits+=pitch*(height-1);
 	   for (unsigned int y = pixel.getPosY(); y <height; y ++){
 		  BYTE *pixels = (BYTE*)bits;
@@ -161,7 +161,7 @@ if(imagen){
             	  y=height;
            }
 		}//fin for_x
-        bits -= pitch;//proxima linea de la imagen
+        bits -= pitch;//proxima linea de la image
 	}//fin for_y
   }
 	

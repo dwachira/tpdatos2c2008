@@ -8,7 +8,6 @@
 #ifndef IMAGENDAO_H_
 #define IMAGENDAO_H_
 
-
 #include "../db/file/StreamFijo.h"
 #include "../db/file/StreamVariable.h"
 #include "../db/file/Indice.h"
@@ -19,6 +18,7 @@
 #include <list>
 using namespace std;
 
+namespace dao {
 
 typedef struct{
 	unsigned int ID;
@@ -65,7 +65,7 @@ class ImagenDAO{
 
 	public:
 
-		ImagenDAO(string baseDir);
+		ImagenDAO();
 		~ImagenDAO();
 
 		/*
@@ -75,7 +75,7 @@ class ImagenDAO{
 		 * fija y se recupera su offset. Finalmente, para cada indice a usar
 		 * se genera la clave que corresponde y se almacena con el offset
 		 */
-		bool insert(Imagen img);
+		bool insert(Imagen& img);
 
 		/*
 		 * Se accede al indice primario, ordenado por ID, y se recupera el
@@ -102,5 +102,6 @@ class ImagenDAO{
 
 };
 
+}
 
 #endif /* IMAGENDAO_H_ */

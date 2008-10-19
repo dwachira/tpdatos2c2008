@@ -1,21 +1,37 @@
+#include "../DirectorioDAO.h"
+#include "../ImagenDAO.h"
+#include "../MensajeDAO.h"
+#include "../ParticionDAO.h"
+
+using namespace dao;
 #ifndef MANAGERDAO_H_
 #define MANAGERDAO_H_
 
-//#include "../../dao/tag/TagDAO.h"
-
-
-//using namespace dao;
 namespace dao
 {
 
 class ManagerDAO
 {
 private:
-	//TagDAO * tagDAO;
-
+	DirectorioDAO directorioDao;
+	ImagenDAO imagenDAO;
+	MensajeDAO mensajeDAO;
+	ParticionDAO particionDAO;
 
 public:
 	ManagerDAO();
+	DirectorioDAO* getDirectorioDAO() {
+		return &directorioDao;
+	}
+	ImagenDAO* getImagenDAO() {
+		return &imagenDAO;
+	}
+	MensajeDAO* getMensajeDAO() {
+		return &mensajeDAO;
+	}
+	ParticionDAO* getParticionDAO() {
+		return &particionDAO;
+	}
 	virtual ~ManagerDAO();
 	//TagDAO * getTagDAO(){return tagDAO;}
 
