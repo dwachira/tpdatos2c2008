@@ -2,18 +2,22 @@
 #define LSBSTEGOBUSINESS_H_
 
 #include "StegoBusiness.h"
-#include "../../util/bits/BitsUtils.h"
+#include "ImagePalette.h"
+
 
 
 class LSBStegoBusiness: public StegoBusiness
 {
 protected:
+    std::string filename;
+    FREE_IMAGE_FORMAT format;
     /*Representacion de la imagen*/
     FIBITMAP *imagen;
     bool error;
     /*Cantidad de bits por pixel a utilizar para esteganografia*/
     unsigned int enable_bpp;
     unsigned int bpp,pitch,height,width,color_type;
+    ImagePalette palette;
     virtual void changePixel(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados);
     virtual std::string getMensajeFromPixel(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados);
     std::string getLSBMensaje(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados);

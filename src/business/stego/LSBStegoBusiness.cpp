@@ -94,7 +94,7 @@ imagen = FreeImage_Load(this->format, filename.c_str(), 0);
  */
 bool LSBStegoBusiness::setMessage(Pixel& pixel,std::string mensaje)
 {
-std::string binario;char* aux;
+
 /*Cantidad de bits que ya se han insertado en la imagen*/
 unsigned int bits_procesados=0;
 
@@ -103,51 +103,22 @@ unsigned int pos=pixel.getNumero_de_bit();
 if(!error){
        std::cout<<"se crea la imagen de bpp = "<<bpp<<std::endl;
        std::cout<<"color_type = "<<color_type<<std::endl;
+      
+       if((bpp<=8)&&(color_type>1)){
+          palette.sortPaletteByDistance(imagen);
+          palette.updateIndexes(imagen);
+          palette.doIndexesLSB(imagen,pixel,mensaje);
+       }else{//se puede trabajar con los pixeles
+       	
        BYTE *bits = (BYTE*)FreeImage_GetBits(imagen);
        /*Me posiciono desde el comienzo de la imagen*/
        bits+=pitch*(height-1);
-       unsigned int tamanio_paleta=FreeImage_GetColorsUsed(imagen);
-       std::cout<<"Tamaño de la paleta"<<tamanio_paleta<<std::endl;
-       /*SOlucion temporal!!!*/
-       if((bpp<=8)&&(color_type>1)){
-            RGBQUAD *paleta_colores = FreeImage_GetPalette(imagen);
-            for (unsigned int i = 0; i < tamanio_paleta; i++) {
-                if(bits_procesados<mensaje.size()){
-                   util::BitsUtils::toBase((int)paleta_colores[i].rgbRed,2,binario);
-                   util::BitsUtils::completeNBits(binario,8);
-                   /*Guardo un bit de informacion en el LSB del byte*/       
-                   binario.at(7)=mensaje.at(bits_procesados); 
-                   bits_procesados++;
-                   paleta_colores[i].rgbRed=strtol(binario.c_str(),&aux,2);
-                   binario="";
-   	            }else i=tamanio_paleta;
-       			if(bits_procesados<mensaje.size()){
-       	      		util::BitsUtils::toBase((int)paleta_colores[i].rgbGreen,2,binario);
-    				util::BitsUtils::completeNBits(binario,8);
-       				/*Guardo un bit de informacion en el LSB del byte*/       
-       				binario.at(7)=mensaje.at(bits_procesados); 
-       				bits_procesados++;
-       				paleta_colores[i].rgbGreen=strtol(binario.c_str(),&aux,2);
-       				binario="";
-       			}else i=tamanio_paleta;
-       			if(bits_procesados<mensaje.size()){
-             		util::BitsUtils::toBase((int)paleta_colores[i].rgbBlue,2,binario);
-       				util::BitsUtils::completeNBits(binario,8);
-       				/*Guardo un bit de informacion en el LSB del byte*/       
-      				binario.at(7)=mensaje.at(bits_procesados); 
-       				bits_procesados++;
-       				paleta_colores[i].rgbBlue=strtol(binario.c_str(),&aux,2);
-       				binario="";
-       			}else i=tamanio_paleta;
-            }
-       }else{//se puede trabajar con los pixeles
 	   for (unsigned int y = pixel.getPosY(); y <height; y ++){
 		  /*Primer linea de pixels de la imagen*/
 		  BYTE *pixels = (BYTE*)bits;
 		  for (unsigned int x = pixel.getPosX(); x < width; x ++){
 		    
              if(bits_procesados<mensaje.size()){ 
-             	/*VEr que hacer aca!!!*/
              	
              	    changePixel(pixels,mensaje,pos,bits_procesados);	
              	   	pixels += (bpp/8);//siguiente pixel
@@ -178,33 +149,9 @@ unsigned int pos=pixel.getNumero_de_bit();
 std::string binario;
 if(!error){
   	         
-  	  /*VEr que hacer aca!!!*/
-      if((bpp==8)&&(color_type>1)){
-      	    unsigned int tamanio_paleta=FreeImage_GetColorsUsed(imagen);
-            RGBQUAD *paleta_colores = FreeImage_GetPalette(imagen);
-            for (unsigned int i = 0; i < tamanio_paleta; i++) {
-                if(bits_procesados<mensaje.size()){
-                   util::BitsUtils::toBase((int)paleta_colores[i].rgbRed,2,binario);
-                   util::BitsUtils::completeNBits(binario,8);
-                   mensaje.append(1,binario.at(7)); 
-                   bits_procesados++;
-                   binario="";
-   	            }else i=tamanio_paleta;
-       			if(bits_procesados<mensaje.size()){
-       	      		util::BitsUtils::toBase((int)paleta_colores[i].rgbGreen,2,binario);
-    				util::BitsUtils::completeNBits(binario,8);
-       				mensaje.append(1,binario.at(7)); 
-       				bits_procesados++;
-       				binario="";
-       			}else i=tamanio_paleta;
-       			if(bits_procesados<mensaje.size()){
-             		util::BitsUtils::toBase((int)paleta_colores[i].rgbBlue,2,binario);
-       				util::BitsUtils::completeNBits(binario,8);
-       				mensaje.append(1,binario.at(7)); 
-       				bits_procesados++;
-       				binario="";
-       			}else i=tamanio_paleta;
-            }
+  	  
+      if((bpp<=8)&&(color_type>1)){
+      	    palette.getMessageFromIndexes(imagen,pixel,longitud);
        }else{
        BYTE *bits = (BYTE*)FreeImage_GetBits(imagen);
 	   bits+=pitch*(height-1);
