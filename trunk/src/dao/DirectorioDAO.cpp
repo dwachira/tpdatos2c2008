@@ -11,6 +11,8 @@ using namespace util;
 
 namespace dao {
 
+int DirectorioDAO::incrementalId = 0;
+
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR
  *******************************************************/
@@ -47,6 +49,8 @@ bool DirectorioDAO::insert(Directorio& dir){
 	if(offset_path == 0)
 		return false;
 
+	//Asigno un nuevo id al directorio
+	dir.setID(getNewId());
 	//genero el 'struct' para almacenar los datos en el stream de registros
 	//de longitud fija
 	REG_DIR* buffer = aStruct(dir, offset_path);

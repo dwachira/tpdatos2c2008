@@ -20,11 +20,16 @@ private:
 	static std::string GIF;
 	static std::string JPG;
 	static std::string PNG;
+	static std::string BMP;
 	static const int EXTENSION_LENGTH = 3;
 
-	dao::ManagerDAO& managerDAO;
+	dao::DirectorioDAO& directorioDAO;
+	dao::ImagenDAO& imagenDAO;
+	dao::ParticionDAO& particionDAO;
+
 public:
-	DirectorioManager(dao::ManagerDAO& manager) : managerDAO(manager) {}
+	DirectorioManager(dao::ManagerDAO& manager) : directorioDAO(manager.getDirectorioDAO()),
+		imagenDAO(manager.getImagenDAO()), particionDAO(manager.getParticionDAO()) {}
 	void agregarDirectorio(const std::string path) const;
 	bool directorioEnUso(const Directorio& directory) const;
 	void removerDirectorio(const long id) const;

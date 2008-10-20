@@ -6,8 +6,9 @@
  */
 
 #include "TestAddDirectory.h"
-#include <cassert>
 #include <list>
+#include <string>
+using namespace std;
 
 TestAddDirectory::TestAddDirectory() {
 	// TODO Auto-generated constructor stub
@@ -17,10 +18,18 @@ TestAddDirectory::TestAddDirectory() {
 int TestAddDirectory::test() {
 	dao::ManagerDAO managerDAO;
 	business::DirectorioManager manager(managerDAO);
-	manager.agregarDirectorio("/home/gsenno/Documents");
+	string expectedDir(__TEST_DIR__"");
+
+	//Unit under test
+	manager.agregarDirectorio(expectedDir);
+
 	list<Directorio*> directorios = manager.getDirectorios();
-	assert(directorios.front()->getPath() == "/home/gsenno/Documents");
-	std::list<Imagen> imagenes = managerDAO.getImagenDAO()->getImgsByDirectorio(5);
+	if (expectedDir.compare(directorios.front()->getPath()) != 0) {
+		fail("El directorio almacenado no coincide con el ingresado");
+	}
+
+	std::list<Imagen> imagenes = managerDAO.getImagenDAO().
+		getImgsByDirectorio(managerDAO.getDirectorioDAO().getLastAssignedId());
 	for (std::list<Imagen>::iterator it = imagenes.begin(); it != imagenes.end(); it++)
 		std::cout<<(*it).getNombre()<<std::endl;
 }

@@ -26,7 +26,6 @@
 
 
 #include <fstream>
-using namespace std;
 
 #define READ 1
 #define WRITE 2
@@ -38,7 +37,7 @@ class StreamFijo{
 
 	private:
 
-		fstream				archivo;
+		std::fstream				archivo;
 		unsigned long int 	cant_reg;			//cant de registros almacenados
 		unsigned long int 	cant_vacios;		//cant que se marcaron como vacios
 		unsigned int 		size_reg;			//tamaño sin considerar el flag de estado

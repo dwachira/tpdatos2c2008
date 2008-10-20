@@ -71,7 +71,7 @@ class MensajeDAO{
 		 * fija y se recupera su offset. Finalmente, para cada indice a usar
 		 * se genera la clave que corresponde y se almacena con el offset
 		 */
-		bool insert(Mensaje msj);
+		bool insert(Mensaje& msj);
 
 		/*
 		 * Se accede al indice primario, ordenado por ID, y se recupera el

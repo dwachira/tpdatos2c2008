@@ -9,6 +9,8 @@
 
 namespace dao {
 
+int ImagenDAO::incrementalId = 0;
+
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR
  *******************************************************/
@@ -52,6 +54,8 @@ bool ImagenDAO::insert(Imagen& img){
 	//si devuelve 0, indica que no pudo almacenar la informacion
 	if(offset_nombre == 0)
 		return false;
+
+	img.setID(getNewId());
 
 	//genero el 'struct' para almacenar los datos en el stream de registros
 	//de longitud fija

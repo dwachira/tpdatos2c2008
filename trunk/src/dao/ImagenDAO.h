@@ -45,6 +45,8 @@ class ImagenDAO{
 		unsigned int				minID;
 		unsigned int				maxID;
 
+		static int incrementalId;
+
 		/*
 		 * Se almcena el nombre de la imagen, que es la parte de longitud
 		 * variable, en un archivo aparte y se recupera el offset
@@ -67,6 +69,14 @@ class ImagenDAO{
 
 		ImagenDAO();
 		~ImagenDAO();
+
+		int getLastAssignedId() {
+			return incrementalId;
+		}
+
+		int getNewId() {
+			return ++incrementalId;
+		}
 
 		/*
 		 * Se inserta el nombre de la imagen en el archivo para regs de long

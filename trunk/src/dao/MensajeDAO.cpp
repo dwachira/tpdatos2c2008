@@ -36,7 +36,7 @@ MensajeDAO::~MensajeDAO(){
  * METODOS PUBLICOS
  *******************************************************/
 
-bool MensajeDAO::insert(Mensaje msj){
+bool MensajeDAO::insert(Mensaje& msj){
 
 	//almaceno el nombre en el stream que maneja registros de longitud
 	//variable y recupero el offset de insercion
