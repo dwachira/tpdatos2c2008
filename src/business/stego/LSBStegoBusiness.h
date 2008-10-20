@@ -9,7 +9,7 @@
 class LSBStegoBusiness: public StegoBusiness
 {
 protected:
-    std::string filename;
+  
     FREE_IMAGE_FORMAT format;
     /*Representacion de la imagen*/
     FIBITMAP *imagen;
