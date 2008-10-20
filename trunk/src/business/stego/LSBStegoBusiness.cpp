@@ -151,7 +151,7 @@ if(!error){
   	         
   	  
       if((bpp<=8)&&(color_type>1)){
-      	    palette.getMessageFromIndexes(imagen,pixel,longitud);
+      	    mensaje.append(palette.getMessageFromIndexes(imagen,pixel,longitud));
        }else{
        BYTE *bits = (BYTE*)FreeImage_GetBits(imagen);
 	   bits+=pitch*(height-1);
