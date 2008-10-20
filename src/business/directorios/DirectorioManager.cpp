@@ -21,6 +21,7 @@ using namespace std;
 
 namespace business {
 
+string DirectorioManager::BMP = "bmp";
 string DirectorioManager::GIF = "gif";
 string DirectorioManager::JPG = "jpg";
 string DirectorioManager::PNG = "png";
@@ -42,8 +43,7 @@ void DirectorioManager::agregarDirectorio(std::string path) const
 			Date* lastModification = Date::valueOf(timeAux->tm_mday, timeAux->tm_mon + 1,
 					timeAux->tm_year + 1900, timeAux->tm_hour, timeAux->tm_min);
 			Directorio unDirectorio(path,*lastModification);
-			unDirectorio.setID(5);
-			managerDAO.getDirectorioDAO()->insert(unDirectorio);
+			directorioDAO.insert(unDirectorio);
 			buscarImagenes(unDirectorio);		//ESCANEAR Directorio EN BUSCA DE IMAGENES
 			delete lastModification;
 
@@ -53,8 +53,7 @@ void DirectorioManager::agregarDirectorio(std::string path) const
 
 void DirectorioManager::removerDirectorio(long  id) const
 {
-	DirectorioDAO* dao = managerDAO.getDirectorioDAO();
-	Directorio* directorio = dao->getDirById(id);
+	Directorio* directorio = directorioDAO.getDirById(id);
 	if (directorio != NULL) {
 		//dao.remove(Directorio);
 	}
@@ -62,15 +61,15 @@ void DirectorioManager::removerDirectorio(long  id) const
 
 bool DirectorioManager::directorioEnUso(const Directorio & directory) const
 {
-//	bool isBeingUsed = false;
-//	list<Image>& images = PersistenceService.getImagesByDirectorio(directory);
-//	list<Image>::iterator it = images.begin();
-//	while ( (it != images.end()) && (!isBeingUsed) ) {
-//		list<Partition>& particiones = PersistenceService.getPartitionsByImage(*it);
-//		if (particiones.size() > 0)
-//			isBeingUsed = true;
-//	}
-//	return isBeingUsed;
+	bool isBeingUsed = false;
+	list<Imagen> imagenes = imagenDAO.getImgsByDirectorio(directory.getID());
+	list<Imagen>::iterator it = imagenes.begin();
+	while ( (it != imagenes.end()) && (!isBeingUsed) ) {
+		const list<Particion>& particiones = particionDAO.getPartsByImg((*it).getID());
+		if (particiones.size() > 0)
+			isBeingUsed = true;
+	}
+	return isBeingUsed;
 }
 
 void DirectorioManager::buscarImagenes(const Directorio& directorio) const
@@ -82,14 +81,14 @@ void DirectorioManager::buscarImagenes(const Directorio& directorio) const
 		string entryName(dirEntry->d_name);
 		if (entryName.size() > EXTENSION_LENGTH) {
 			string extension = entryName.substr(entryName.size() - EXTENSION_LENGTH);
-			if ( (extension.compare("rar") == 0) || (extension.compare(JPG) == 0) || (extension.compare(PNG) == 0) ) {
+			if ( (extension.compare(BMP) == 0) || (extension.compare(GIF) == 0) || (extension.compare(JPG) == 0) || (extension.compare(PNG) == 0) ) {
 				string fullFileName = directorio.getPath() + "/" + entryName;
 				lstat(fullFileName.data(),&fileStats);
 				Imagen imagen;
 				imagen.setTamanio(fileStats.st_size);
 				imagen.setNombre(fullFileName);
 				imagen.setID_Dir(directorio.getID());
-				managerDAO.getImagenDAO()->insert(imagen);
+				imagenDAO.insert(imagen);
 //				Stego.setFreeSpace(anImage);
 //				PersistenceManager.save(anImage);
 			}
@@ -101,7 +100,8 @@ void DirectorioManager::buscarImagenes(const Directorio& directorio) const
 std::list<Directorio*> business::DirectorioManager::getDirectorios() const
 {
 	list<Directorio*> directorios;
-	directorios.push_front(managerDAO.getDirectorioDAO()->getDirById(5));
+	for (int i = 1; i <= directorioDAO.getLastAssignedId(); i++)
+		directorios.push_back(directorioDAO.getDirById(i));
 	return directorios;
 }
 

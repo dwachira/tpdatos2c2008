@@ -39,6 +39,8 @@ class DirectorioDAO{
 		StreamFijo*					archivo;
 		StreamVariable*				stream;
 
+		static int incrementalId;
+
 		/*
 		 * Se almcena el path del directorio, que es la parte de longitud
 		 * variable, en un archivo aparte y se recupera el offset
@@ -61,6 +63,14 @@ class DirectorioDAO{
 
 		DirectorioDAO();
 		~DirectorioDAO();
+
+		int getLastAssignedId() {
+			return incrementalId;
+		}
+
+		int getNewId() {
+			return ++incrementalId;
+		}
 
 		/*
 		 * Se inserta el path del directorio en el archivo para regs de long

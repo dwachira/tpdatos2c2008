@@ -20,20 +20,19 @@ private:
 
 public:
 	ManagerDAO();
-	DirectorioDAO* getDirectorioDAO() {
-		return &directorioDao;
+	DirectorioDAO& getDirectorioDAO() {
+		return directorioDao;
 	}
-	ImagenDAO* getImagenDAO() {
-		return &imagenDAO;
+	ImagenDAO& getImagenDAO() {
+		return imagenDAO;
 	}
-	MensajeDAO* getMensajeDAO() {
-		return &mensajeDAO;
+	MensajeDAO& getMensajeDAO() {
+		return mensajeDAO;
 	}
-	ParticionDAO* getParticionDAO() {
-		return &particionDAO;
+	ParticionDAO& getParticionDAO() {
+		return particionDAO;
 	}
 	virtual ~ManagerDAO();
-	//TagDAO * getTagDAO(){return tagDAO;}
 
 };
 
