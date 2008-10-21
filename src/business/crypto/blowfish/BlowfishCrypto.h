@@ -22,7 +22,8 @@ class BlowfishCrypto: public CryptoBusiness {
 private:
 	DWord pSubKeys[18];
 	DWord sBoxes[4][256];
-	void swap(DWord left, DWord right);
+	void swap(DWord &left, DWord &right);
+
 
 
 public:
@@ -30,8 +31,10 @@ public:
 	virtual ~BlowfishCrypto();
 	void inicializar(string password);
 	string encrypt(string data);
+	string desencrypt(string data);
 	QWord encrypt(QWord data);
-	string desencrypt(string password, string data);
+	QWord desencrypt(QWord data);
+
 };
 
 #endif /* BLOWFISHCRYPTO_H_ */

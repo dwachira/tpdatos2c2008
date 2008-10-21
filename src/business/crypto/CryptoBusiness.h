@@ -10,7 +10,7 @@ public:
 	virtual ~CryptoBusiness();
 	virtual void inicializar(string password) = 0;
 	virtual string encrypt(string data) = 0;
-	virtual string desencrypt(string password, string data) = 0;
+	virtual string desencrypt(string data) = 0;
 };
 
 #endif /* CRYPTOBUSINESS_H_ */
