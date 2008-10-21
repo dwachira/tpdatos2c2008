@@ -19,18 +19,17 @@ union DWord{
 	Doble doble;
 	Word word[2];
 	Byte byte[4];
-	char * toString;
 	struct {
-		unsigned int byte3:8;
-		unsigned int byte2:8;
-		unsigned int byte1:8;
 		unsigned int byte0:8;
+		unsigned int byte1:8;
+		unsigned int byte2:8;
+		unsigned int byte3:8;
 	} wint;
 	struct {
-		Byte byte3:8;
-		Byte byte2:8;
-		Byte byte1:8;
 		Byte byte0:8;
+		Byte byte1:8;
+		Byte byte2:8;
+		Byte byte3:8;
 	} wchar;
 	//Constructores
 	DWord(){}
