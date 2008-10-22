@@ -1,6 +1,6 @@
 #include "LossyCompressStegoBusiness.h"
 
-LossyCompressStegoBusiness::LossyCompressStegoBusiness(std::string filename):StegoBusiness(filename),
+LossyCompressStegoBusiness::LossyCompressStegoBusiness(std::string filename,FREE_IMAGE_FORMAT format):StegoBusiness(filename,format),
 free_space(0){
 }
 
@@ -49,7 +49,7 @@ FIBITMAP *imagen = FreeImage_Load(this->format,this->filename.c_str(),0);
 }
 //en este caso el pixel tendria que indiacar numero de bit a modificar por ej
 //podria no usarse pixel y usarse simplemente ese numero <---VER
-bool LossyCompressStegoBusiness::setMessage(Pixel& pixel,std::string mensaje)
+bool LossyCompressStegoBusiness::setMessage(unsigned long int offset,std::string mensaje)
 {
 std::fstream imageFile;
 
@@ -65,7 +65,7 @@ imageFile.open(filename.c_str(), std::fstream::in |std::fstream::out| std::fstre
  return false;
 }
 
-std::string LossyCompressStegoBusiness::getMessage(Pixel& pixel,unsigned int longitud){
+std::string LossyCompressStegoBusiness::getMessage(unsigned long int offset,unsigned int longitud){
 std::string mensaje;	
 std::fstream imageFile;
 

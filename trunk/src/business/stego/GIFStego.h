@@ -9,8 +9,8 @@ class GIFStego: public LSBStegoBusiness
 public:
 	GIFStego();
 	GIFStego(std::string filename);
-	virtual bool setMessage(Pixel& pixel,std::string mensaje);
-	virtual std::string getMessage(Pixel& pixel,unsigned int longitud);
+	virtual bool setMessage(unsigned long int first_bit,std::string mensaje);
+	virtual std::string getMessage(unsigned long int first_bit,unsigned int longitud);
 	virtual unsigned int getFreeSpace();
 	virtual ~GIFStego();
 };

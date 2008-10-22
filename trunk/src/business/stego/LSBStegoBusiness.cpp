@@ -1,21 +1,53 @@
 #include "LSBStegoBusiness.h"
 #include <iostream>
-LSBStegoBusiness::LSBStegoBusiness(std::string filename):StegoBusiness(filename),error(false),enable_bpp(1)
+
+
+LSBStegoBusiness::LSBStegoBusiness(std::string filename,FREE_IMAGE_FORMAT format):StegoBusiness(filename,format),error(false),enable_bpp(1),imagen(filename,format),palette(imagen)
 {
+	error=imagen.load();
 }
 
-std::string LSBStegoBusiness::getMensajeFromPixel(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados){
-	return getLSBMensaje(pixels,pos,longitud,bits_procesados);
+void LSBStegoBusiness::getPixel(unsigned long int first_bit,Pixel& pixel){
+unsigned int y=0;
+unsigned int x=0;
+unsigned int bits_count=0;
+unsigned int bit=0;
+
+	  while(( y <imagen.getHeight())&&(bits_count<first_bit)){
+		  /*Primer linea de pixels de la imagen*/
+		 
+		   while(( x <imagen.getWidth())&&(bits_count<first_bit)){
+		   	    //siguiente pixel
+		   	    bits_count+=8*imagen.getBpp();
+		   	    if(bits_count>=first_bit)
+		   	      bit= (first_bit-(y*imagen.getWidth()))%(imagen.getBpp());
+		   	    //siguiente pixel
+		      	x++;
+		}//fin while_x
+      //siguiente linea de la imagen
+	  y++;
+	}//fin while_y
+    pixel.setPosX(x);
+    pixel.setPosY(y);
+    pixel.setNumero_de_bit(bit);
+   
+	
 }
 
-std::string LSBStegoBusiness::getLSBMensaje(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados){
+std::string LSBStegoBusiness::getMessageFromPixel(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados){
+	return getLSBMessage(pixels,pos,longitud,bits_procesados);
+}
+
+std::string LSBStegoBusiness::getLSBMessage(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados){
 std::string mensaje,binario;
 unsigned int pos_pixel=0;
 unsigned int bits_por_byte= 0;
 char car;
 int byte;
-
-  while((pos_pixel<bpp/8)&&(bits_procesados<longitud)){
+if(bits_procesados==0)
+  pos_pixel= (pos/8);
+  
+  while((pos_pixel<imagen.getBpp()/8)&&(bits_procesados<longitud)){
       byte=(int)pixels[pos_pixel];
       util::BitsUtils::toBase(byte,2,binario);
 	  util::BitsUtils::completeNBits(binario,8);
@@ -45,9 +77,12 @@ char* aux;
 std::string binario;
 unsigned int bits_por_byte=0;
 unsigned int pos_pixel=0;
+//debo posicionarme en el pixel correcto
+if(bits_procesados==0)
+  pos_pixel= (pos/8);
 
 /*Mientras queden bytes por pixel para recorrer*/              
-while((pos_pixel<bpp/8)&&(bits_procesados<mensaje.size())){
+while((pos_pixel<imagen.getBpp()/8)&&(bits_procesados<mensaje.size())){
    util::BitsUtils::toBase((int)pixels[pos_pixel],2,binario);
   /*Completo el binario para que sea mas facil el proceso*/
    util::BitsUtils::completeNBits(binario,8);
@@ -72,77 +107,62 @@ while((pos_pixel<bpp/8)&&(bits_procesados<mensaje.size())){
   
 }
 
-void LSBStegoBusiness::loadImagen()
-{
-/*Cargo la imagen */
-imagen = FreeImage_Load(this->format, filename.c_str(), 0);
 
-  if(imagen){
-  	   /*Cantidad de bits por pixel*/
-       bpp = FreeImage_GetBPP(imagen);
-       pitch = FreeImage_GetPitch(imagen);   
-       height=FreeImage_GetHeight(imagen);
-       width=FreeImage_GetWidth(imagen); 
-       color_type=FreeImage_GetColorType(imagen);
-       error=false;
-  }else error=true;
-
-}
 /**
  * Permite ocultar el mensaje correspondiente dentro de la imagen
  * 
  */
-bool LSBStegoBusiness::setMessage(Pixel& pixel,std::string mensaje)
+bool LSBStegoBusiness::setMessage(unsigned long int first_bit,std::string mensaje)
 {
-
 /*Cantidad de bits que ya se han insertado en la imagen*/
 unsigned int bits_procesados=0;
-
+Pixel pixel;
+getPixel(first_bit,pixel);
 /*Posicion inicial del mensaje dentro del pixel*/
 unsigned int pos=pixel.getNumero_de_bit();
 if(!error){
-       std::cout<<"se crea la imagen de bpp = "<<bpp<<std::endl;
-       std::cout<<"color_type = "<<color_type<<std::endl;
-      
-       if((bpp<=8)&&(color_type>1)){
-          palette.sortPaletteByDistance(imagen);
-          palette.updateIndexes(imagen);
-          palette.doIndexesLSB(imagen,pixel,mensaje);
+        
+       if((imagen.getBpp()<=8)&&(imagen.getColorType()>1)){
+          palette.sortPaletteByDistance();
+          palette.updateIndexes();
+          palette.doIndexesLSB(pixel,mensaje);
        }else{//se puede trabajar con los pixeles
        	
-       BYTE *bits = (BYTE*)FreeImage_GetBits(imagen);
+       BYTE *bits = imagen.getBits();
        /*Me posiciono desde el comienzo de la imagen*/
-       bits+=pitch*(height-1);
-	   for (unsigned int y = pixel.getPosY(); y <height; y ++){
+       bits+=imagen.getPitch()*(imagen.getHeight()-1);
+	   for (unsigned int y = pixel.getPosY(); y <imagen.getHeight(); y ++){
 		  /*Primer linea de pixels de la imagen*/
 		  BYTE *pixels = (BYTE*)bits;
-		  for (unsigned int x = pixel.getPosX(); x < width; x ++){
+		  for (unsigned int x = pixel.getPosX(); x < imagen.getWidth(); x ++){
 		    
              if(bits_procesados<mensaje.size()){ 
              	
-             	    changePixel(pixels,mensaje,pos,bits_procesados);	
-             	   	pixels += (bpp/8);//siguiente pixel
+             	    changePixel(pixels,mensaje,pos,bits_procesados);
+             	    pos= 8 - this->enable_bpp;	
+             	   	pixels += (imagen.getBpp()/8);//siguiente pixel
              
             }else{ //para terminar el ciclo for 
-            	  x=width;
-            	  y=height;
+            	  x=imagen.getWidth();
+            	  y=imagen.getHeight();
              }
 		}//fin for_x
-      bits -= pitch;//siguiente linea de la imagen
+      bits -= imagen.getPitch();//siguiente linea de la imagen
 		
 	}//fin for_y
        }
 	/*Guardo los cambios realizados en la imagen*/
-	FreeImage_Save(this->format,imagen,this->filename.c_str(),0);
-	
+	imagen.save();
+		
     return true;
   }
   return false;	
 }
 
-std::string LSBStegoBusiness::getMessage(Pixel& pixel,unsigned int longitud){
+std::string LSBStegoBusiness::getMessage(unsigned long int first_bit,unsigned int longitud){
 std::string mensaje;	
-
+Pixel pixel;
+getPixel(first_bit,pixel);
 unsigned int bits_procesados=0;
 /*posicion inicial*/
 unsigned int pos=pixel.getNumero_de_bit();
@@ -150,26 +170,27 @@ std::string binario;
 if(!error){
   	         
   	  
-      if((bpp<=8)&&(color_type>1)){
-      	    mensaje.append(palette.getMessageFromIndexes(imagen,pixel,longitud));
+      if((imagen.getBpp()<=8)&&(imagen.getColorType()>1)){
+      	    mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
        }else{
-       BYTE *bits = (BYTE*)FreeImage_GetBits(imagen);
-	   bits+=pitch*(height-1);
-	   for (unsigned int y = pixel.getPosY(); y <height; y ++){
+       BYTE *bits = imagen.getBits();
+	   bits+=imagen.getPitch()*(imagen.getHeight()-1);
+	   for (unsigned int y = pixel.getPosY(); y <imagen.getHeight(); y ++){
 		  BYTE *pixels = (BYTE*)bits;
-		  for (unsigned int x = pixel.getPosX(); x < width; x ++){
+		  for (unsigned int x = pixel.getPosX(); x < imagen.getWidth(); x ++){
 		 	   
             if(bits_procesados<longitud){ 
             	
-            	   mensaje.append(getMensajeFromPixel(pixels,pos,longitud,bits_procesados));
-                   pixels += (bpp/8); 
+            	   mensaje.append(getMessageFromPixel(pixels,pos,longitud,bits_procesados));
+                   pos= 8 - this->enable_bpp;
+                   pixels += (imagen.getBpp()/8); 
                
            }else{//para terminar el ciclo for 
-            	  x=width;
-            	  y=height;
+            	  x=imagen.getWidth();
+            	  y=imagen.getHeight();
            }
 		}//fin for_x
-        bits -= pitch;//proxima linea de la imagen
+        bits -= imagen.getPitch();//proxima linea de la imagen
 	}//fin for_y
 	 
   }
@@ -179,5 +200,5 @@ return mensaje;
 
 LSBStegoBusiness::~LSBStegoBusiness()
 {
-	FreeImage_Unload(imagen);
+	
 }
