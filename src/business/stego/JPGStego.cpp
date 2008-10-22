@@ -1,8 +1,8 @@
 #include "JPGStego.h"
 
-JPGStego::JPGStego(std::string filename):LossyCompressStegoBusiness(filename)
+JPGStego::JPGStego(std::string filename):LossyCompressStegoBusiness(filename,FIF_JPEG)
 {
-	 this->format=FIF_JPEG;
+	
 }
 
 JPGStego::~JPGStego()

@@ -1,6 +1,8 @@
 #include "StegoBusiness.h"
 
-StegoBusiness::StegoBusiness(std::string filename):filename(filename)
+StegoBusiness::StegoBusiness(){};
+
+StegoBusiness::StegoBusiness(std::string filename,FREE_IMAGE_FORMAT format):filename(filename),format(format)
 {
 	
 }

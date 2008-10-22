@@ -1,9 +1,8 @@
 #include "PNGStego.h"
 
-PNGStego::PNGStego(std::string filename):LSBStegoBusiness(filename)
+PNGStego::PNGStego(std::string filename):LSBStegoBusiness(filename,FIF_PNG)
 {
-	 this->format=FIF_PNG;
-	 loadImagen();
+	
 }
 
 void PNGStego::changePixel(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados)	
@@ -18,7 +17,7 @@ unsigned int bits_alpha=0;
 unsigned int pos_pixel=0;
 
      /*Canal alpha en cero--> imagen transparente*/
-     if((bpp==32)&&(pixels[3]==0)){
+     if((imagen.getBpp()==32)&&(pixels[3]==0)){
     	  while((bits_procesados<mensaje.size())&&(pos_pixel<3)){
              newbyte.append(1,mensaje.at(bits_procesados));
              bits_alpha++;
@@ -36,8 +35,8 @@ unsigned int pos_pixel=0;
              
 }
 unsigned int PNGStego::getFreeSpace(){
-	unsigned int space=(this->height)*(this->width)*(this->bpp)*(this->enable_bpp);
-	if(bpp==32)
+	unsigned int space=((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp())*(this->enable_bpp));
+	if(imagen.getBpp()==32)
 	  space+=  getTransparentPixels()*(24 - this->enable_bpp);
 	return space;
 	
@@ -49,20 +48,20 @@ unsigned int PNGStego::getTransparentPixels(){
 unsigned int transparent=0;
 if(!error){
   	  
-       BYTE *bits = (BYTE*)FreeImage_GetBits(imagen);
+       BYTE *bits = imagen.getBits();
        /*Me posiciono desde el comienzo de la imagen*/
-       bits+=pitch*(height-1);
+       bits+=imagen.getPitch()*(imagen.getHeight()-1);
        
-	   for (unsigned int y =0; y <height; y ++){
+	   for (unsigned int y = 0; y <imagen.getHeight(); y ++){
 		  /*Primer linea de pixels de la imagen*/
 		  BYTE *pixels = (BYTE*)bits;
-		  for (unsigned int x = 0; x < width; x ++){
+		  for (unsigned int x = 0; x < imagen.getWidth(); x ++){
 		      if(pixels[3]==0)
 	             transparent++;
-       	   	  pixels += (bpp/8);//siguiente pixel
+       	   	  pixels += (imagen.getBpp()/8);//siguiente pixel
           }//fin for_x
 		
-      bits -= pitch;//siguiente linea de la imagen
+      bits -= imagen.getPitch();//siguiente linea de la imagen
 		
 	}//fin for_y
   }
@@ -72,9 +71,10 @@ std::string PNGStego::getMessageFromPixel(BYTE *pixels,unsigned int& pos,unsigne
 std::string mensaje,binario;
 unsigned int byte;
 unsigned int pos_pixel=0;
-
+if(bits_procesados==0)
+  pos_pixel= (pos/8);
 /*Canal alpha en cero--> imagen transparente*/
-   if((bpp==32)&&(pixels[3]==0)){
+   if((imagen.getBpp()==32)&&(pixels[3]==0)){
      while((bits_procesados<longitud)&&(pos_pixel<3)){
           byte=(int)pixels[pos_pixel];
           util::BitsUtils::toBase(byte,2,binario);
@@ -89,7 +89,7 @@ unsigned int pos_pixel=0;
       }
       return mensaje;       	
   }else//sino utilizo el metodo comun
-       return getLSBMensaje(pixels,pos,longitud,bits_procesados);
+       return getLSBMessage(pixels,pos,longitud,bits_procesados);
              		
 }
 

@@ -15,3 +15,4 @@ public:
 };
 
 #endif /*PNGSTEGO_H_*/
+

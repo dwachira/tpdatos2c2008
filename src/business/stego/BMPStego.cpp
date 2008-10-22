@@ -1,13 +1,12 @@
 #include "BMPStego.h"
 
-BMPStego::BMPStego(std::string filename):LSBStegoBusiness(filename)
+BMPStego::BMPStego(std::string filename):LSBStegoBusiness(filename,FIF_BMP)
 {
- this->format=FIF_BMP;
- loadImagen();
+
 }
 
 unsigned int BMPStego::getFreeSpace(){
- return ((this->height)*(this->width)*(this->bpp)*(this->enable_bpp));	
+ return ((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp())*(this->enable_bpp));	
 	
 }
 BMPStego::~BMPStego()
