@@ -120,7 +120,7 @@ Directorio* DirectorioDAO::getDirById(unsigned int newID){
 	return dir;
 }
 
-list<Directorio> DirectorioDAO::getAllDirs(){
+list<Directorio> DirectorioDAO::getDirsSortedByFechaModif(){
 
 	list<Directorio> lista;
 	vector<RegPagina> resultados = this->index_FechaModif->recorrerIndice();

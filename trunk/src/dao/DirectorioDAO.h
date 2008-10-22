@@ -97,7 +97,7 @@ class DirectorioDAO{
 		 * Se devuelven ordenados por Fecha de Ultima Modificacion, por si tiene
 		 * alguna utilidad (de menor a mayor, o sea, los ultimos modificados al final)
 		 */
-		list<Directorio> getAllDirs();
+		list<Directorio> getDirsSortedByFechaModif();
 
 //podria hacerse un get por fecha de moficacion, pero no le veo sentido aun
 };
