@@ -13,6 +13,8 @@ int main(int argc, char* argv[]){
 	for (int i = 0; i < 1 ; i++)
 		tests[i]->test();
 
+/*	BlowfishTest bt;
+	bt.test();*/
 	return 0;
 }
 
