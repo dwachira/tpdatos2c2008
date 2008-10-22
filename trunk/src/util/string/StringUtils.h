@@ -20,7 +20,7 @@ public:
 	virtual ~StringUtils();
 	static int split(string input, const string& delimiter, vector<string>& results, bool includeEmpties);
 	static string charAt(string input, int pos);
-	static bool isInteger(string input); 
+	static bool isInteger(string input);
 	static string uppercase(string input);
 	static string toString(float input);
 	static string toString(int input);
@@ -31,6 +31,7 @@ public:
 	static string trim(string input);
 	static string toString(unsigned int input);
 	static double concat(unsigned int input1, unsigned int input2);
+	static double concat(unsigned int input1, unsigned int input2, unsigned int input3);
 	static int compare(string s1, string s2);
 
 };

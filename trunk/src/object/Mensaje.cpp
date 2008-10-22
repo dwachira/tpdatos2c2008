@@ -6,6 +6,8 @@
  */
 #include "Mensaje.h"
 
+namespace object{
+
 Mensaje::Mensaje(){
 
 	this->ID = 0;
@@ -37,4 +39,6 @@ Mensaje::~Mensaje(){
 	this->nombre = "";
 	this->tamanio = 0;
 	this->cant_partes = -1;
+}
+
 }

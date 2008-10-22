@@ -17,6 +17,7 @@
 #include <vector>
 #include <list>
 using namespace std;
+using namespace object;
 
 namespace dao {
 

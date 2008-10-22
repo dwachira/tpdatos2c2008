@@ -6,6 +6,8 @@
  */
 #include "Particion.h"
 
+namespace object{
+
 Particion::Particion(){
 
 	this->ID_Img = 0;
@@ -46,4 +48,6 @@ Particion::~Particion(){
 	this->bit_inicio = 0;
 	this->longitud = 0;
 	this->libre = true;
+}
+
 }

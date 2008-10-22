@@ -58,10 +58,9 @@ bool ParticionDAO::insert(Particion part){
 
 	//inserto en los indices. se indica la clave referente a cada indice y
 	//el offset de insercion de los datos en el archivo stream
-	double claveCompuestaPrim;
-/*
- * FALTA ARMAR LA CLAVE COMPUESTA PRIMARIA (IMG-TXT-POSICION)
- */
+	double claveCompuestaPrim = StringUtils::concat
+							(buffer->ID_Img,buffer->ID_Txt,buffer->posicion);
+
 	bool insertar = this->index_Prim->insertar(claveCompuestaPrim, offset_registro);
 	//***** NO PUDO INSERTAR EN EL INDICE, PERO SI ALMACENO EN LOS STREAMS *****
 	if(! insertar)
@@ -69,11 +68,15 @@ bool ParticionDAO::insert(Particion part){
 
 	this->index_Img->insertar((double) buffer->ID_Img, offset_registro);
 	this->index_Txt->insertar((double) buffer->ID_Txt, offset_registro);
-	double claveCompuestaLibres;
-/*
- * FALTA ARMAR LA CLAVE COMPUESTA DE POSICIONES LIBRES + LONGITUD DE CADA UNA
- */
-	this->index_Libres->insertar(claveCompuestaLibres, offset_registro);
+
+	//si la particion esta marcada como libre, se agrega en el indice que indica
+	//las posiciones libres que se pueden usar mas adelante
+	if(buffer->libre){
+		double claveCompuestaLibres = StringUtils::concat
+											(buffer->posicion,buffer->longitud);
+
+		this->index_Libres->insertar(claveCompuestaLibres, offset_registro);
+	}
 
 	free(buffer);
 	return true;
@@ -81,10 +84,8 @@ bool ParticionDAO::insert(Particion part){
 
 Particion ParticionDAO::getPartByImgTxtPos(unsigned int newImg, unsigned int newTxt, unsigned int newPos){
 
-	double claveBuscada;
-/*
- * FALTA ARMAR LA CLAVE COMPUESTA PRIMARIA (IMG-TXT-POSICION)
- */
+	double claveBuscada = StringUtils::concat(newImg,newTxt,newPos);
+
 	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
 	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
 	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave

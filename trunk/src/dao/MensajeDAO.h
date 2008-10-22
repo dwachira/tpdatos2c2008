@@ -16,6 +16,7 @@
 #include "../object/Mensaje.h"
 #include <vector>
 using namespace std;
+using namespace object;
 
 namespace dao {
 

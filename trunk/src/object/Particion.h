@@ -11,6 +11,7 @@
 
 using namespace std;
 
+namespace object{
 
 class Particion{
 
@@ -54,6 +55,8 @@ class Particion{
 		void ocupar(bool libre) {this->libre = true;}
 
 };
+
+}
 
 
 #endif /* PARTICION_H_ */
