@@ -6,6 +6,8 @@
  */
 #include "Imagen.h"
 
+namespace object{
+
 Imagen::Imagen() {
 
 	this->ID = 0;
@@ -46,4 +48,6 @@ Imagen::~Imagen() {
 	this->tamanio = 0;
 	this->espacio_libre = 0;
 	this->hash_value = 0;
+}
+
 }

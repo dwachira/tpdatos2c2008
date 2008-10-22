@@ -13,6 +13,7 @@
 #include "../util/date/Date.h"
 using namespace std;
 
+namespace object{
 
 class Directorio{
 
@@ -38,15 +39,11 @@ class Directorio{
 		void setPath(string newPath) {this->path = newPath;}
 
 	    util::Date getFechaUltimaModificacion() const
-	    {
-	        return fechaUltimaModificacion;
-	    }
-
+							{return fechaUltimaModificacion;}
 	    void setFechaUltimaModificacion(util::Date& ultimaModificacion)
-	    {
-	        this->fechaUltimaModificacion = ultimaModificacion;
-	    }
+							{this->fechaUltimaModificacion = ultimaModificacion;}
 };
 
+}
 
 #endif /* DIRECTORIO_H_ */

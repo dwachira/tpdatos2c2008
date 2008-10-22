@@ -13,9 +13,12 @@
 #include "../db/file/AVL.h"
 
 #include "../object/Particion.h"
+#include "../util/string/StringUtils.h"
 #include <vector>
 #include <list>
 using namespace std;
+using namespace util;
+using namespace object;
 
 namespace dao {
 

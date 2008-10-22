@@ -76,9 +76,9 @@ bool DirectorioDAO::insert(Directorio& dir){
 		return false;
 
 	double claveCompuestaFecha;
-/*
- * FALTA ARMAR LA CLAVE COMPUESTA EN BASE A LAS PARTES DE LOS ATRIBUTOS DE LA FECHA
- */
+	//se arma la clave compuesta concatenando los valores de la fecha
+	claveCompuestaFecha = buffer->anio*100000000 + buffer->mes*1000000 +
+				buffer->dia*10000 + buffer->hora*100 + buffer->min;
 	this->index_FechaModif->insertar(claveCompuestaFecha, offset_registro);
 
 	free(buffer);
@@ -118,6 +118,29 @@ Directorio* DirectorioDAO::getDirById(unsigned int newID){
 	Directorio* dir = new Directorio(nombre,*lastModification);
 	dir->setID(buffer->ID);
 	return dir;
+}
+
+list<Directorio> DirectorioDAO::getAllDirs(){
+
+	list<Directorio> lista;
+	vector<RegPagina> resultados = this->index_FechaModif->recorrerIndice();
+
+	REG_DIR* buffer = new REG_DIR();
+	this->archivo->abrir(READ);
+	for(unsigned int i=0; i<resultados.size(); i++){
+		this->archivo->leer(buffer, resultados[i].getOffset());
+		string nombre = this->recuperarPath(buffer->offset_path);
+		Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
+				buffer->hora,buffer->min);
+		Directorio* dir = new Directorio(nombre,*lastModification);
+		dir->setID(buffer->ID);
+		lista.push_back(*dir);
+	}
+
+	this->archivo->cerrar();
+	free(buffer);
+
+	return lista;
 }
 
 

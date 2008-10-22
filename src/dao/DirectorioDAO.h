@@ -14,7 +14,9 @@
 
 #include "../object/Directorio.h"
 #include <vector>
+#include <list>
 using namespace std;
+using namespace object;
 
 namespace dao {
 
@@ -89,6 +91,13 @@ class DirectorioDAO{
 		 * y se recupera el path del directorio, ultimo dato necesario.
 		 */
 		Directorio* getDirById(unsigned int newID);
+
+		/*
+		 * Se devuelve una lista con todos los directorios cargados en el sistema
+		 * Se devuelven ordenados por Fecha de Ultima Modificacion, por si tiene
+		 * alguna utilidad (de menor a mayor, o sea, los ultimos modificados al final)
+		 */
+		list<Directorio> getAllDirs();
 
 //podria hacerse un get por fecha de moficacion, pero no le veo sentido aun
 };

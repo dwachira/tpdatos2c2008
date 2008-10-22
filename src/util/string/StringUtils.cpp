@@ -13,7 +13,7 @@ StringUtils::~StringUtils()
 
 int StringUtils::split(string input, const string& delimiter,
 		vector<string>& results, bool includeEmpties) {
-	
+
 	int iPos = 0;
 	int newPos = -1;
 	int sizeS2 = (int)delimiter.size();
@@ -81,10 +81,10 @@ bool StringUtils::isInteger(string input) {
 	} else {
 		return false;
 	}
-}	
+}
 
 string StringUtils::uppercase(string input){
-	
+
 
 	for (int j=0; j< (int)input.length(); j++)
 	{
@@ -142,8 +142,8 @@ string& StringUtils::replaceAll(string& input, const string& from,  const string
 }
 
 string StringUtils::trim(string input){
-	
-	
+
+
 	bool isSpace = false;
 	int primerChar = 0;
 	int ultimoSpace = 0;
@@ -177,14 +177,27 @@ string StringUtils::toString(unsigned int input){
 
 
 double StringUtils::concat(unsigned int input1, unsigned int input2){
-	
+
 	string s1 = toString(input1);
 	string s2 = toString(input2);
-	
+
 	string output = s1 + s2;
-	
+
 	double result = atof(output.c_str());
-	
+
+	return result;
+}
+
+double StringUtils::concat(unsigned int input1, unsigned int input2, unsigned int input3){
+
+	string s1 = toString(input1);
+	string s2 = toString(input2);
+	string s3 = toString(input3);
+
+	string output = s1 + s2 + s3;
+
+	double result = atof(output.c_str());
+
 	return result;
 }
 
@@ -193,7 +206,7 @@ int StringUtils::compare(string s1, string s2)
   const int l1 = s1.size();
   const int l2 = s2.size();
   const int lmin = l1 < l2 ? l1 : l2;
-  const char *c1 = s1.data(); 
+  const char *c1 = s1.data();
   const char *c2 = s2.data();
   int l = 0;
 

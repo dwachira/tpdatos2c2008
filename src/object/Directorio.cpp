@@ -6,6 +6,8 @@
  */
 #include "Directorio.h"
 
+namespace object{
+
 /*
 Directorio::Directorio(unsigned int newID, string newPath, util::Date* newModif){
 
@@ -15,5 +17,7 @@ Directorio::Directorio(unsigned int newID, string newPath, util::Date* newModif)
 }
 */
 Directorio::~Directorio() {
+
+}
 
 }

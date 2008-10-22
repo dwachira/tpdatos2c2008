@@ -12,6 +12,7 @@
 #include <string>
 using namespace std;
 
+namespace object{
 
 class Mensaje{
 
@@ -47,5 +48,6 @@ class Mensaje{
 
 };
 
+}
 
 #endif /* MENSAJE_H_ */

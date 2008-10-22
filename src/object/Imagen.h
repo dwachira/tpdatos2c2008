@@ -12,6 +12,7 @@
 #include <string>
 using namespace std;
 
+namespace object{
 
 class Imagen{
 
@@ -56,5 +57,6 @@ class Imagen{
 
 };
 
+}
 
 #endif /* IMAGEN_H_ */
