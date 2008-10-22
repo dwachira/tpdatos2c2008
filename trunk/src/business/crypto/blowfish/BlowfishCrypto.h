@@ -23,7 +23,7 @@ private:
 	DWord pSubKeys[18];
 	DWord sBoxes[4][256];
 	void swap(DWord &left, DWord &right);
-
+	string qWordToString(QWord qword);
 
 
 public:

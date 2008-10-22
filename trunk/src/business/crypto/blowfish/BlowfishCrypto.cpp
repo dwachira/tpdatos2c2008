@@ -59,38 +59,51 @@ void BlowfishCrypto::inicializar(string password){
 
 string BlowfishCrypto::encrypt(string data){
 	string resultado;
+	resultado.reserve(data.length());
 	unsigned int len = data.length();
 	string subData;
-	for (unsigned int i = 1; i < len; i += 8){
+
+	for (unsigned int i = 0; i < len; i += 8){
 		if (i + 8 >= data.length()){
 			subData = data.substr(i,len - i);
 		}else{
 			subData = data.substr(i,8);
 		}
-		QWord dataQWord(subData.c_str());
+		QWord dataQWord(subData);
 		dataQWord = encrypt(dataQWord);
-		resultado += string((const char *)dataQWord.xl.byte);
-		resultado += string((const char *)dataQWord.xr.byte);
-
+		resultado += qWordToString(dataQWord);
 	}
 	return resultado;
 }
 
+string BlowfishCrypto::qWordToString(QWord qword){
+	string res = "        ";
+	for (int i = 0; i < 4; i++){
+		res[i] = qword.xl.byte[i];
+	}
+	for (int i = 4; i < 8; i++){
+		res[i] = qword.xr.byte[i-4];
+	}
+	return res;
+}
+
+
+
 string BlowfishCrypto::desencrypt(string data){
 	string resultado;
+	resultado.reserve(data.length());
 	unsigned int len = data.length();
 	string subData;
-	for (unsigned int i = 1; i < len; i += 8){
+
+	for (unsigned int i = 0; i < len; i += 8){
 		if (i + 8 >= data.length()){
 			subData = data.substr(i,len - i);
 		}else{
 			subData = data.substr(i,8);
 		}
-		QWord dataQWord(subData.c_str());
-		dataQWord = encrypt(dataQWord);
-		resultado += string((const char *)dataQWord.xl.byte);
-		resultado += string((const char *)dataQWord.xr.byte);
-
+		QWord dataQWord(subData);
+		dataQWord = desencrypt(dataQWord);
+		resultado += qWordToString(dataQWord);
 	}
 	return resultado;
 
@@ -111,7 +124,7 @@ QWord BlowfishCrypto::encrypt(QWord data){
 }
 
 QWord BlowfishCrypto::desencrypt(QWord data){
-	for (int i = 18; i > 1; --i){
+	for (int i = 17; i > 1; --i){
 		data.xl.doble = data.xl.doble ^ this->pSubKeys[i].doble;
 		data.xr.doble = F(data.xl) ^ data.xr.doble;
 		swap(data.xl,data.xr);

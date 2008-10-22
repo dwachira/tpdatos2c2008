@@ -52,16 +52,69 @@ struct QWord{
 			xl = l;
 			xr = r;
 	}
-	QWord(const char* s){
+	QWord(string s){
+		xl = (unsigned long)0;
+		xr = (unsigned long)0;
+		unsigned int len = s.length();
+		if (len < 1)
+			return;
 		xl.wchar.byte0 = s[0];
+		if (len < 2)
+			return;
 		xl.wchar.byte1 = s[1];
+		if (len < 3)
+			return;
 		xl.wchar.byte2 = s[2];
+		if (len < 4)
+			return;
 		xl.wchar.byte3 = s[3];
+		if (len < 5)
+			return;
 		xr.wchar.byte0 = s[4];
+		if (len < 6)
+			return;
 		xr.wchar.byte1 = s[5];
+		if (len < 7)
+			return;
 		xr.wchar.byte2 = s[6];
+		if (len < 8)
+			return;
 		xr.wchar.byte3 = s[7];
+
 	}
+
+	QWord(unsigned char * s, int len){
+			xl = (unsigned long)0;
+			xr = (unsigned long)0;
+			if (len < 1)
+				return;
+			xl.wchar.byte0 = s[0];
+			if (len < 2)
+				return;
+			xl.wchar.byte1 = s[1];
+			if (len < 3)
+				return;
+			xl.wchar.byte2 = s[2];
+			if (len < 4)
+				return;
+			xl.wchar.byte3 = s[3];
+			if (len < 5){
+				int a = 0;
+				a = a+a;
+				return;
+			}
+			xr.wchar.byte0 = s[4];
+			if (len < 6)
+				return;
+			xr.wchar.byte1 = s[5];
+			if (len < 7)
+				return;
+			xr.wchar.byte2 = s[6];
+			if (len < 8)
+				return;
+			xr.wchar.byte3 = s[7];
+
+		}
 
 };
 
