@@ -84,6 +84,17 @@ bool ImagenDAO::insert(Imagen& img){
 	this->index_Directorio->insertar((double) buffer->ID_Dir, offset_registro);
 	this->index_Espacio->insertar((double) buffer->espacio_libre, offset_registro);
 
+	//si lo que inserte iba dentro de la pagina que se mantiene en buffer, la
+	//vuelvo a cargar despues de la insercion.
+	if((img.getID() >= this->minID) && (img.getID() <= this->maxID)){
+		//obtengo la pag candidata y armo el arbol con la misma
+		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) img.getID());
+		this->arbol->ArmarArbol(candidata);
+		//actualizo los limites del arbol
+		this->minID = candidata[0].getID();
+		this->maxID = candidata[candidata.size()-1].getID();
+	}
+
 	free(buffer);
 	return true;
 }
