@@ -22,13 +22,13 @@ BlowfishTest::~BlowfishTest() {
 
 int BlowfishTest::test() {
 	BlowfishCrypto * crypto = new BlowfishCrypto();
-	crypto->inicializar("betolanza");
+	/*crypto->inicializar("betolanza");
 	string msj = "NO al paco";
 	string resEncript = crypto->encrypt(msj);
 	std::cout << "Encriptacion es: " << resEncript << std::endl;
 	crypto->inicializar("betolanza");
 	string resDesencript = crypto->desencrypt(resEncript);
-	std::cout << "La Desencriptacion es: " << resDesencript << std::endl;
+	std::cout << "La Desencriptacion es: " << resDesencript << std::endl;*/
 	/*crypto->inicializar("betolanza");
 	string linea;
 	ifstream in ("/home/maxi/in.txt");
@@ -98,7 +98,7 @@ int BlowfishTest::test() {
 
 
 
-/*	crypto->inicializar("betolanza");
+	crypto->inicializar("betolanza");
 
 	FILE *fe, *fs;
 	unsigned char buffer[8];
@@ -109,14 +109,14 @@ int BlowfishTest::test() {
 	while((bytesLeidos = fread(buffer, 1, 8, fe))){
 		QWord msj(buffer,bytesLeidos);
 
-		QWord en = crypto->encrypt(msj);*/
+		QWord en = crypto->encrypt(msj);
 		/*if (bytesLeidos > 4){
 			fwrite(en.xl.byte, 1, 4, fs);
 			fwrite(en.xr.byte, 1, bytesLeidos - 4, fs);
 		}else{
 			fwrite(en.xl.byte, 1, bytesLeidos, fs);
 		}*/
-		/*fwrite(en.xl.byte, 1, 4, fs);
+		fwrite(en.xl.byte, 1, 4, fs);
 		fwrite(en.xr.byte, 1, 4, fs);
 	}
 
@@ -128,7 +128,7 @@ int BlowfishTest::test() {
 	fs = fopen("/home/maxi/in.txt.zip", "wb");
 	while((bytesLeidos = fread(buffer, 1, 8, fe))){
 		QWord msj(buffer,bytesLeidos);
-		QWord en = crypto->desencrypt(msj);*/
+		QWord en = crypto->desencrypt(msj);
 		/*if (bytesLeidos > 4){
 			fwrite(en.xl.byte, 1, 4, fs);
 			fwrite(en.xr.byte, 1, bytesLeidos - 4, fs);
@@ -136,13 +136,13 @@ int BlowfishTest::test() {
 			fwrite(en.xl.byte, 1, bytesLeidos, fs);
 		}*/
 
-		/*fwrite(en.xl.byte, 1, 4, fs);
+		fwrite(en.xl.byte, 1, 4, fs);
 		fwrite(en.xr.byte, 1,  4, fs);
 
 	}
 
 	fclose(fe);
-	fclose(fs);*/
+	fclose(fs);
 
 
 	return 0;
