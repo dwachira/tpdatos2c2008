@@ -12,6 +12,9 @@ public:
 	unsigned long int getPosX();
 	unsigned long int getPosY();
 	unsigned int getNumero_de_bit();
+	void setPosX(unsigned long int x);
+	void setPosY(unsigned long int y);
+	void setNumero_de_bit(unsigned long int bit);
 	virtual ~Pixel();
 };
 
