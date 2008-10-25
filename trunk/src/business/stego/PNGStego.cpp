@@ -1,18 +1,17 @@
 #include "PNGStego.h"
 
-PNGStego::PNGStego(std::string filename):LSBStegoBusiness(filename,FIF_PNG)
+PNGStego::PNGStego(std::string filename):LSBStegoBusiness(filename)
 {
 	
 }
 
-void PNGStego::changePixel(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados)	
+unsigned int PNGStego::changePixel(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados)	
 {
 /*Auxiliar para realizar la conversión de binario a entero*/
 char* aux;
 int byte;
 /*Para almacenar el contenido del pixel en binario*/
 std::string newbyte;
-
 unsigned int bits_alpha=0;
 unsigned int pos_pixel=0;
 
@@ -22,19 +21,22 @@ unsigned int pos_pixel=0;
              newbyte.append(1,mensaje.at(bits_procesados));
              bits_alpha++;
              bits_procesados++;
-             if((bits_alpha%8)==0){
+             if((bits_alpha%8)==0){//guardo el nuevo byte completo
              	byte=strtol(newbyte.c_str(),&aux,2);
              	newbyte.clear();
              	pixels[pos_pixel] = byte;
              	pos_pixel++;
              }
           }
+          return bits_alpha;
      }else{//sino utilizo el metodo comun
-           doLSBStego(pixels,mensaje,pos,bits_procesados);	
+           return doLSBStego(pixels,mensaje,pos,bits_procesados);	
      }
              
 }
 unsigned int PNGStego::getFreeSpace(){
+	if((imagen.getBpp()<=8)&&(imagen.getColorType()>1))
+       palette.sortPaletteByDistance();
 	unsigned int space=((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp())*(this->enable_bpp));
 	if(imagen.getBpp()==32)
 	  space+=  getTransparentPixels()*(24 - this->enable_bpp);

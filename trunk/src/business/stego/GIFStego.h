@@ -5,14 +5,16 @@
 
 class GIFStego: public LSBStegoBusiness
 {
-
-public:
-	GIFStego();
-	GIFStego(std::string filename);
-	virtual bool setMessage(unsigned long int first_bit,std::string mensaje);
-	virtual std::string getMessage(unsigned long int first_bit,unsigned int longitud);
-	virtual unsigned int getFreeSpace();
-	virtual ~GIFStego();
+	public:
+	
+		GIFStego();
+		GIFStego(std::string filename);
+		virtual unsigned int setMessage(unsigned long int first_bit,std::string mensaje);
+		virtual std::string getMessage(unsigned long int first_bit,unsigned int longitud);
+		virtual unsigned int getFreeSpace();
+		virtual ~GIFStego();
+		
 };
 
 #endif /*GIFSTEGO_H_*/
+
