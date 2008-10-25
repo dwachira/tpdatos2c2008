@@ -1,29 +1,29 @@
 #include "GIFStego.h"
 #include <fstream>
-GIFStego::GIFStego(std::string filename):LSBStegoBusiness(filename,FIF_GIF)
+GIFStego::GIFStego(std::string filename):LSBStegoBusiness(filename)
 {
 }
 
 unsigned int GIFStego::getFreeSpace(){
+ palette.sortPaletteByDistance();  //dejo todo preparado para realizar luego el lsb
  return ((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp())*(this->enable_bpp));	
 	
 }
  
-bool GIFStego::setMessage(unsigned long int first_bit,std::string mensaje)
+unsigned int GIFStego::setMessage(unsigned long int first_pos,std::string mensaje)
 {
-
+unsigned int last_pos;
 if(!error){
 	  Pixel pixel;
-      getPixel(first_bit,pixel);
-  	  palette.sortPaletteByDistance();  
-  	  palette.updateIndexes();
-      //palette.doIndexesLSB(pixel,mensaje);
+      getPixel(first_pos,pixel);
+      //last_pos= palette.doPaletteLSB(first_pos,mensaje);
+  	  last_pos=palette.doIndexesLSB(pixel,mensaje);
 	  /*Guardo los cambios realizados en la imagen*/
 	  imagen.save();
-	
-    return true;
+	 
+    
   }
-  return false;	
+  return last_pos+first_pos;	
 }
 
 std::string GIFStego::getMessage(unsigned long int first_bit,unsigned int longitud){

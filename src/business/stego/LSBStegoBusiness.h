@@ -7,30 +7,31 @@
 
 class LSBStegoBusiness: public StegoBusiness
 {
-protected:  
+	protected:  
     
-    bool error;
-    /*Cantidad de bits por pixel a utilizar para esteganografia*/
-    unsigned int enable_bpp;
-    /*Representacion de la imagen*/
-    FIBitmap imagen;
-    ImagePalette palette;
+    	bool error;
+    	/*Cantidad de bits por pixel a utilizar para esteganografia*/
+    	unsigned int enable_bpp;
+    	/*Representacion de la imagen*/
+    	FIBitmap imagen;
+    	ImagePalette palette;
     
-    virtual void changePixel(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados);
-    virtual std::string getMessageFromPixel(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados);
-    std::string getLSBMessage(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados);
-    void doLSBStego(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados);
-    void loadImagen();
-    void getPixel(unsigned long int first_bit,Pixel& pixel);
+  		virtual unsigned int changePixel(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados);
+    	virtual std::string getMessageFromPixel(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados);
+    	std::string getLSBMessage(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados);
+    	unsigned int doLSBStego(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados);
+    	void getPixel(unsigned long int first_bit,Pixel& pixel);
     
-public:
-	LSBStegoBusiness(std::string filename,FREE_IMAGE_FORMAT format);
+	public:
 	
-	virtual bool setMessage(unsigned long int first_bit,std::string mensaje);
-	virtual std::string getMessage(unsigned long int first_bit,unsigned int longitud);
-	virtual unsigned int getFreeSpace()=0;
+		LSBStegoBusiness(std::string filename);
 	
-	virtual ~LSBStegoBusiness();
+		virtual unsigned int setMessage(unsigned long int first_pos,std::string mensaje);
+		virtual std::string getMessage(unsigned long int first_pos,unsigned int longitud);
+		virtual unsigned int getFreeSpace()=0;
+		virtual unsigned int getFirstFreeBit();
+	
+		virtual ~LSBStegoBusiness();
 };
 
 #endif /*LSBSTEGOBUSINESS_H_*/
