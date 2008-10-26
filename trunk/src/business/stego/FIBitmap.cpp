@@ -5,6 +5,7 @@ FIBitmap::FIBitmap(){}
 
 FIBitmap::FIBitmap(std::string filename):filename(filename),format(FIF_UNKNOWN),error(true)
 {
+	getFileType();
 }
 
 bool FIBitmap::getFileType(){
@@ -25,7 +26,7 @@ format = FreeImage_GetFileType(filename.c_str(), 0);
 	
 bool FIBitmap::load(int flag){
 
-  if (getFileType()){
+  if (format!=FIF_UNKNOWN){
 	
     /*Cargo la imagen */
     imagen = FreeImage_Load(this->format, filename.c_str(),flag);
@@ -42,7 +43,7 @@ bool FIBitmap::load(int flag){
        
        		error=false;
   	}else error=true;	
-  } else error=false;	
+  } else error=true;	
   	
 	return error;
 }

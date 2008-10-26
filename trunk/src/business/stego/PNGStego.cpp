@@ -37,9 +37,9 @@ unsigned int pos_pixel=0;
 unsigned int PNGStego::getFreeSpace(){
 	if((imagen.getBpp()<=8)&&(imagen.getColorType()>1))
        palette.sortPaletteByDistance();
-	unsigned int space=((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp())*(this->enable_bpp));
+	unsigned int space=((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp()/8)*(this->enable_bpp));
 	if(imagen.getBpp()==32)
-	  space+=  getTransparentPixels()*(24 - this->enable_bpp);
+	  space+=  getTransparentPixels()*(24 - this->enable_bpp*(imagen.getBpp()/8));
 	return space;
 	
 }

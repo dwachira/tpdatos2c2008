@@ -31,12 +31,13 @@ unsigned int bit=0;
 		}//fin while_x
       //siguiente linea de la imagen
 	  y++;
+	  x=0;
 	}//fin while_y
   } else bit= first_bit;
     pixel.setPosX(x);
     pixel.setPosY(y);
     pixel.setNumero_de_bit(bit);
-    
+    std::cout<<"x: "<<x<<" Y "<<y<<" bit "<<bit<<std::endl;
 	
 }
 

@@ -8,7 +8,7 @@ StegoBusiness* StegoFactory::newInstance(std::string filename){
 StegoBusiness* stego=NULL;
 FIBitmap fibitmap(filename);
 
-if(fibitmap.getFileType()){
+
 	switch (fibitmap.getFileFormat()){
 	  case FIF_BMP: 
 	        		stego=new BMPStego(filename);
@@ -19,13 +19,12 @@ if(fibitmap.getFileType()){
 	  case FIF_PNG: 
 	  				stego=new PNGStego(filename);
 	  				break;
-	  case FIF_JPEG: 
+	  case FIF_JPEG:
 	  				stego=new JPGStego(filename);
 	  				break;
+	  
 	  }
-   	
-   }
-
+   
   return stego;
 }
 
