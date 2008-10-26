@@ -1,7 +1,7 @@
 #ifndef LOSSYCOMPRESSSTEGOBUSINESS_H_
 #define LOSSYCOMPRESSSTEGOBUSINESS_H_
 
-#define PERC 0
+#define PERC 48
 
 #include "StegoBusiness.h"
 
