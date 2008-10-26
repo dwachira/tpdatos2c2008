@@ -6,7 +6,7 @@ GIFStego::GIFStego(std::string filename):LSBStegoBusiness(filename)
 
 unsigned int GIFStego::getFreeSpace(){
  palette.sortPaletteByDistance();  //dejo todo preparado para realizar luego el lsb
- return ((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp()/8)*(this->enable_bpp));	
+ return ( ((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp()/8)*(this->enable_bpp))/8 );	
 	
 }
  
