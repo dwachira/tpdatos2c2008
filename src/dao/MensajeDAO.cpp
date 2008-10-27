@@ -20,6 +20,8 @@ MensajeDAO::MensajeDAO(){
 
 	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_MSJ.str", sizeof(REG_MSJ));
 	this->stream = new StreamVariable(__BASE_DIR__"/STREAM_MSJ.str");
+
+	this->arbol = new AVL();
 }
 
 MensajeDAO::~MensajeDAO(){
@@ -29,6 +31,8 @@ MensajeDAO::~MensajeDAO(){
 
 	delete(this->archivo);
 	delete(this->stream);
+
+	delete(this->arbol);
 }
 
 

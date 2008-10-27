@@ -94,7 +94,7 @@ bool AVL::Buscar(const double bus_clave){
 		return false;
 }
 
-void AVL::ArmarArbol(std::vector<RegPagina> vector){
+void AVL::ArmarArbol(const std::vector<RegPagina>& vector){
 
 	par_dato dato;
 

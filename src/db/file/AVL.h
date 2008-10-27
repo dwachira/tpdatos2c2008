@@ -76,7 +76,7 @@ class AVL{
 		 * Pasa los datos recuperados del indexado, en un vector
 		 * a un arbol balanceado para realizar la busqueda
 		 */
-		void ArmarArbol(std::vector<RegPagina> vector);
+		void ArmarArbol(const std::vector<RegPagina>& vector);
 
 		/*
 		 * Se obtiene el dato, cuyo puntero esta almacenado

@@ -36,8 +36,8 @@ Indice::Indice(const char* nombreFisico, bool esIndiceSecundario){
 
 Indice::~Indice(){
 	free(nombre);
-	delete this->pActual;
-	delete this->archivo;
+	delete(this->pActual);
+	delete(this->archivo);
 }
 
 
@@ -48,8 +48,6 @@ Indice::~Indice(){
 vector<RegPagina> Indice::getPaginaCandidata(double clave){
 
 	vector<RegPagina> vector;
-	vector.clear();
-	vector.resize(0);	//TAL VEZ ESTÁ DE MAS ESTA INVOCACION
 
 	if(this->cantPaginas > 0){	//si hay algo en el archivo
 

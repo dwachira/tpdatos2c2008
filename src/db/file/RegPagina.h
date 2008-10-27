@@ -30,8 +30,8 @@ class RegPagina{
 
 		void setID(double newID);
 		void setOffset(unsigned long int newOffset);
-		double getID();
-		unsigned long int getOffset();
+		double getID() const;
+		unsigned long int getOffset() const;
 };
 
 

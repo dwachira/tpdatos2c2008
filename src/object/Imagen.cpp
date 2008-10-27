@@ -8,6 +8,12 @@
 
 namespace object{
 
+
+std::string Imagen::BMP = "bmp";
+std::string Imagen::GIF = "gif";
+std::string Imagen::JPG = "jpg";
+std::string Imagen::PNG = "png";
+
 Imagen::Imagen() {
 
 	this->ID = 0;
@@ -40,6 +46,7 @@ Imagen::Imagen(unsigned int ID, unsigned int ID_Dir, string nombre, unsigned int
 	this->hash_value = hash_value;
 }
 */
+
 Imagen::~Imagen() {
 
 	this->ID = 0;

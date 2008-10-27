@@ -32,9 +32,9 @@ void RegPagina::setOffset(unsigned long int newOffset){
 	this->offset = newOffset;
 }
 
-double RegPagina::getID(){
+double RegPagina::getID() const {
 	return this->ID;
 }
-unsigned long int RegPagina::getOffset(){
+unsigned long int RegPagina::getOffset() const {
 	return this->offset;
 }
