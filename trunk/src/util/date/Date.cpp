@@ -11,6 +11,50 @@
 namespace util
 {
 
+bool operator< (const Date& left, const Date& right) {
+	if (left.getYear() < right.getYear()) {
+		return true;
+	}
+	else if (left.getYear() == right.getYear()) {
+		if (left.getMonth() < right.getMonth()) {
+			return true;
+		}
+		else if (left.getMonth() == right.getMonth()) {
+			if (left.getDay() < right.getDay()) {
+				return true;
+			}
+			else if (left.getDay() == right.getDay()) {
+				if (left.getHour() < right.getHour()) {
+					return true;
+				}
+				else if (left.getHour() < right.getHour()) {
+					return true;
+				}
+				else if (left.getHour() == right.getHour()) {
+					if (left.getMinute() < right.getMinute()) {
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+				else {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
+}
+
 std::ostream& operator<<(std::ostream& os, const util::Date& date) {
 	std::stringstream stringBuff;
 	stringBuff << date.getDay() << "/" << date.getMonth() << "/"

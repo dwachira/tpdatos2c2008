@@ -7,7 +7,6 @@
 
 #ifndef DIRECTORIOMANAGER_H_
 #define DIRECTORIOMANAGER_H_
-
 #include <string>
 #include <list>
 #include "../../object/Directorio.h"
@@ -34,7 +33,7 @@ public:
 	bool directorioEnUso(const Directorio& directory) const;
 	void removerDirectorio(const long id) const;
 	std::list<Directorio*> getDirectorios() const;
-	void buscarImagenes(const Directorio& directory) const;
+	void buscarImagenes(Directorio& directory) const;
 	virtual ~DirectorioManager();
 };
 

@@ -11,7 +11,7 @@ class StegoFactory
 {
 public:
 	StegoFactory();
-	static StegoBusiness* newInstance(std::string filename);
+	static StegoBusiness* newInstance(const std::string filename);
 	virtual ~StegoFactory();
 };
 

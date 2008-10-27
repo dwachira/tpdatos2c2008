@@ -115,7 +115,7 @@ Directorio* DirectorioDAO::getDirById(unsigned int newID){
 	string nombre = this->recuperarPath(buffer->offset_path);
 	Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
 			buffer->hora,buffer->min);
-	Directorio* dir = new Directorio(nombre,*lastModification);
+	Directorio* dir = new Directorio(nombre,lastModification);
 	dir->setID(buffer->ID);
 	return dir;
 }
@@ -132,7 +132,7 @@ list<Directorio> DirectorioDAO::getDirsSortedByFechaModif(){
 		string nombre = this->recuperarPath(buffer->offset_path);
 		Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
 				buffer->hora,buffer->min);
-		Directorio* dir = new Directorio(nombre,*lastModification);
+		Directorio* dir = new Directorio(nombre,lastModification);
 		dir->setID(buffer->ID);
 		lista.push_back(*dir);
 	}

@@ -64,6 +64,8 @@ public:
 		return minute;
 	}
 
+    friend bool operator< (const Date& left, const Date& right);
+
     friend std::ostream& operator<<(std::ostream& os, const util::Date& date);
 
 };

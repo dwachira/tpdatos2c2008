@@ -51,8 +51,8 @@ class Particion{
 		void setLongitud(unsigned int longitud) {this->longitud = longitud;}
 
 		bool isLibre() {return libre;}
-		void liberar(bool libre) {this->libre = false;}
-		void ocupar(bool libre) {this->libre = true;}
+		void liberar() {this->libre = false;}
+		void ocupar() {this->libre = true;}
 
 };
 

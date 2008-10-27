@@ -118,7 +118,7 @@ Imagen ImagenDAO::getImgById(unsigned int newID){
 	bool buscar = arbol->Buscar((double) newID);
 
 	if(!buscar){		//si no lo encontro, no existe en el indice
-		Imagen img(0,0,0,0,0,"");
+		Imagen img(0,0,0,0,0,0,"");
 		return img;
 	}
 
@@ -130,7 +130,7 @@ Imagen ImagenDAO::getImgById(unsigned int newID){
 	this->archivo->cerrar();
 
 	string nombre = this->recuperarNombre(buffer->offset_nombre);
-	Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,
+	Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,0,
 								buffer->hash_value, buffer->tamanio, nombre);
 	free(buffer);
 	return img;
@@ -146,7 +146,7 @@ list<Imagen> ImagenDAO::getImgsByDirectorio(unsigned int newID_Dir){
 	for(unsigned int i=0; i<resultados.size(); i++){
 		this->archivo->leer(buffer, resultados[i].getOffset());
 		string nombre = this->recuperarNombre(buffer->offset_nombre);
-		Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,
+		Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,0,
 							buffer->hash_value, buffer->tamanio, nombre);
 		lista.push_back(img);
 	}
@@ -166,11 +166,11 @@ list<Imagen> ImagenDAO::getImgsSortedByEspacioLibre(){
 	this->archivo->abrir(READ);
 
 	//para que queden de mayor a menor arranco desde el final y voy al ppio
-	for(unsigned int i=resultados.size()-1; i>=0; i--){
+	for(int i=resultados.size()-1; i>=0; i--){
 		this->archivo->leer(buffer, resultados[i].getOffset());
 		if(buffer->espacio_libre > 0){
 			string nombre = this->recuperarNombre(buffer->offset_nombre);
-			Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,
+			Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,0,
 								buffer->hash_value, buffer->tamanio, nombre);
 			lista.push_back(img);
 		}
