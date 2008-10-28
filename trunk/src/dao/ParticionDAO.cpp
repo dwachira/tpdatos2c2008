@@ -203,16 +203,16 @@ bool ParticionDAO::liberar(unsigned int img, unsigned int txt, unsigned int pos)
 	if((claveBuscada < this->minID) || (claveBuscada > this->maxID)){
 		//obtengo la pag candidata y armo el arbol con la misma
 		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol->ArmarArbol(candidata);
+		this->arbol.ArmarArbol(candidata);
 		//actualizo los limites del arbol
 		this->minID = candidata[0].getID();
 		this->maxID = candidata[candidata.size()-1].getID();
 	}
 
-	if(! arbol->Buscar(claveBuscada))
+	if(! arbol.Buscar(claveBuscada))
 		return false;
 
-	RegPagina reg = this->arbol->ValorActual();
+	RegPagina reg = this->arbol.ValorActual();
 
 	REG_PART* buffer = new REG_PART();
 	this->archivo->abrir(READ);
