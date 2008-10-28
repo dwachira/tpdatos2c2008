@@ -15,11 +15,11 @@ int TestCompressor::test(){
 	FILE *input_file;
 	FILE *output_file;
 	FILE *temp_file;
-	
+
 	CompressorBusiness * compresor = new CompressorBusiness();
-	
+
 	//COMPRIMIR
-	input_file=fopen("consultas.txt","rb");
+	input_file=fopen(__TEST_DIR__"/prueba_entrada.txt","rb");
 	temp_file=fopen("compressed.temp","wb");
 	if (input_file==NULL || temp_file==NULL)
 	{
@@ -29,11 +29,11 @@ int TestCompressor::test(){
 	compresor->compress(input_file,temp_file);
 	fclose(input_file);
 	fclose(temp_file);
-	
-	//DESCOMPRIMIR  
-	  
+
+	//DESCOMPRIMIR
+
     temp_file=fopen("compressed.temp","rb");
-    output_file=fopen("output.txt","wb");
+    output_file=fopen(__TEST_DIR__"/output.txt","wb");
     if (temp_file==NULL || output_file==NULL)
     {
       printf("No se encuentra el archivo.");
@@ -44,6 +44,6 @@ int TestCompressor::test(){
 	fclose(temp_file);
     fclose(output_file);
 	return 0;
-	
+
 };
 
