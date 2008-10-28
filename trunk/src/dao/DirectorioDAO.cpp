@@ -85,6 +85,59 @@ bool DirectorioDAO::insert(Directorio& dir){
 	return true;
 }
 
+void DirectorioDAO::borrar(unsigned int id){
+
+	//obtengo la pag candidata y armo el arbol con la misma
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) id);
+	bool encontrado = false;
+	unsigned int i = 0;
+	while(!encontrado && i<candidata.size()){
+		if(candidata[i].getID() == id)
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > id)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
+	}
+
+	if(encontrado){
+
+		RegPagina reg = candidata[i];
+		REG_DIR* buffer = new REG_DIR();
+		this->archivo->abrir(READ);
+		this->archivo->leer(buffer, reg.getOffset());
+		this->archivo->cerrar();
+
+		//elimino del archivo de datos
+		this->archivo->abrir(DELETE);
+		this->archivo->borrar(reg.getOffset());
+		this->archivo->cerrar();
+
+		//doy de baja el registro de los indices
+		this->index_Prim->eliminar((double) id);
+
+		double claveCompuestaFecha = buffer->anio*100000000 + buffer->mes*1000000 +
+						buffer->dia*10000 + buffer->hora*100 + buffer->min;
+		this->index_FechaModif->eliminar(claveCompuestaFecha);
+
+		//elimino el nombre del directorio del archivo de regs de long variable
+		this->stream->borrar(buffer->offset_path);
+	}
+}
+
+void DirectorioDAO::borrar(Directorio& dir){
+
+	unsigned int id = dir.getID();
+	return borrar(id);
+
+	//debo utilizar la otra funcion porque no puedo evitar tener que leer desde
+	//el archivo la informacion. Esto es porque sino resultaria imposible dar
+	//de baja el nombre del directorio del archivo de registros de longitud variable
+	//Por ese motivo es que debe seguirse esta secuencia
+}
+
 Directorio* DirectorioDAO::getDirById(unsigned int newID){
 
 	//obtengo la pag candidata y armo el arbol con la misma
