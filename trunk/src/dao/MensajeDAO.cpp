@@ -148,6 +148,41 @@ void MensajeDAO::borrar(Mensaje& msj){
 	//Por ese motivo es que debe seguirse esta secuencia
 }
 
+bool MensajeDAO::update(unsigned int ID, int newCantPartes){
+
+	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
+	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
+	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
+	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
+	//sin tener que acceder al disco ni recorrer el archivo
+	if((ID < this->minID) || (ID > this->maxID)){
+		//obtengo la pag candidata y armo el arbol con la misma
+		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
+		this->arbol->ArmarArbol(candidata);
+		//actualizo los limites del arbol
+		this->minID = candidata[0].getID();
+		this->maxID = candidata[candidata.size()-1].getID();
+	}
+
+	if(! arbol->Buscar((double) ID))
+		return false;
+
+	//recupero la informacion almacenada, requerido para poder dar de baja un indice
+	RegPagina reg = this->arbol->ValorActual();
+	REG_MSJ* buffer = new REG_MSJ();
+	this->archivo->abrir(READ);
+	this->archivo->leer(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//actualizo los valores que se van a modificar y sobreescribo el archivo
+	buffer->cant_partes = newCantPartes;
+	this->archivo->abrir(UPDATE);
+	this->archivo->actualizar(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	return true;
+}
+
 Mensaje MensajeDAO::getMsjById(unsigned int newID){
 
 	//primero verifico con el arbol cargado en memoria. Si la clave buscada es

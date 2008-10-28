@@ -75,6 +75,11 @@ class ParticionDAO{
 		void borrar(unsigned int img, unsigned int txt, unsigned int pos);
 
 		/*
+		 * Dada una operacion de Baja de una Particion, se marca como libre.
+		 */
+		bool liberar(unsigned int img, unsigned int txt, unsigned int pos);
+
+		/*
 		 * Se accede al indice primario, ordenado por IDImg + IDTxt + Pos, y se
 		 * recupera el offset del dato con la clave solicitada. Luego se accede
 		 * al archivo se recupera la informacion almacenada en ese offset.

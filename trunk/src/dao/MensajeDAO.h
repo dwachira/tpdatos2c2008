@@ -83,6 +83,13 @@ class MensajeDAO{
 		void borrar(unsigned int id);
 
 		/*
+		 * Se puede actualizar solo la cantidad de partes que conforman un
+		 * mensaje determinado. Los demas campos, al no sufrir modificaciones, no
+		 * se necesitan. De ser necesario, usar delete + insert
+		 */
+		bool update(unsigned int ID, int newCantPartes);
+
+		/*
 		 * Se accede al indice primario, ordenado por ID, y se recupera el
 		 * offset del dato con el id solicitado. Luego se accede al archivo para
 		 * regs de long fija y se recupera la informacion almacenada en ese

@@ -82,11 +82,11 @@ bool StreamVariable::abrir(int newModo){
 	return true;
 }
 
-void StreamVariable::cerrar(){
-
-	this->modo = 0;
-	this->archivo.close();
-	if(this->actualizarVacios){
+void StreamVariable::cerrar(){					//se cancelo la reorganizacion xq
+												//si se lleva a cabo, se pierden
+	this->modo = 0;								//todos los punteros de los indices
+	this->archivo.close();						//y resultan imposibles de recuperar
+/*	if(this->actualizarVacios){
 //		delete(this->archivoVacios);
 		char* nombreExtra = (char*) malloc (strlen(this->nombre)+4);
 		strcpy(nombreExtra,this->nombre);
@@ -100,7 +100,7 @@ void StreamVariable::cerrar(){
 		this->archivoVacios->cerrar();
 		this->actualizarVacios = false;
 		this->listaLoaded = false;
-	}
+	}*/
 }
 
 unsigned long int StreamVariable::escribir(string registro){

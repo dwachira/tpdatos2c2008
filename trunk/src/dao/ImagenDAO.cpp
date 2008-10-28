@@ -159,6 +159,168 @@ void ImagenDAO::borrar(Imagen& img){
 	//Por ese motivo es que debe seguirse esta secuencia
 }
 
+bool ImagenDAO::updateDirectorio(unsigned int ID, unsigned int newId_Dir){
+
+	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
+	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
+	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
+	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
+	//sin tener que acceder al disco ni recorrer el archivo
+	if((ID < this->minID) || (ID > this->maxID)){
+		//obtengo la pag candidata y armo el arbol con la misma
+		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
+		this->arbol->ArmarArbol(candidata);
+		//actualizo los limites del arbol
+		this->minID = candidata[0].getID();
+		this->maxID = candidata[candidata.size()-1].getID();
+	}
+
+	if(! arbol->Buscar((double) ID))
+		return false;
+
+	//si encontro el dato, lo recupero para actualizarlo
+	RegPagina reg = this->arbol->ValorActual();
+	REG_IMG* buffer = new REG_IMG();
+	this->archivo->abrir(READ);
+	this->archivo->leer(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//recupero el dato viejo para poder dar de baja en el indice
+	unsigned int dirViejo = buffer->ID_Dir;
+
+	//actualizo el campo a modificar y sobreescribo en el archivo
+	buffer->ID_Dir = newId_Dir;
+	this->archivo->abrir(UPDATE);
+	this->archivo->actualizar(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//finalmente, doy de baja e inserto del indice correspondiente
+	this->index_Directorio->eliminar((double) dirViejo);
+	this->index_Directorio->insertar((double) newId_Dir, reg.getOffset());
+
+	return true;
+}
+
+bool ImagenDAO::updateEspacioLibre(unsigned int ID, unsigned int newEspacioLibre){
+
+	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
+	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
+	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
+	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
+	//sin tener que acceder al disco ni recorrer el archivo
+	if((ID < this->minID) || (ID > this->maxID)){
+		//obtengo la pag candidata y armo el arbol con la misma
+		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
+		this->arbol->ArmarArbol(candidata);
+		//actualizo los limites del arbol
+		this->minID = candidata[0].getID();
+		this->maxID = candidata[candidata.size()-1].getID();
+	}
+
+	if(! arbol->Buscar((double) ID))
+		return false;
+
+	//si encontro el dato, lo recupero para actualizarlo
+	RegPagina reg = this->arbol->ValorActual();
+	REG_IMG* buffer = new REG_IMG();
+	this->archivo->abrir(READ);
+	this->archivo->leer(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//recupero el dato viejo para poder dar de baja en el indice
+	unsigned int espacioViejo = buffer->espacio_libre;
+
+	//actualizo el campo a modificar y sobreescribo en el archivo
+	buffer->espacio_libre = newEspacioLibre;
+	this->archivo->abrir(UPDATE);
+	this->archivo->actualizar(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//finalmente, doy de baja e inserto del indice correspondiente
+	this->index_Espacio->eliminar((double) espacioViejo);
+	this->index_Espacio->insertar((double) newEspacioLibre, reg.getOffset());
+
+	return true;
+}
+
+bool ImagenDAO::updateHashValue(unsigned int ID, unsigned long int newHashValue){
+
+	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
+	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
+	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
+	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
+	//sin tener que acceder al disco ni recorrer el archivo
+	if((ID < this->minID) || (ID > this->maxID)){
+		//obtengo la pag candidata y armo el arbol con la misma
+		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
+		this->arbol->ArmarArbol(candidata);
+		//actualizo los limites del arbol
+		this->minID = candidata[0].getID();
+		this->maxID = candidata[candidata.size()-1].getID();
+	}
+
+	if(! arbol->Buscar((double) ID))
+		return false;
+
+	//si encontro el dato, lo recupero para actualizarlo
+	RegPagina reg = this->arbol->ValorActual();
+	REG_IMG* buffer = new REG_IMG();
+	this->archivo->abrir(READ);
+	this->archivo->leer(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//actualizo el campo a modificar y sobreescribo en el archivo
+	buffer->hash_value = newHashValue;
+	this->archivo->abrir(UPDATE);
+	this->archivo->actualizar(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	return true;
+}
+
+bool ImagenDAO::updateNombre(unsigned int ID, string newNombre){
+
+	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
+	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
+	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
+	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
+	//sin tener que acceder al disco ni recorrer el archivo
+	if((ID < this->minID) || (ID > this->maxID)){
+		//obtengo la pag candidata y armo el arbol con la misma
+		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
+		this->arbol->ArmarArbol(candidata);
+		//actualizo los limites del arbol
+		this->minID = candidata[0].getID();
+		this->maxID = candidata[candidata.size()-1].getID();
+	}
+
+	if(! arbol->Buscar((double) ID))
+		return false;
+
+	//si encontro el dato, lo recupero para actualizarlo
+	RegPagina reg = this->arbol->ValorActual();
+	REG_IMG* buffer = new REG_IMG();
+	this->archivo->abrir(READ);
+	this->archivo->leer(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//elimino el nombre del archivo de registros de longitud variable
+	this->stream->abrir(DELETE);
+	this->stream->borrar(buffer->offset_nombre);
+	this->stream->cerrar();
+
+	//inserto el nuevo nombre
+	unsigned long int newOffset = guardarNombre(newNombre);
+
+	//actualizo el valor en el registro y sobreescribo en el archivo
+	buffer->offset_nombre = newOffset;
+	this->archivo->abrir(UPDATE);
+	this->archivo->actualizar(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	return true;
+}
+
 Imagen ImagenDAO::getImgById(unsigned int newID){
 
 	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
