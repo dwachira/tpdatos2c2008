@@ -105,15 +105,15 @@ void ParticionDAO::borrar(unsigned int img, unsigned int txt, unsigned int pos){
 	if((claveBuscada < this->minID) || (claveBuscada > this->maxID)){
 		//obtengo la pag candidata y armo el arbol con la misma
 		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol->ArmarArbol(candidata);
+		this->arbol.ArmarArbol(candidata);
 		//actualizo los limites del arbol
 		this->minID = candidata[0].getID();
 		this->maxID = candidata[candidata.size()-1].getID();
 	}
 
-	if(arbol->Buscar(claveBuscada)){
+	if(arbol.Buscar(claveBuscada)){
 
-		RegPagina reg = this->arbol->ValorActual();
+		RegPagina reg = this->arbol.ValorActual();
 
 		//recupero la informacion almacenada, requerido para poder dar de baja un indice
 		REG_PART* buffer = new REG_PART();
@@ -128,7 +128,7 @@ void ParticionDAO::borrar(unsigned int img, unsigned int txt, unsigned int pos){
 
 		//cargo la nueva pagina del indice, ya que sufrio modificaciones
 		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol->ArmarArbol(candidata);
+		this->arbol.ArmarArbol(candidata);
 		//actualizo los limites del arbol
 		this->minID = candidata[0].getID();
 		this->maxID = candidata[candidata.size()-1].getID();
@@ -159,15 +159,15 @@ void ParticionDAO::borrar(Particion part){
 	if((claveBuscada < this->minID) || (claveBuscada > this->maxID)){
 		//obtengo la pag candidata y armo el arbol con la misma
 		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol->ArmarArbol(candidata);
+		this->arbol.ArmarArbol(candidata);
 		//actualizo los limites del arbol
 		this->minID = candidata[0].getID();
 		this->maxID = candidata[candidata.size()-1].getID();
 	}
 
-	if(arbol->Buscar(claveBuscada)){
+	if(arbol.Buscar(claveBuscada)){
 
-		RegPagina reg = this->arbol->ValorActual();
+		RegPagina reg = this->arbol.ValorActual();
 
 		//elimino del archivo de datos
 		this->archivo->abrir(DELETE);
@@ -176,7 +176,7 @@ void ParticionDAO::borrar(Particion part){
 
 		//cargo la nueva pagina del indice, ya que sufrio modificaciones
 		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol->ArmarArbol(candidata);
+		this->arbol.ArmarArbol(candidata);
 		//actualizo los limites del arbol
 		this->minID = candidata[0].getID();
 		this->maxID = candidata[candidata.size()-1].getID();
