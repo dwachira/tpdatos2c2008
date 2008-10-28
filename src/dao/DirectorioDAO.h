@@ -92,6 +92,14 @@ class DirectorioDAO{
 		void borrar(unsigned int id);
 
 		/*
+		 * Se utiliza para actualizar la ultima fecha de modificacion de un
+		 * directorio. Los demas campos permanecen inalterables.
+		 */
+		bool update(unsigned int ID, util::Date newFecha);
+		bool update(unsigned int ID, unsigned int anio, unsigned int mes,
+						unsigned int dia, unsigned int hora, unsigned int min);
+
+		/*
 		 * Se accede al indice primario, ordenado por ID, y se recupera el
 		 * offset del dato con el id solicitado. Luego se accede al archivo para
 		 * regs de long fija y se recupera la informacion almacenada en ese

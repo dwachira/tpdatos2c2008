@@ -97,6 +97,17 @@ class ImagenDAO{
 		void borrar(unsigned int id);
 
 		/*
+		 * Se pueden actualizar los campos EspacioLibre (por las modificaciones que
+		 * sufre la imagen), Id de Directorio (por la posibilidad de que una imagen
+		 * sea movida a otro directorio), el hashValue (que se modifica con cada
+		 * cambio que sufre la imagen) y el nombre (en caso que sea renombrada)
+		 */
+		bool updateEspacioLibre(unsigned int ID, unsigned int newEspacioLibre);
+		bool updateDirectorio(unsigned int ID, unsigned int newId_Dir);
+		bool updateHashValue(unsigned int ID, unsigned long int newHashValue);
+		bool updateNombre(unsigned int ID, string newNombre);
+
+		/*
 		 * Se accede al indice primario, ordenado por ID, y se recupera el
 		 * offset del dato con el id solicitado. Luego se accede al archivo para
 		 * regs de long fija y se recupera la informacion almacenada en ese

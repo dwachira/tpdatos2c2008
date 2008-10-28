@@ -191,6 +191,48 @@ void ParticionDAO::borrar(Particion part){
 	}
 }
 
+bool ParticionDAO::liberar(unsigned int img, unsigned int txt, unsigned int pos){
+
+	double claveBuscada = StringUtils::concat(img,txt,pos);
+
+	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
+	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
+	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
+	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
+	//sin tener que acceder al disco ni recorrer el archivo
+	if((claveBuscada < this->minID) || (claveBuscada > this->maxID)){
+		//obtengo la pag candidata y armo el arbol con la misma
+		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
+		this->arbol->ArmarArbol(candidata);
+		//actualizo los limites del arbol
+		this->minID = candidata[0].getID();
+		this->maxID = candidata[candidata.size()-1].getID();
+	}
+
+	if(! arbol->Buscar(claveBuscada))
+		return false;
+
+	RegPagina reg = this->arbol->ValorActual();
+
+	REG_PART* buffer = new REG_PART();
+	this->archivo->abrir(READ);
+	this->archivo->leer(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//recupero la longitud, necesario para dar de baja del indice, actualizo
+	//el valor de estado y sobreescribo en el archivo
+	unsigned int longitud = buffer->longitud;
+	buffer->libre = false;
+	this->archivo->abrir(UPDATE);
+	this->archivo->actualizar(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	double claveCompuestaLibres = StringUtils::concat(pos,longitud);
+	this->index_Libres->eliminar(claveCompuestaLibres);
+
+	return true;
+}
+
 Particion ParticionDAO::getPartByImgTxtPos(unsigned int newImg, unsigned int newTxt, unsigned int newPos){
 
 	double claveBuscada = StringUtils::concat(newImg,newTxt,newPos);

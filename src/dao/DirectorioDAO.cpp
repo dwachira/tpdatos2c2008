@@ -138,6 +138,75 @@ void DirectorioDAO::borrar(Directorio& dir){
 	//Por ese motivo es que debe seguirse esta secuencia
 }
 
+bool DirectorioDAO::update(unsigned int ID, unsigned int anio, unsigned int mes,
+							unsigned int dia, unsigned int hora, unsigned int min){
+
+	//obtengo la pag candidata y busco el Id solicitado
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
+	bool encontrado = false;
+	unsigned int i = 0;
+	while(!encontrado && i<candidata.size()){
+		if(candidata[i].getID() == ID)
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > ID)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
+	}
+
+	if(!encontrado)
+		return false;
+
+	//si existe, recupero la informacion
+	RegPagina reg = candidata[i];
+	REG_DIR* buffer = new REG_DIR();
+	this->archivo->abrir(READ);
+	this->archivo->leer(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//recupero la fecha vieja para poder eliminar del indice
+	unsigned int anioViejo = buffer->anio;
+	unsigned int mesViejo = buffer->mes;
+	unsigned int diaViejo = buffer->dia;
+	unsigned int horaViejo = buffer->hora;
+	unsigned int minViejo = buffer->min;
+
+	//actualizo los valores de la fecha de modificacion
+	buffer->anio = anio;
+	buffer->mes = mes;
+	buffer->dia = dia;
+	buffer->hora = hora;
+	buffer->min = min;
+
+	//y sobreescribo en el archivo
+	this->archivo->abrir(UPDATE);
+	this->archivo->actualizar(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//y elimino y inserto del indice pertinente
+	double claveCompuestaFecha = anioViejo*100000000 + mesViejo*1000000 +
+										diaViejo*10000 + horaViejo*100 + minViejo;
+	double newClaveCompuestaFecha = anio*100000000 + mes*1000000 + dia*10000 +
+																	hora*100 + min;
+	this->index_FechaModif->eliminar(claveCompuestaFecha);
+	this->index_FechaModif->insertar(newClaveCompuestaFecha, reg.getOffset());
+
+	return true;
+}
+
+bool DirectorioDAO::update(unsigned int ID, util::Date newFecha){
+
+	unsigned int anio = newFecha.getYear();
+	unsigned int mes = newFecha.getMonth();
+	unsigned int dia = newFecha.getDay();
+	unsigned int hora = newFecha.getHour();
+	unsigned int min = newFecha.getMinute();
+
+	return update(ID, anio, mes, dia, hora, min);
+}
+
 Directorio* DirectorioDAO::getDirById(unsigned int newID){
 
 	//obtengo la pag candidata y armo el arbol con la misma
