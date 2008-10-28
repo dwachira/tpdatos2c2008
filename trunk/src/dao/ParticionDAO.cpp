@@ -83,7 +83,7 @@ bool ParticionDAO::insert(Particion part){
 	if((claveCompuestaPrim >= this->minID) && (claveCompuestaPrim <= this->maxID)){
 		//obtengo la pag candidata y armo el arbol con la misma
 		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveCompuestaPrim);
-		this->arbol->ArmarArbol(candidata);
+		this->arbol.ArmarArbol(candidata);
 		//actualizo los limites del arbol
 		this->minID = candidata[0].getID();
 		this->maxID = candidata[candidata.size()-1].getID();
@@ -203,20 +203,20 @@ Particion ParticionDAO::getPartByImgTxtPos(unsigned int newImg, unsigned int new
 	if((claveBuscada < this->minID) || (claveBuscada > this->maxID)){
 		//obtengo la pag candidata y armo el arbol con la misma
 		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol->ArmarArbol(candidata);
+		this->arbol.ArmarArbol(candidata);
 		//actualizo los limites del arbol
 		this->minID = candidata[0].getID();
 		this->maxID = candidata[candidata.size()-1].getID();
 	}
 
-	bool buscar = arbol->Buscar(claveBuscada);
+	bool buscar = arbol.Buscar(claveBuscada);
 
 	if(!buscar){		//si no lo encontro, no existe en el indice
 		Particion partic(0,0,0,0,0,false);
 		return partic;
 	}
 
-	RegPagina reg = this->arbol->ValorActual();
+	RegPagina reg = this->arbol.ValorActual();
 
 	REG_PART* buffer = new REG_PART();
 	this->archivo->abrir(READ);
