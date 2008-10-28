@@ -99,6 +99,66 @@ bool ImagenDAO::insert(Imagen& img){
 	return true;
 }
 
+void ImagenDAO::borrar(unsigned int id){
+
+	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
+	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
+	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
+	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
+	//sin tener que acceder al disco ni recorrer el archivo
+	if((id < this->minID) || (id > this->maxID)){
+		//obtengo la pag candidata y armo el arbol con la misma
+		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) id);
+		this->arbol->ArmarArbol(candidata);
+		//actualizo los limites del arbol
+		this->minID = candidata[0].getID();
+		this->maxID = candidata[candidata.size()-1].getID();
+	}
+
+	if(arbol->Buscar((double) id)){
+
+		RegPagina reg = this->arbol->ValorActual();
+
+		//recupero la informacion almacenada, requerido para poder dar de baja un indice
+		REG_IMG* buffer = new REG_IMG();
+		this->archivo->abrir(READ);
+		this->archivo->leer(buffer, reg.getOffset());
+		this->archivo->cerrar();
+
+		//elimino del archivo de datos
+		this->archivo->abrir(DELETE);
+		this->archivo->borrar(reg.getOffset());
+		this->archivo->cerrar();
+
+		//cargo la nueva pagina del indice, ya que sufrio modificaciones
+		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(id);
+		this->arbol->ArmarArbol(candidata);
+		//actualizo los limites del arbol
+		this->minID = candidata[0].getID();
+		this->maxID = candidata[candidata.size()-1].getID();
+
+		//doy de baja el registro de los indices
+		this->index_Prim->eliminar((double) id);
+		this->index_Espacio->eliminar((double) buffer->espacio_libre);
+		this->index_Directorio->eliminar((double) buffer->ID_Dir);
+
+		//elimino el nombre de la iamgen del archivo de regs de long variable
+		this->stream->borrar(buffer->offset_nombre);
+	}
+}
+
+void ImagenDAO::borrar(Imagen& img){
+
+	unsigned int id = img.getID();
+
+	return borrar(id);
+
+	//debo utilizar la otra funcion porque no puedo evitar tener que leer desde
+	//el archivo la informacion. Esto es porque sino resultaria imposible dar
+	//de baja el nombre de la imagen del archivo de registros de longitud variable
+	//Por ese motivo es que debe seguirse esta secuencia
+}
+
 Imagen ImagenDAO::getImgById(unsigned int newID){
 
 	//primero verifico con el arbol cargado en memoria. Si la clave buscada es

@@ -25,9 +25,9 @@ namespace dao {
 typedef struct{
 	unsigned int ID_Img;
 	unsigned int ID_Txt;
-	unsigned int posicion;
-	unsigned int bit_inicio;
-	unsigned int longitud;
+	unsigned int posicion;		//...de la particion dentro del mensaje completo
+	unsigned int bit_inicio;	//...posicion de inicio de la particion en la imagen
+	unsigned int longitud;		//...de la particion (espacio que ocupa en la imagen)
 	bool libre;
 }REG_PART;
 
@@ -63,6 +63,16 @@ class ParticionDAO{
 		 * se genera la clave que corresponde y se almacena con el offset
 		 */
 		bool insert(Particion part);
+
+		/*
+		 * Dada una relacion entre Imagen - Texto - Posicion, se elimina de
+		 * los indices pertinentes y del archivo de datos.
+		 * Si se posee el objeto Particion no sera necesario recuperar cierta
+		 * informacion desde el archivo que posibilite el proceso de baja de
+		 * alguno de los indices utilizados.
+		 */
+		void borrar(Particion part);
+		void borrar(unsigned int img, unsigned int txt, unsigned int pos);
 
 		/*
 		 * Se accede al indice primario, ordenado por IDImg + IDTxt + Pos, y se

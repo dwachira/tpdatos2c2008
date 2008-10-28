@@ -84,6 +84,14 @@ class DirectorioDAO{
 		bool insert(Directorio& dir);
 
 		/*
+		 * A partir de un Codigo de Directorio, se da de baja la informacion del
+		 * registro del archivo de datos, se da de baja de todos los indices,
+		 * y se elimina el nombre del mismo del archivo de regs de long variable.
+		 */
+		void borrar(Directorio& dir);
+		void borrar(unsigned int id);
+
+		/*
 		 * Se accede al indice primario, ordenado por ID, y se recupera el
 		 * offset del dato con el id solicitado. Luego se accede al archivo para
 		 * regs de long fija y se recupera la informacion almacenada en ese
