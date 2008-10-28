@@ -43,7 +43,7 @@ class ParticionDAO{
 
 		StreamFijo*					archivo;
 
-		AVL*						arbol;
+		AVL							arbol;
 		unsigned int				minID;
 		unsigned int				maxID;
 
