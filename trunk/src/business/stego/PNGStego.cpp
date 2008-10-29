@@ -16,7 +16,7 @@ unsigned int bits_alpha=0;
 unsigned int pos_pixel=0;
 
      /*Canal alpha en cero--> imagen transparente*/
-     if((imagen.getBpp()==32)&&(pixels[3]==0)){
+     if((imagen.getBpp()==32)&&(pixels[3]==0)){std::cout<<"pixel transparente "<<std::endl;
     	  while((bits_procesados<mensaje.size())&&(pos_pixel<3)){
              newbyte.append(1,mensaje.at(bits_procesados));
              bits_alpha++;
@@ -36,12 +36,14 @@ unsigned int pos_pixel=0;
 }
 unsigned int PNGStego::getFreeSpace(){
 	if((imagen.getBpp()<=8)&&(imagen.getColorType()>1))
-       palette.sortPaletteByDistance();
+       if (sort_palette){
+       	    palette.sortPaletteByDistance();
+       	    return ((imagen.getHeight())*(imagen.getWidth())/8);
+       }
+       else return (imagen.getPaletteSize()*3)/8;
       
 	unsigned int space;
-	if(imagen.getBpp()<=8)
-	   space=((imagen.getHeight())*(imagen.getWidth())/8);
-	else space=((((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp()/8)*(this->enable_bpp)))/8);
+	space=((((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp()/8)*(this->enable_bpp)))/8);
 	if(imagen.getBpp()==32)
 	  space+=  ((getTransparentPixels()*(24 - this->enable_bpp*(imagen.getBpp()/8)))/8);
 	return space;

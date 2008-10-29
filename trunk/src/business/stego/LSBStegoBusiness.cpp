@@ -2,13 +2,17 @@
 #include <iostream>
 
 
-LSBStegoBusiness::LSBStegoBusiness(std::string filename):StegoBusiness(filename),error(false),enable_bpp(1),imagen(filename),palette(imagen)
+LSBStegoBusiness::LSBStegoBusiness(std::string filename):StegoBusiness(filename),
+error(false),enable_bpp(1),imagen(filename),palette(imagen),sort_palette(true)
 {
 	error=imagen.load();
+	if(imagen.getPaletteSize()<256) sort_palette=false;
+	std::cout<<imagen.getPaletteSize()<<std::endl;
 }
 
 //si uso el lsb sobre la paleta --->devolver cero
 unsigned int LSBStegoBusiness::getFirstFreeBit(){
+	if(!sort_palette) return 0;
 	return (8-this->enable_bpp);
 }
 
@@ -18,27 +22,33 @@ unsigned int x=0;
 unsigned int bits_count=0;
 unsigned int bit=0;
 
-  if(first_bit> 8-this->enable_bpp){//no estoy en caso inicial
+unsigned int bpp;
+if(imagen.getBpp()<8) bpp=1;
+else bpp=imagen.getBpp()/8;
+std::cout<<" bpp: "<<bpp<<std::endl;
+  if(first_bit> (bpp*8-1)){//no estoy en caso inicial
+  	
 	  while(( y <imagen.getHeight())&&(bits_count<first_bit)){
 		  /*Primer linea de pixels de la imagen*/
-		 
+		   x=0;
 		   while(( x <imagen.getWidth())&&(bits_count<first_bit)){
 		   	    //siguiente pixel
-		   	    bits_count+=8*imagen.getBpp();
+		   	    bits_count+=8*bpp;
 		   	    if(bits_count>=first_bit)
-		   	      bit= (first_bit-(y*imagen.getWidth()))%(imagen.getBpp());
+		   	      bit= first_bit-(bits_count-8*bpp);
 		   	    //siguiente pixel
-		      	x++;
+		      	if(bits_count<first_bit) x++;
+		      	
 		}//fin while_x
       //siguiente linea de la imagen
-	  y++;
-	  x=0;
+	  if(bits_count<first_bit) y++;
+	  
 	}//fin while_y
   } else bit= first_bit;
     pixel.setPosX(x);
     pixel.setPosY(y);
     pixel.setNumero_de_bit(bit);
-    std::cout<<"x: "<<x<<" Y "<<y<<" bit "<<bit<<std::endl;
+    std::cout<<"x: "<<x<<" y: "<<y<<" bit: "<<bit<<std::endl;
 	
 }
 
@@ -85,7 +95,7 @@ char* aux;
 std::string binario;
 unsigned int bits_por_byte=0;
 unsigned int pos_pixel=0;
-unsigned int bits_count;
+unsigned int bits_count=0;
 
 //debo posicionarme en el byte del pixel correcto
 if(bits_procesados==0)
@@ -109,9 +119,7 @@ while((pos_pixel<imagen.getBpp()/8)&&(bits_procesados<mensaje.size())){
   if(bits_procesados==mensaje.size()){
   	if(bits_por_byte<this->enable_bpp)
        bits_count-=this->enable_bpp-bits_por_byte;
-    //corro las posiciones necesarias para llegar al proximo bit disponible, es decir,
-    //al bit del siguiente byte 
-    else bits_count+=8-this->enable_bpp;
+      
   }  
   new_byte=  strtol(binario.c_str(),&aux,2);	          
   /*Guardo el nuevo byte modificado*/
@@ -121,7 +129,7 @@ while((pos_pixel<imagen.getBpp()/8)&&(bits_procesados<mensaje.size())){
   bits_por_byte=0;
   pos=8-this->enable_bpp;
    }
-
+  
   return bits_count;
   
 }
@@ -137,13 +145,15 @@ unsigned int LSBStegoBusiness::setMessage(unsigned long int first_pos,std::strin
 unsigned int bits_procesados=0;
 Pixel pixel;
 unsigned int last_pos=0;
-getPixel(first_pos,pixel);
+if(sort_palette) getPixel(first_pos,pixel);
 /*Posicion inicial del mensaje dentro del pixel*/
 unsigned int pos=pixel.getNumero_de_bit();
 if(!error){
         
-       if((imagen.getBpp()<=8)&&(imagen.getColorType()>1))
-            last_pos+=palette.doIndexesLSB(pixel,mensaje);
+       if((imagen.getBpp()<=8)&&(imagen.getColorType()>1)){
+           if(sort_palette) last_pos+=palette.doIndexesLSB(pixel,mensaje);
+           else last_pos=palette.doPaletteLSB(first_pos,mensaje);    
+       }
        else{//se puede trabajar con los pixeles
        	
        	BYTE *bits = imagen.getBits();
@@ -173,10 +183,10 @@ if(!error){
   return last_pos+first_pos;	
 }
 
-std::string LSBStegoBusiness::getMessage(unsigned long int first_bit,unsigned int longitud){
+std::string LSBStegoBusiness::getMessage(unsigned long int first_pos,unsigned int longitud){
 std::string mensaje;	
 Pixel pixel;
-getPixel(first_bit,pixel);
+getPixel(first_pos,pixel);
 unsigned int bits_procesados=0;
 /*posicion inicial*/
 unsigned int pos=pixel.getNumero_de_bit();
@@ -184,7 +194,8 @@ std::string binario;
 if(!error){
   	  
       if((imagen.getBpp()<=8)&&(imagen.getColorType()>1))
-      	    mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
+      	    if(sort_palette) mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
+      	    else mensaje.append(palette.getMessageFromPalette(first_pos,longitud));
       else{
        		BYTE *bits = imagen.getBits();
 	   		bits+=imagen.getPitch()*(imagen.getHeight()-1);

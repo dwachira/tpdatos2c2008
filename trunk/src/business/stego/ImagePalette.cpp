@@ -111,7 +111,7 @@ if(palette) {
             i++;
             
         }
-        imagen.applyColorMapping(dstcolors,imagen.getPaletteSize());
+      
         //imagen.applyColorMapping(palette,dstcolors);
         
         /*Ordeno los indices*/
@@ -128,11 +128,14 @@ if(palette) {
         	std::cout<<"indice_transparente"<<transparent_index<<std::endl;
    			imagen.setTransparentIndex(getNewPaletteIndex(transparent_index));
 		}	
-	    if(imagen.hasBackgroundColor())  	
-	  	    imagen.setBackgroundColorIndex(getNewPaletteIndex(background_index));
-       	
+	    
         std::cout<<"Tamaño de la paleta"<<palette_size<<std::endl;
-        imagen.save();
+        /*Guardo los cambios en los indices*/
+        imagen.save(); 
+        /*Guardo los cambios en la paleta de colores*/
+        imagen.applyColorMapping(dstcolors,imagen.getPaletteSize());
+        if(imagen.hasBackgroundColor())  	
+	  	    imagen.setBackgroundColorIndex(getNewPaletteIndex(background_index));
    }
 }
 
@@ -153,7 +156,7 @@ std::string binario,mensaje;
 		 	   
             if(bits_procesados<longitud){ 
             	   
-             	   pixel_index=imagen.getPixelIndex(x,height-y-1);
+             	   pixel_index=imagen.getPixelIndex(x,y);
              	   util::BitsUtils::toBase((int)pixel_index,2,binario);
                    /*Completo el binario para que sea mas facil el proceso*/
                    util::BitsUtils::completeNBits(binario,8);
@@ -243,7 +246,7 @@ unsigned int bits_procesados=0;
 unsigned int first_palette_pos=first/3;
 unsigned int i=first_palette_pos;
 unsigned int rgb_pos=getRGBPos(first);//determina en que color empiezo
-
+std::cout<<"rgb_pos "<<rgb_pos<<std::endl;
 if(palette) {
        unsigned int palette_size=imagen.getPaletteSize();
        while((i<palette_size)&&(bits_procesados<longitud)){    
@@ -286,20 +289,19 @@ for (unsigned int y = pixel.getPosY(); y <height; y ++){
 	for (unsigned int x = pixel.getPosX(); x < width; x ++){
 		    
          if(bits_procesados<mensaje.size()){ 
-         	pixel_index=imagen.getPixelIndex(x,height-y-1);
-            //std::cout<<"Pixel_index"<<(int)pixel_index<<std::endl;
+         	pixel_index=imagen.getPixelIndex(x,y);
+            std::cout<<"Pixel_index"<<(int)pixel_index<<std::endl;
 		    util::BitsUtils::toBase((int)pixel_index,2,binario);
             /*Completo el binario para que sea mas facil el proceso*/
             util::BitsUtils::completeNBits(binario,8);
-            /*Ciclo en caso de modificar mas de un bit por byte*/
+         
             binario.at(pos)=mensaje.at(bits_procesados); 
             bits_procesados++;
-            if(bits_procesados==1) bits_count++;
-            else bits_count+=8;
+            bits_count+=8;
             new_pixel_index= (BYTE)strtol(binario.c_str(),&aux,2);	          
             binario="";
                                 
-            imagen.setPixelIndex(x,height-y-1,&new_pixel_index);
+            imagen.setPixelIndex(x,y,&new_pixel_index);
              
          }else{ //para terminar el ciclo for 
             	  x=width;
@@ -309,8 +311,9 @@ for (unsigned int y = pixel.getPosY(); y <height; y ++){
       
 		
 	}//fin for_y
-    
-	return bits_count+7;//Sumo 7 para caer justo en el lsb del prox indice
+    /*Guardo los cambios realizados en la imagen*/
+	imagen.save();
+	return bits_count;
 }
 
 
