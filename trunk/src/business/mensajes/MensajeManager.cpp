@@ -12,6 +12,9 @@
 #include <sys/stat.h>
 #include <list>
 #include <cstdlib>
+#include <string.h>
+#include <string>
+#include <iostream>
 #include <sys/types.h>
 using namespace std;
 
@@ -21,22 +24,24 @@ std::string MensajeManager::TMP_COMPRESSED_FILE_NAME  = "tmp_file";
 
 void MensajeManager::agregarMensaje(std::string filename)
 {
-//	CompressorBusiness compressor;
-//	FILE* file = fopen(filename.c_str(),"rb");
-//	FILE* tmpfile = fopen(TMP_FILE_NAME,"w+b");
-//
-//	compressor.compress(file,tmpfile);
-	ifstream filestrm(filename.c_str());
-	if (filestrm.fail()) {
-		//No se pudo abrir el archivo
+
+	FILE* file = fopen(filename.c_str(),"rb");
+	if (file == NULL) {
+		//No se pudo abrir el archivo.
 		return;
 	}
+	FILE* tmpfile = fopen(TMP_COMPRESSED_FILE_NAME.c_str(),"wb");
 
+	compressor.compress(file,tmpfile);
+	fclose(tmpfile);
+	fclose(file);
+
+	ifstream filestrm(TMP_COMPRESSED_FILE_NAME.c_str());
 	filestrm.seekg (0, ios::end);
 	unsigned int tamanioMensaje = filestrm.tellg();
 	filestrm.seekg (0, ios::beg);
 
-	list<Imagen> imagenesDisponibles = managerDAO.getImagenDAO().getImgsSortedByEspacioLibre();
+	list<Imagen> imagenesDisponibles = imagenDao.getImgsSortedByEspacioLibre();
 	list<Imagen> imagenesSeleccionadas;
 
 	unsigned int espacioDisponible = 0;
@@ -62,7 +67,7 @@ void MensajeManager::agregarMensaje(std::string filename)
 		mensaje.setTamanio(tamanioMensaje);
 		mensaje.setCant_partes(imagenesSeleccionadas.size());
 
-		managerDAO.getMensajeDAO().insert(mensaje);
+		mensajeDao.insert(mensaje);
 
 		unsigned int streamsize = tamanioMensaje;
 		unsigned int numeroDeParticion = 0;
@@ -75,7 +80,17 @@ void MensajeManager::agregarMensaje(std::string filename)
 			char* buffer = new char[streamsize];
 
 			filestrm.read(buffer,streamsize);
-
+			std::string mensajeComprimido(buffer);
+			std::cout<<mensajeComprimido<<std::endl;
+			std::string tiraDeBits("");
+			for (int i = 0; i < streamsize  ; i++) {
+				for (int j = 0; j < 8; j++)
+					if ((buffer[i])&(1<<j))
+						tiraDeBits.append("1");
+					else
+						tiraDeBits.append("0");
+			}
+			std::cout<<tiraDeBits<<std::endl;
 			Particion particion;
 			particion.setBit_inicio(imagen.getProximo_bit_libre());
 			particion.setID_Img(imagen.getID());
@@ -86,11 +101,11 @@ void MensajeManager::agregarMensaje(std::string filename)
 
 			StegoBusiness* stego = StegoFactory::newInstance((*it2).getNombre());
 
-			imagen.setProximo_bit_libre(stego->setMessage(particion.getBit_inicio(),buffer));
+			imagen.setProximo_bit_libre(stego->setMessage(particion.getBit_inicio(),tiraDeBits));
 			imagen.setEspacio_libre(imagen.getEspacio_libre()-streamsize);
 			//imagen.setHash_value()
 
-			managerDAO.getParticionDAO().insert(particion);
+			particionDao.insert(particion);
 			//managerDAO.getImagenDAO().upate(imagen);
 
 			streamsize = tamanioMensaje - streamsize;
@@ -102,6 +117,7 @@ void MensajeManager::agregarMensaje(std::string filename)
 		//throw espacio insuficiente
 	}
 
+	remove(TMP_COMPRESSED_FILE_NAME.c_str());
 
 }
 
@@ -128,25 +144,41 @@ void MensajeManager::quitarMensaje(std::string filename)
 
 void MensajeManager::obtenerMensaje(std::string filename, std::string destino)
 {
-	fstream salida(destino.c_str(), fstream::binary | fstream::out);
+	fstream fromImage(TMP_COMPRESSED_FILE_NAME.c_str(), fstream::binary | fstream::out);
 
-	MensajeDAO mensajeDAO = managerDAO.getMensajeDAO();
-	ParticionDAO particionDAO = managerDAO.getParticionDAO();
-	ImagenDAO imagenDAO = managerDAO.getImagenDAO();
-
-	Mensaje mensaje = mensajeDAO.getMsjById(0);
+	Mensaje mensaje = mensajeDao.getMsjById(0);
 
 	//TODO:: Chequear si vienen ordenadas por posicion
-	list<Particion> particiones = particionDAO.getPartsByTxt(mensaje.getID());
+	list<Particion> particiones = particionDao.getPartsByTxt(mensaje.getID());
 
 	for (list<Particion>::iterator it = particiones.begin(); it != particiones.end(); it++) {
 		Particion& particion = *it;
-		const Imagen& imagen = imagenDAO.getImgById(particion.getID_Img());
+		const Imagen& imagen = imagenDao.getImgById(particion.getID_Img());
 		StegoBusiness* stego = StegoFactory::newInstance(imagen.getNombre());
-		const std::string& chunk = stego->getMessage(particion.getBit_inicio(),particion.getLongitud());
-		salida.write(chunk.c_str(),particion.getLongitud());
+		const string& chunk = stego->getMessage(particion.getBit_inicio(),particion.getLongitud()*8);
+		std::cout<<chunk<<std::endl;
+		string encodedMessage("");
+		const char* buffer = chunk.c_str();
+		for (int i = 0; i < chunk.size(); i+=8) {
+			char byte = 0x0;
+			for (int j = 0; j < 7; j++) {
+				if (memcmp(buffer+i+j,"1",1) == 0)
+					byte = byte | (1<<j);
+			}
+			encodedMessage.push_back(byte);
+		}
+		cout<<encodedMessage<<endl;
+		fromImage.write(encodedMessage.c_str(),encodedMessage.size());
 	}
+	fromImage.close();
 
+	FILE* tmp_file = fopen(TMP_COMPRESSED_FILE_NAME.c_str(),"rb");
+	FILE* salida = fopen(destino.c_str(),"w+b");
+
+	compressor.decompress(tmp_file,salida);
+	fclose(tmp_file);
+	remove(TMP_COMPRESSED_FILE_NAME.c_str());
+	fclose(salida);
 }
 
 MensajeManager::~MensajeManager() {

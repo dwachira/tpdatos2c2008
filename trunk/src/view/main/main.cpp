@@ -11,7 +11,7 @@
 
 int main(int argc, char* argv[]){
 
-	TestCase* tests[] = {new TestCompressor() };
+	TestCase* tests[] = {new TestAgregarYRecuperarMensaje() };
 	for (int i = 0; i < 1 ; i++)
 		tests[i]->test();
 
