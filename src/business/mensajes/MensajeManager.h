@@ -11,15 +11,20 @@
 #include <string>
 #include "../../object/Mensaje.h"
 #include "../../dao/manager/ManagerDAO.h"
+#include "../compressor/CompressorBusiness.h"
 
 namespace business {
 
 class MensajeManager {
 private:
-	ManagerDAO& managerDAO;
+	ImagenDAO& imagenDao;
+	ParticionDAO& particionDao;
+	MensajeDAO& mensajeDao;
+	CompressorBusiness compressor;
 	static std::string TMP_COMPRESSED_FILE_NAME;
 public:
-	MensajeManager(ManagerDAO& manager) : managerDAO(manager) {}
+	MensajeManager(ManagerDAO& manager) : imagenDao(manager.getImagenDAO()), particionDao(manager.getParticionDAO()),
+											mensajeDao(manager.getMensajeDAO()) {}
 	void agregarMensaje(std::string filename);
 	void quitarMensaje(std::string filename);
 	void quitarMensaje(Mensaje& mensaje);
