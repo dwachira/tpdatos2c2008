@@ -7,6 +7,7 @@ LSBStegoBusiness::LSBStegoBusiness(std::string filename):StegoBusiness(filename)
 	error=imagen.load();
 }
 
+//si uso el lsb sobre la paleta --->devolver cero
 unsigned int LSBStegoBusiness::getFirstFreeBit(){
 	return (8-this->enable_bpp);
 }

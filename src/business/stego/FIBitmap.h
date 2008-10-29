@@ -19,7 +19,7 @@ class FIBitmap
     	std::string filename;
     	FREE_IMAGE_FORMAT format;
     	bool error;
-    	unsigned int bpp,pitch,height,width,color_type,palette_size;
+    	unsigned int bpp,pitch,height,width,color_type,palette_size,palette_offset;
     	
 	public:
 	
@@ -47,10 +47,11 @@ class FIBitmap
 		int getTransparentIndex();	
 		void setTransparentIndex(int index);
 		void setBackgroundColorIndex(int new_index);
-		int applyPaletteIndexMapping(BYTE*srcindices, BYTE *dstindices, unsigned count);
+		int applyPaletteIndexMapping(BYTE*srcindices, BYTE *dstindices);
 		int applyColorMapping(RGBQUAD *srccolors, RGBQUAD *dstcolors);
-		void applyColorMapping(RGBQUAD *srccolors);
+		void applyColorMapping(RGBQUAD *srccolors,unsigned int count,unsigned int from=0);
 		int getPaletteOffset();
+		BITMAPINFO* getInfo();
 	
 		bool load(int flag=0);
 		void save(int perc=0);

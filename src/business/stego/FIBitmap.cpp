@@ -40,7 +40,8 @@ bool FIBitmap::load(int flag){
        		width=FreeImage_GetWidth(imagen); 
        		color_type=FreeImage_GetColorType(imagen);
        		palette_size=FreeImage_GetColorsUsed(imagen);
-       
+            palette_offset=getPaletteOffset();
+            std::cout<<"palette_Offset"<<palette_offset<<std::endl;
        		error=false;
   	}else error=true;	
   } else error=true;	
@@ -103,42 +104,43 @@ void FIBitmap::setTransparentIndex(int index){
     return FreeImage_SetTransparentIndex(imagen,index);
 }
 
-int FIBitmap::applyPaletteIndexMapping(BYTE*srcindices, BYTE *dstindices, unsigned count){
-	return FreeImage_ApplyPaletteIndexMapping(imagen,srcindices,dstindices, count,FALSE);
+int FIBitmap::applyPaletteIndexMapping(BYTE*srcindices, BYTE *dstindices){
+	return FreeImage_ApplyPaletteIndexMapping(imagen,srcindices,dstindices,palette_size,FALSE);
 }
 int FIBitmap::applyColorMapping(RGBQUAD *srccolors, RGBQUAD *dstcolors){
  return FreeImage_ApplyColorMapping(imagen,srccolors,dstcolors,palette_size, TRUE, FALSE);
 }
 
-void FIBitmap::applyColorMapping(RGBQUAD *srccolors){
-std::fstream imageFile;
-imageFile.open(filename.c_str(), std::fstream::out| std::fstream::binary);
-  if(imageFile.is_open()){
-	 imageFile.seekp(getPaletteOffset(), std::ios::beg);//pos 13=comienzo paleta de colores
-	 for (unsigned int i=0;i<palette_size;i++){
+void FIBitmap::applyColorMapping(RGBQUAD *srccolors,unsigned int count,unsigned int from){
+std::ofstream imageFile;
+imageFile.open(filename.c_str(), std::fstream::binary);
+  if(imageFile.is_open()){std::cout<<"Me posiciono en : "<<palette_offset<<std::endl;
+  	 
+	 imageFile.seekp(palette_offset);//pos 13/24=comienzo paleta de colores
+	 for (unsigned int i=from;i<count;i++){
+	 	 
 	     imageFile.put((char)((int)srccolors[i].rgbRed));
 	     imageFile.put((char)((int)srccolors[i].rgbGreen));
 	     imageFile.put((char)((int)srccolors[i].rgbBlue));
+	    
 	 } 
      imageFile.close();
   }	
-	
+
 }
 
 int FIBitmap::getPaletteOffset(){
-std::fstream imageFile;
+std::ifstream imageFile;
 int offset,byte_int;
 char byte;
 std::string binario;
-imageFile.open(filename.c_str(), std::fstream::in| std::fstream::binary);
-  if(imageFile.is_open()){
-  	 imageFile.seekg(0, std::ios::end); // Ir al final del fichero
-     std::cout<<"tamanio "<<imageFile.tellg()<<std::endl;
-  	 imageFile.seekg(10, std::ios::beg);//pos 10=bits info paleta
-	 imageFile.get(byte); std::cout<<"saco el byte "<<byte<<"/"<<(int)byte<<std::endl;
+imageFile.open(filename.c_str(), std::fstream::binary);
+  if(imageFile.is_open()){ 
+  	 imageFile.seekg(10);//pos 10=bits info paleta
+	 imageFile.get(byte); 
 	 byte_int=(int)byte;
 	 if(byte_int<0) byte_int+=256;
-	 std::cout<<"positivo byte "<<byte_int<<std::endl;
+	 
 	 util::BitsUtils::toBase(byte_int,2,binario);
 	 util::BitsUtils::completeNBits(binario,8);
 	  //si el primer bit esta en uno --> paleta global 
@@ -147,19 +149,23 @@ imageFile.open(filename.c_str(), std::fstream::in| std::fstream::binary);
 	 //sino: paleta local
 	 else offset=24;
      imageFile.close();
-  }	std::cout<<"offset"<<offset<<std::endl;
+  }	
   return offset;
 }
 
 void FIBitmap::setBackgroundColorIndex(int new_index){
-
-std::fstream imageFile;
-imageFile.open(filename.c_str(), std::fstream::out| std::fstream::binary);
+std::cout<<"nuevo indice"<<new_index<<std::endl;
+std::ofstream imageFile;
+imageFile.open(filename.c_str(), std::fstream::binary);
   if(imageFile.is_open()){
-	 imageFile.seekp(11, std::ios::beg);//pos 11=indice del background color
-     imageFile.put(new_index);
+	 imageFile.seekp(11);//pos 11=indice del background color
+     imageFile.put((char)new_index);
      imageFile.close();
   }
+}
+
+BITMAPINFO* FIBitmap::getInfo(){
+ return FreeImage_GetInfo(imagen);
 }
 
 FIBitmap::~FIBitmap(){

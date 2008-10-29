@@ -6,7 +6,8 @@ GIFStego::GIFStego(std::string filename):LSBStegoBusiness(filename)
 
 unsigned int GIFStego::getFreeSpace(){
  palette.sortPaletteByDistance();  //dejo todo preparado para realizar luego el lsb
- return ( ((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp()/8)*(this->enable_bpp))/8 );	
+ //si uso solo la paleta devolver imagen.getPaletteSize()*8
+ return ( ((imagen.getHeight())*(imagen.getWidth()))/8 );	
 	
 }
  
@@ -33,6 +34,7 @@ if(!error) {
 	Pixel pixel;
     getPixel(first_bit,pixel);
 	mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
+	//mensaje.append(palette.getMessageFromPalette(first_bit,longitud));
 }	 	
 return mensaje;	
 }
