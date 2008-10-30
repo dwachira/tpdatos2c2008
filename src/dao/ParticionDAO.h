@@ -11,7 +11,6 @@
 #include "../db/file/StreamFijo.h"
 #include "../db/file/Indice.h"
 #include "../db/file/AVL.h"
-
 #include "../object/Particion.h"
 #include "../util/string/StringUtils.h"
 #include <vector>

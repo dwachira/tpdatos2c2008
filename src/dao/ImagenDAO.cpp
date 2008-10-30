@@ -403,12 +403,28 @@ list<Imagen> ImagenDAO::getImgsSortedByEspacioLibre(){
 
 	return lista;
 }
+/*
+void ImagenDAO::openStream(){
 
+	this->stream->abrir(READ);
+	this->stream->seek_beg();
+}
+
+unsigned long int ImagenDAO::leerProximo(string* cadena){
+
+	return this->stream->leerProximo(cadena);
+}
+
+void ImagenDAO::closeStream(){
+
+	this->stream->cerrar();
+}
+*/
 
 /*******************************************************
  * METODOS PRIVADOS
  *******************************************************/
-
+/*
 unsigned long int ImagenDAO::guardarNombre(string nombre){
 
 	bool open = this->stream->abrir(WRITE);
@@ -432,7 +448,7 @@ string ImagenDAO::recuperarNombre(unsigned long int offset){
 
 	return nombre;
 }
-
+*/
 REG_IMG* ImagenDAO::aStruct(Imagen img, unsigned long int offset_nombre){
 
 	REG_IMG* buffer = new REG_IMG();
