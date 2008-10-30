@@ -23,7 +23,7 @@ int TestAgregarYRecuperarMensaje::test() {
 
 	mensajeManager.agregarMensaje(__TEST_DIR__"/prueba_entrada.txt");
 	mensajeManager.obtenerMensaje(__TEST_DIR__"/prueba_entrada.txt",__TEST_DIR__"/prueba_salida.txt");
-
+	return 0;
 }
 
 TestAgregarYRecuperarMensaje::~TestAgregarYRecuperarMensaje() {
