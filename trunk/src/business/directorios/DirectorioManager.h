@@ -10,30 +10,36 @@
 #include <string>
 #include <list>
 #include "../../object/Directorio.h"
+#include "DirectorioIteradorImagenes.h"
 #include "../../dao/manager/ManagerDAO.h"
 
 namespace business {
 
 class DirectorioManager {
 private:
-	static std::string GIF;
-	static std::string JPG;
-	static std::string PNG;
-	static std::string BMP;
-	static const int EXTENSION_LENGTH = 3;
 
 	dao::DirectorioDAO& directorioDAO;
 	dao::ImagenDAO& imagenDAO;
 	dao::ParticionDAO& particionDAO;
-
+	void accederDirectorio(std::string path) const;
 public:
 	DirectorioManager(dao::ManagerDAO& manager) : directorioDAO(manager.getDirectorioDAO()),
 		imagenDAO(manager.getImagenDAO()), particionDAO(manager.getParticionDAO()) {}
+
+	/*@throws DirectoryAccessException */
 	void agregarDirectorio(const std::string path) const;
+
 	bool directorioEnUso(const Directorio& directory) const;
+
 	void removerDirectorio(const long id) const;
+
+	/*@throws DirectoryAccessException */
+	DirectorioIteradorImagenes obtenerIteradorDeImagenes(Directorio& directorio) const;
+
 	std::list<Directorio*> getDirectorios() const;
+
 	void buscarImagenes(Directorio& directory) const;
+
 	virtual ~DirectorioManager();
 };
 
