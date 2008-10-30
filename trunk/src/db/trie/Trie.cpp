@@ -3,18 +3,14 @@
   string Trie::getSubstring(string s){
        return s.substr(1,s.length() - 1);
   }
-  
+
   Trie::Trie(){
-        string alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        for (int i = 0; i < RAICES ; i++){
-            raices[i].setCaracter(alfabeto[i]);
-            raices[i].setIndice(0);
-        }
+
   }
-  
+
   Trie::~Trie(){
   }
-  
+
   /** Insertar una cadena al Trie, y retornar si tuvo exito*/
   bool Trie::insertCadena( string cadena , unsigned int indice ){
        Nodo * inicio = getInicio(cadena[0]);
@@ -23,27 +19,31 @@
           return true;
        }else
             return false;
-       
+
   }
-  
-  
- 
+
+
+
   Nodo* Trie::getInicio(char caracter){
-        for (int i = 0; i < RAICES; i++){
-            Nodo  * nodo = &(raices[i]);
-            if (nodo->getCaracter() == caracter)
-               return nodo;
-        }
-        return NULL;
- }
+	  //Recorrer todas las raices, hasta encontrar la correspondiente al caracter
+	  for(Collection::iterator it = raices.begin(); it != raices.end(); it++){
+		  if ((*it)->getCaracter() == caracter){
+			  return (*it);
+		  }
+	  }
+	  //Si no encuentra el nodo, lo crea y lo agrega a la raiz
+	  Nodo * nodoRaiz = new Nodo(caracter,0);
+	  raices.insert(nodoRaiz);
+	  return nodoRaiz;
+  }
 
   /** Insertar una cadena al Trie, y retornar si tuvo exito*/
   bool Trie::insertCadenaSubLevel(Nodo* nodo, string cadena , unsigned int indice ){
        string subCadena = getSubstring(cadena);
-       /* Insertar caracter en el nodo correspondiente y actualizar el parametro 
+       /* Insertar caracter en el nodo correspondiente y actualizar el parametro
         * nodo con el hijo donde se hizo la insersecion */
        bool inserto = this->insertCaracterInHijo(&nodo,subCadena[0]);
-     
+
        //Si no inserto, es el final de la cadena, y el indice no es 0 entonces ya estaba el termino
        if (!inserto && subCadena.length() == 0 && nodo->getIndice() > 0)
              return false;
@@ -55,8 +55,8 @@
                   return true;
            }
   }
-  
-  
+
+
   /** Insertar una cadena en el hijo correspondiente, y retornar si tuvo exito*/
   bool Trie::insertCaracterInHijo(Nodo** nodo, char carac ){
        Nodo * nodoHijo = (*nodo)->getNodoHijoByCaracter(carac);
@@ -64,13 +64,13 @@
           nodoHijo = new Nodo(carac,0);
           (*nodo)->addHijo(nodoHijo);
           (*nodo) = nodoHijo;
-        
+
           return true;
        }else{
           (*nodo) = nodoHijo;
           return false;
        }
-    
+
   }
 
 
@@ -79,7 +79,7 @@
 	  //Obtener el indice de la cadena, si es mayor a 0 retornar true
 	 return (getIndice(cadena) > 0);
   }
-        
+
   /** Retornar el indice de la cadena, si no existe retornar 0*/
   unsigned int Trie::getIndice( string cadena ){
 	  //Obtener el nodo raiz del primer caracter de la cadena
@@ -97,7 +97,7 @@
 	  return 0;
   }
 
-       
+
   /** Eliminar la cadena del Trie si existe retornar true, sino false*/
   bool Trie::deleteCadena( string cadena ){
 	  //Obtener el nodo raiz del primer caracter de la cadena
@@ -106,7 +106,7 @@
 	  string subCadena = getSubstring(cadena);
 	  return deleteSubCadena(nodo,subCadena);
   }
-  
+
   /** Eliminar la subcadena del nodo, si debe eliminar retornar true, sino false*/
    bool Trie::deleteSubCadena(Nodo * nodo, string subCadena ){
 	  bool eliminar = false;
@@ -117,7 +117,7 @@
  		  subCadena = getSubstring(subCadena);
  		  eliminar = deleteSubCadena(nodoHijo,subCadena);
   	  }
- 	  
+
  	  if (eliminar ){
  		 //Elimino hijo del nodo
  		  nodo->deleteNodoHijo(nodoHijo);
@@ -134,23 +134,22 @@
  	  	  }else{
  	  		  nodo->setIndice(0);
  	  	  }
- 	  } 
+ 	  }
  	  return false;
    }
-  
-  
-  /** Imprimir el trie por pantalla*/
-  void  Trie::printTrie(){
-	  //Recorrer todas las raices e imprimir cada una
-      string alfabeto = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-      for (int i = 0; i < RAICES; i++){
-         //  printf("Raiz %c \r\n",raices[i].getCaracter());
-    	  if (raices[i].cantHijos() > 0)
-           printNodo(&(raices[i]));
-           
-       }
+
+
+   /** Imprimir el trie por pantalla*/
+   void  Trie::printTrie(){
+	   //Recorrer todas las raices e imprimir cada una
+	   for(Collection::iterator it = raices.begin(); it != raices.end(); it++){
+		   if ((*it)->cantHijos() > 0){
+			   printNodo((*it));
+		   }
+	   }
+
    }
-  
+
  /** Imprimir un nodopor pantalla*/
   void Trie::printNodo(Nodo * nodo ){
 	  //Si el nodo no es null, imprimir el caracter por pantalla
@@ -163,15 +162,6 @@
 	    	  printf(" // i: %d \n",nodo->getIndice());
 	      nodo->executeInHijos(&(printNodo));
 	  }
-	 /* do{
-		  //Imprimir recursivamente todos los nodos hijos
-           nodoHijo = nodo->getNodoHijoByPos(i);
-           if (nodoHijo != NULL)
-               printNodo(nodoHijo);
-           i++;
-       }while( nodoHijo != NULL);*/
-	  
-      
-      
-     
+
+
   }

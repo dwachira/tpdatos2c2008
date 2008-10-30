@@ -8,15 +8,10 @@ using namespace std;
 
 
 class Nodo{
-	typedef  set<Nodo *> Collection;
 
-private:
-        char            caracter;
-        unsigned int    indice;
-        Collection     hijos;
-        static int comparePointerNodo(Nodo * nodoLeft,Nodo* nodoRight);
 
 public:
+		typedef  set<Nodo *> Collection;
         Nodo();
         Nodo(char carac):caracter(carac),indice(0){};
         Nodo(char carac,unsigned int index):caracter(carac),indice(index){}
@@ -45,7 +40,11 @@ public:
         bool operator==(const Nodo& rightNodo )const{
             return (this->getCaracter() == rightNodo.getCaracter());
         }
-
+private:
+        char            caracter;
+        unsigned int    indice;
+        Collection     hijos;
+        static int comparePointerNodo(Nodo * nodoLeft,Nodo* nodoRight);
 
 };
 
