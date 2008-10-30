@@ -5,8 +5,14 @@ GIFStego::GIFStego(std::string filename):LSBStegoBusiness(filename)
 }
 
 unsigned int GIFStego::getFreeSpace(){
+	
+ if(imagen.isGrayScale()) std::cout<<"ESCALA DE GRISES"<<std::endl;
+ if(imagen.isAnimated()) std::cout<<"GIF ANIMADOOOO"<<std::endl;
+       		
  if(sort_palette) {
- 	 palette.sortPaletteByDistance();  //dejo todo preparado para realizar luego el lsb
+ 	 //solo ordeno la paleta si se trata de una imagen que no es escala de grises
+ 	 if(!imagen.isGrayScale())
+ 	 	palette.sortPaletteByDistance();  //dejo todo preparado para realizar luego el lsb
      return ( ((imagen.getHeight())*(imagen.getWidth()))/8 );	
  }
     return (imagen.getPaletteSize()*3)/8;	

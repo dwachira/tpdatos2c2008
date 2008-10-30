@@ -6,7 +6,7 @@ BMPStego::BMPStego(std::string filename):LSBStegoBusiness(filename)
 }
 
 unsigned int BMPStego::getFreeSpace(){
- if((imagen.getBpp()<=8)&&(imagen.getColorType()>1))
+ if((imagen.getBpp()<=8)&&(!imagen.isGrayScale()))
    if(sort_palette){ 
    	       palette.sortPaletteByDistance();
    	       return ((imagen.getHeight())*(imagen.getWidth())/8);   	  

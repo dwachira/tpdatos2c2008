@@ -2,16 +2,11 @@
 #define IMAGEPALETTE_H_
 
 #define MAX_DISTANCE 445
-#define RED_LUMINANCE 0.299
-#define GREEN_LUMINANCE 0.587
-#define BLUE_LUMINANCE 0.114
 
 #include <iostream>
-#include <map>
 #include "Pixel.h"
 #include "FIBitmap.h"
 
-#include <math.h>
 #include <vector>
 
 class ImagePalette
@@ -32,7 +27,6 @@ class ImagePalette
 	
 		unsigned int getNewPaletteIndex(unsigned int index);
 		void sortPaletteByDistance();
-		void sortPaletteByLuminance();
 		unsigned int doIndexesLSB(Pixel& pixel,std::string mensaje);		 
 		unsigned int doPaletteLSB(unsigned int first_bit,std::string mensaje);
 		std::string getMessageFromIndexes(Pixel& pixel,unsigned int longitud);

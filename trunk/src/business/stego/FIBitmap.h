@@ -6,6 +6,7 @@
 
 #include <string>
 #include <fstream>
+#include <math.h>
 
 class FIBitmap
 {
@@ -51,6 +52,8 @@ class FIBitmap
 		int applyColorMapping(RGBQUAD *srccolors, RGBQUAD *dstcolors);
 		void applyColorMapping(RGBQUAD *srccolors,unsigned int count,unsigned int from=0);
 		int getPaletteOffset();
+		bool isGrayScale();
+		bool isAnimated();
 		BITMAPINFO* getInfo();
 	
 		bool load(int flag=0);

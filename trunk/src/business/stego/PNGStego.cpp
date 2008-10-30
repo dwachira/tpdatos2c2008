@@ -35,7 +35,7 @@ unsigned int pos_pixel=0;
              
 }
 unsigned int PNGStego::getFreeSpace(){
-	if((imagen.getBpp()<=8)&&(imagen.getColorType()>1))
+	if((imagen.getBpp()<=8)&&(!imagen.isGrayScale()))
        if (sort_palette){
        	    palette.sortPaletteByDistance();
        	    return ((imagen.getHeight())*(imagen.getWidth())/8);

@@ -39,10 +39,9 @@ bool FIBitmap::load(int flag){
        		height=FreeImage_GetHeight(imagen);
        		width=FreeImage_GetWidth(imagen); 
        		color_type=FreeImage_GetColorType(imagen);
-       		palette_size=FreeImage_GetColorsUsed(imagen);
-            palette_offset=getPaletteOffset();
-            std::cout<<"palette_Offset"<<palette_offset<<std::endl;
-       		error=false;
+       		palette_offset=getPaletteOffset();
+            
+            error=false;
   	}else error=true;	
   } else error=true;	
   	
@@ -116,7 +115,7 @@ std::fstream imageFile;
 imageFile.open(filename.c_str(), std::fstream::in |std::fstream::out| std::fstream::binary);
   if(imageFile.is_open()){
   	 
-	 imageFile.seekp(palette_offset);//pos 13/24=comienzo paleta de colores
+	 imageFile.seekp(palette_offset+from*3);//pos 13/24=comienzo paleta de colores
 	 for (unsigned int i=from;i<count;i++){
 	 	 
 	     imageFile.put((char)((int)srccolors[i].rgbRed));
@@ -136,18 +135,33 @@ char byte;
 std::string binario;
 imageFile.open(filename.c_str(), std::fstream::binary);
   if(imageFile.is_open()){ 
-  	 imageFile.seekg(10);//pos 10=bits info paleta
+  	 imageFile.seekg(10);//pos 10=bits info paleta global
   	 imageFile.get(byte); 
 	 byte_int=(int)byte;
 	 if(byte_int<0) byte_int+=256;
 	 
 	 util::BitsUtils::toBase(byte_int,2,binario);
 	 util::BitsUtils::completeNBits(binario,8);
-	  //si el primer bit esta en uno --> paleta global 
+	 //si el primer bit esta en uno --> paleta global 
 	 if(binario.at(0)=='1')
 	    offset=13;
 	 //sino: paleta local
-	 else offset=24;
+	 else{
+	 	  offset=23;
+	      binario="";
+	      imageFile.seekg(22);//pos 22=bits info paleta local
+  	      imageFile.get(byte); 
+	      byte_int=(int)byte;
+	      if(byte_int<0) byte_int+=256;
+	 	  util::BitsUtils::toBase(byte_int,2,binario);
+	 	  util::BitsUtils::completeNBits(binario,8);
+	 }
+	 /*Calculo el tamanio de la paleta de colores*/
+	 /*los bits 5 a 7 guardan el tamanio*/
+	 char* aux;
+	 unsigned int size=strtol((binario.substr(5)).c_str(),&aux,2);
+	 palette_size= pow(2,size+1);//2^(size+1)
+	 std::cout<<"palette_size: "<<palette_size<<std::endl;
      imageFile.close();
   }	
   return offset;
@@ -163,6 +177,28 @@ imageFile.open(filename.c_str(), std::fstream::in |std::fstream::out| std::fstre
      imageFile.put((char)new_index);
      imageFile.close();
   }
+}
+
+bool FIBitmap::isGrayScale(){
+bool gray_scale=true;
+unsigned int i=0;
+
+	if(format==FIF_GIF){
+   		RGBQUAD* pal=getPalette();
+		while((i<palette_size)&&(gray_scale)){
+		   gray_scale=((pal[i].rgbRed==pal[i].rgbGreen)&&(pal[i].rgbRed==pal[i].rgbBlue)&&(pal[i].rgbBlue==pal[i].rgbGreen));
+		   i++;  
+		}
+
+	}else return (color_type<3);
+    return gray_scale;
+
+}
+
+bool FIBitmap::isAnimated(){
+FITAG *tag = NULL;
+  return (FreeImage_FindFirstMetadata(FIMD_ANIMATION,imagen,&tag)!=NULL);
+	
 }
 
 BITMAPINFO* FIBitmap::getInfo(){
