@@ -17,25 +17,6 @@ unsigned int ImagePalette::getNewPaletteIndex(unsigned int index){
  return i;
 }
  
-void ImagePalette::sortPaletteByLuminance(){
-std::vector<double> luminance;
-//map<double, int> map_luminance;
-/*Reordeno la paleta de colores */
-RGBQUAD *palette = imagen.getPalette();
-  if(palette) {
-	 unsigned int palette_size=imagen.getPaletteSize();
-            
-     for (unsigned int i = 0; i < palette_size; i++) {
-     	     
-         luminance.push_back(  RED_LUMINANCE*pow((int)palette[i].rgbRed,2)  +
-                             GREEN_LUMINANCE*pow((int)palette[i].rgbGreen,2)+
-             				  BLUE_LUMINANCE*pow((int)palette[i].rgbBlue,2)
-             				 );
-	
-      }
-  }
-  
-}
  
 void ImagePalette::sortPaletteByDistance(){
 
@@ -61,11 +42,12 @@ if(palette) {
         	 else  distancias[i][j]=0;
            }
        }
-      
+      std::ofstream file("paleta.txt");
      /*Calculo la distancias entre los colores de la paleta*/
      for (unsigned int i = 0; i < palette_size; i++) {
      	if((palette[i].rgbRed==background.rgbRed)&&(palette[i].rgbGreen==background.rgbGreen)&&(palette[i].rgbBlue==background.rgbBlue))
      	    background_index=i;
+     	file<<(int)palette[i].rgbRed<<"-"<<(int)palette[i].rgbGreen<<"-"<<(int)palette[i].rgbBlue<<std::endl;    
         for (unsigned int j = i+1; j < palette_size; j++) {
              red=pow(((int)palette[i].rgbRed-(int)palette[j].rgbRed),2);
              green=pow(((int)palette[i].rgbGreen-(int)palette[j].rgbGreen),2);
@@ -78,7 +60,7 @@ if(palette) {
               }
            }
         }
-           
+           file.close();
      /*Color ordenado por menor distancia*/
      new_palette_indexes.push_back(color_i);
      new_palette_indexes.push_back(color_j);
@@ -112,7 +94,7 @@ if(palette) {
             
         }
       
-        //imagen.applyColorMapping(palette,dstcolors);
+        imagen.applyColorMapping(palette,dstcolors);
         
         /*Ordeno los indices*/
         BYTE srcindices[256];BYTE dstindices[256];
@@ -129,7 +111,6 @@ if(palette) {
    			imagen.setTransparentIndex(getNewPaletteIndex(transparent_index));
 		}	
 	    
-        std::cout<<"Tamaño de la paleta"<<palette_size<<std::endl;
         /*Guardo los cambios en los indices*/
         imagen.save(); 
         /*Guardo los cambios en la paleta de colores*/
@@ -155,8 +136,8 @@ std::string binario,mensaje;
 		  for (unsigned int x = pixel.getPosX(); x < width; x ++){
 		 	   
             if(bits_procesados<longitud){ 
-            	   
-             	   pixel_index=imagen.getPixelIndex(x,y);
+            	   //height-y-1
+             	   pixel_index=imagen.getPixelIndex(x,height-y-1);
              	   util::BitsUtils::toBase((int)pixel_index,2,binario);
                    /*Completo el binario para que sea mas facil el proceso*/
                    util::BitsUtils::completeNBits(binario,8);
@@ -233,7 +214,8 @@ if(palette) {
           if(bits_procesados<mensaje.size()) i++;
        }
        /*Actualizo la paleta de colores para que los cambios se apliquen a la imagen*/
-       imagen.applyColorMapping(palette,first_palette_pos,i);
+       std::cout<<"voy a actualizar desde "<<first_palette_pos<<" hasta "<<i<<std::endl;
+       imagen.applyColorMapping(palette,i+1,first_palette_pos);
        
   }  
 	return bits_procesados+first_pos;
@@ -283,14 +265,15 @@ unsigned int width=imagen.getWidth();
 unsigned int bits_count=0;
  /*Me posiciono desde el comienzo de la imagen*/
 std::string binario;char* aux;
-
+std::ofstream f("Indices.txt");
 for (unsigned int y = pixel.getPosY(); y <height; y ++){
 		  
 	for (unsigned int x = pixel.getPosX(); x < width; x ++){
 		    
          if(bits_procesados<mensaje.size()){ 
-         	pixel_index=imagen.getPixelIndex(x,y);
-            std::cout<<"Pixel_index"<<(int)pixel_index<<std::endl;
+         	//height-y-1
+         	pixel_index=imagen.getPixelIndex(x,height-y-1);
+            f<<"Pixel_index antes"<<(int)pixel_index<<std::endl;
 		    util::BitsUtils::toBase((int)pixel_index,2,binario);
             /*Completo el binario para que sea mas facil el proceso*/
             util::BitsUtils::completeNBits(binario,8);
@@ -299,9 +282,10 @@ for (unsigned int y = pixel.getPosY(); y <height; y ++){
             bits_procesados++;
             bits_count+=8;
             new_pixel_index= (BYTE)strtol(binario.c_str(),&aux,2);	          
+            f<<"Pixel_index despues"<<(int)new_pixel_index<<std::endl;
             binario="";
                                 
-            imagen.setPixelIndex(x,y,&new_pixel_index);
+            imagen.setPixelIndex(x,height-y-1,&new_pixel_index);
              
          }else{ //para terminar el ciclo for 
             	  x=width;

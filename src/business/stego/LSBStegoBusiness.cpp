@@ -6,7 +6,7 @@ LSBStegoBusiness::LSBStegoBusiness(std::string filename):StegoBusiness(filename)
 error(false),enable_bpp(1),imagen(filename),palette(imagen),sort_palette(true)
 {
 	error=imagen.load();
-	if(imagen.getPaletteSize()<256) sort_palette=false;
+	if(imagen.getPaletteSize()<=16) sort_palette=false;
 	std::cout<<imagen.getPaletteSize()<<std::endl;
 }
 
@@ -150,7 +150,7 @@ if(sort_palette) getPixel(first_pos,pixel);
 unsigned int pos=pixel.getNumero_de_bit();
 if(!error){
         
-       if((imagen.getBpp()<=8)&&(imagen.getColorType()>1)){
+       if((imagen.getBpp()<=8)&&(!imagen.isGrayScale())){
            if(sort_palette) last_pos+=palette.doIndexesLSB(pixel,mensaje);
            else last_pos=palette.doPaletteLSB(first_pos,mensaje);    
        }
