@@ -24,7 +24,7 @@ private:
 	static std::string JPG;
 	static std::string PNG;
 	static std::string BMP;
-	static const int EXTENSION_LENGTH = 3;
+	static const unsigned int EXTENSION_LENGTH = 3;
 	void obtenerSiguienteImagen();
 public:
 	DirectorioIteradorImagenes(object::Directorio& dir);

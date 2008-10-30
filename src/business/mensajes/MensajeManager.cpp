@@ -83,7 +83,7 @@ void MensajeManager::agregarMensaje(std::string filename)
 			std::string mensajeComprimido(buffer);
 			std::cout<<mensajeComprimido<<std::endl;
 			std::string tiraDeBits("");
-			for (int i = 0; i < streamsize  ; i++) {
+			for (unsigned int i = 0; i < streamsize  ; i++) {
 				for (int j = 0; j < 8; j++)
 					if ((buffer[i])&(1<<j))
 						tiraDeBits.append("1");
@@ -159,7 +159,7 @@ void MensajeManager::obtenerMensaje(std::string filename, std::string destino)
 		std::cout<<chunk<<std::endl;
 		string encodedMessage("");
 		const char* buffer = chunk.c_str();
-		for (int i = 0; i < chunk.size(); i+=8) {
+		for (unsigned int i = 0; i < chunk.size(); i+=8) {
 			char byte = 0x0;
 			for (int j = 0; j < 7; j++) {
 				if (memcmp(buffer+i+j,"1",1) == 0)
