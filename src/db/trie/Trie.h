@@ -5,7 +5,7 @@
 #include<string>
 
 
-#define RAICES 27
+
 
 using namespace std;
 
@@ -14,9 +14,10 @@ using namespace std;
 
 class Trie{
 private:
-        Nodo raices[RAICES];
+		typedef  Nodo::Collection Collection;
+		Collection raices;
         unsigned int    cantCadena;
-        
+
         Nodo* getInicio(char caracter);
         static string getSubstring(string s);
         bool insertCadenaSubLevel(Nodo* nodo, string cadena , unsigned int indice );
@@ -37,14 +38,14 @@ public:
 
         /** Indicar si existe la cadena. Si existe retornar true, si no false*/
         bool existCadena( string cadena );
-        
+
         /*- Retornar el indice de la cadena, si no existe retornar 0*/
         unsigned int getIndice( string cadena );
 
-       
+
         /** Eliminar la cadena del Trie si existe retornar True, sino false*/
         bool deleteCadena( string cadena );
-        
+
         /** Imprimir el trie por pantalla*/
         void  printTrie();
 
