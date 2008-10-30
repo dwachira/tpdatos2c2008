@@ -219,12 +219,28 @@ Mensaje MensajeDAO::getMsjById(unsigned int newID){
 	free(buffer);
 	return msj;
 }
+/*
+void MensajeDAO::openStream(){
 
+	this->stream->abrir(READ);
+	this->stream->seek_beg();
+}
+
+unsigned long int MensajeDAO::leerProximo(string* cadena){
+
+	return this->stream->leerProximo(cadena);
+}
+
+void MensajeDAO::closeStream(){
+
+	this->stream->cerrar();
+}
+*/
 
 /*******************************************************
  * METODOS PRIVADOS
  *******************************************************/
-
+/*
 unsigned long int MensajeDAO::guardarNombre(string nombre){
 
 	bool open = this->stream->abrir(WRITE);
@@ -248,7 +264,7 @@ string MensajeDAO::recuperarNombre(unsigned long int offset){
 
 	return nombre;
 }
-
+*/
 REG_MSJ* MensajeDAO::aStruct(Mensaje msj, unsigned long int offset_nombre){
 
 	REG_MSJ* buffer = new REG_MSJ();

@@ -12,8 +12,8 @@
 #include "../db/file/StreamVariable.h"
 #include "../db/file/Indice.h"
 #include "../db/file/AVL.h"
-
 #include "../object/Imagen.h"
+#include "DAO.h"
 #include <vector>
 #include <list>
 using namespace std;
@@ -31,7 +31,7 @@ typedef struct{
 }REG_IMG;
 
 
-class ImagenDAO{
+class ImagenDAO : public DAO{
 
 	private:
 
@@ -40,7 +40,7 @@ class ImagenDAO{
 		Indice*						index_Directorio;
 
 		StreamFijo*					archivo;
-		StreamVariable*				stream;
+//		StreamVariable*				stream;
 
 		AVL*						arbol;
 		unsigned int				minID;
@@ -52,14 +52,14 @@ class ImagenDAO{
 		 * Se almcena el nombre de la imagen, que es la parte de longitud
 		 * variable, en un archivo aparte y se recupera el offset
 		 */
-		unsigned long int guardarNombre(string nombre);
+//		unsigned long int guardarNombre(string nombre);
 
 		/*
 		 * A partir del offset recuperado con la funcion anterior, y que fue
 		 * almacenado en el indice junto con los demas datos de longitud fija,
 		 * se puede recuperar del stream de regs de long variable, el nombre
 		 */
-		string recuperarNombre(unsigned long int offset);
+//		string recuperarNombre(unsigned long int offset);
 
 		/*
 		 * Transformacion a struct de una instancia de clase 'Imagen'
@@ -130,6 +130,12 @@ class ImagenDAO{
 		 */
 		list<Imagen> getImgsSortedByEspacioLibre();
 
+
+		//FUNCIONES PARA UTILIZAR EN EL TRIEDAO. MANEJO DE REGS DE LONG VARIABLE
+
+//		void openStream();
+//		unsigned long int leerProximo(string* cadena);
+//		void closeStream();
 };
 
 }

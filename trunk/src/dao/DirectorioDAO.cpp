@@ -44,7 +44,7 @@ bool DirectorioDAO::insert(Directorio& dir){
 
 	//almaceno el nombre en el stream que maneja registros de longitud
 	//variable y recupero el offset de insercion
-	unsigned long int offset_path = guardarPath(dir.getPath());
+	unsigned long int offset_path = guardarNombre(dir.getPath());
 	//si devuelve 0, indica que no pudo almacenar la informacion
 	if(offset_path == 0)
 		return false;
@@ -234,7 +234,7 @@ Directorio* DirectorioDAO::getDirById(unsigned int newID){
 	this->archivo->leer(buffer, reg.getOffset());
 	this->archivo->cerrar();
 
-	string nombre = this->recuperarPath(buffer->offset_path);
+	string nombre = this->recuperarNombre(buffer->offset_path);
 	Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
 			buffer->hora,buffer->min);
 	Directorio* dir = new Directorio(nombre,lastModification);
@@ -251,7 +251,7 @@ list<Directorio> DirectorioDAO::getDirsSortedByFechaModif(){
 	this->archivo->abrir(READ);
 	for(unsigned int i=0; i<resultados.size(); i++){
 		this->archivo->leer(buffer, resultados[i].getOffset());
-		string nombre = this->recuperarPath(buffer->offset_path);
+		string nombre = this->recuperarNombre(buffer->offset_path);
 		Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
 				buffer->hora,buffer->min);
 		Directorio* dir = new Directorio(nombre,lastModification);
@@ -264,12 +264,28 @@ list<Directorio> DirectorioDAO::getDirsSortedByFechaModif(){
 
 	return lista;
 }
+/*
+void DirectorioDAO::openStream(){
 
+	this->stream->abrir(READ);
+	this->stream->seek_beg();
+}
+
+unsigned long int DirectorioDAO::leerProximo(string* cadena){
+
+	return this->stream->leerProximo(cadena);
+}
+
+void DirectorioDAO::closeStream(){
+
+	this->stream->cerrar();
+}
+*/
 
 /*******************************************************
  * METODOS PRIVADOS
  *******************************************************/
-
+/*
 unsigned long int DirectorioDAO::guardarPath(string nombre){
 
 	bool open = this->stream->abrir(WRITE);
@@ -293,7 +309,7 @@ string DirectorioDAO::recuperarPath(unsigned long int offset){
 
 	return nombre;
 }
-
+*/
 REG_DIR* DirectorioDAO::aStruct(const Directorio& dir, unsigned long int offset_path){
 
 	REG_DIR* buffer = new REG_DIR();

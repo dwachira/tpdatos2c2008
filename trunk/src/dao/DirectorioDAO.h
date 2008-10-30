@@ -11,8 +11,8 @@
 #include "../db/file/StreamFijo.h"
 #include "../db/file/StreamVariable.h"
 #include "../db/file/Indice.h"
-
 #include "../object/Directorio.h"
+#include "DAO.h"
 #include <vector>
 #include <list>
 using namespace std;
@@ -31,7 +31,7 @@ typedef struct{
 }REG_DIR;
 
 
-class DirectorioDAO{
+class DirectorioDAO : public DAO{
 
 	private:
 
@@ -39,7 +39,7 @@ class DirectorioDAO{
 		Indice*						index_FechaModif;
 
 		StreamFijo*					archivo;
-		StreamVariable*				stream;
+//		StreamVariable*				stream;
 
 		static int incrementalId;
 
@@ -47,14 +47,14 @@ class DirectorioDAO{
 		 * Se almcena el path del directorio, que es la parte de longitud
 		 * variable, en un archivo aparte y se recupera el offset
 		 */
-		unsigned long int guardarPath(string nombre);
+//		unsigned long int guardarPath(string nombre);
 
 		/*
 		 * A partir del offset recuperado con la funcion anterior, y que fue
 		 * almacenado en el indice junto con los demas datos de longitud fija,
 		 * se puede recuperar del stream de regs de long variable, el path
 		 */
-		string recuperarPath(unsigned long int offset);
+//		string recuperarPath(unsigned long int offset);
 
 		/*
 		 * Transformacion a struct de una instancia de clase 'Directorio'
@@ -116,6 +116,13 @@ class DirectorioDAO{
 		list<Directorio> getDirsSortedByFechaModif();
 
 //podria hacerse un get por fecha de moficacion, pero no le veo sentido aun
+
+
+		//FUNCIONES PARA UTILIZAR EN EL TRIEDAO. MANEJO DE REGS DE LONG VARIABLE
+
+//		void openStream();
+//		unsigned long int leerProximo(string* cadena);
+//		void closeStream();
 };
 
 }
