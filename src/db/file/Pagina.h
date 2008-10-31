@@ -16,7 +16,7 @@
  */
 
 #ifndef MAX_REGS_PAGINA
-#define MAX_REGS_PAGINA 16		//cantidad de RegPagina por Pagina
+#define MAX_REGS_PAGINA 100		//cantidad de RegPagina por Pagina
 #endif							//CREO QUE DEBE SER PAR PARA QUE NO HAYA PROBLEMAS
 
 #include "RegPagina.h"
