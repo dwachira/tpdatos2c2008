@@ -73,19 +73,7 @@ bool ParticionDAO::insert(Particion part){
 	if(buffer->libre){
 		double claveCompuestaLibres = StringUtils::concat
 											(buffer->posicion,buffer->longitud);
-
 		this->index_Libres->insertar(claveCompuestaLibres, offset_registro);
-	}
-
-	//si lo que inserte iba dentro de la pagina que se mantiene en buffer, la
-	//vuelvo a cargar despues de la insercion.
-	if((claveCompuestaPrim >= this->minID) && (claveCompuestaPrim <= this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveCompuestaPrim);
-		this->arbol.ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
 	}
 
 	free(buffer);
@@ -94,25 +82,28 @@ bool ParticionDAO::insert(Particion part){
 
 void ParticionDAO::borrar(unsigned int img, unsigned int txt, unsigned int pos){
 
+	//obtengo la pag candidata
 	double claveBuscada = StringUtils::concat(img,txt,pos);
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((claveBuscada < this->minID) || (claveBuscada > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol.ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;									//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){			//por una busqueda binaria
+		if(candidata[i].getID() == claveBuscada)		//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > claveBuscada)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
 	}
+	/********************************************/
 
-	if(arbol.Buscar(claveBuscada)){
+	if(encontrado){
 
-		RegPagina reg = this->arbol.ValorActual();
+		RegPagina reg = candidata[i];
 
 		//recupero la informacion almacenada, requerido para poder dar de baja un indice
 		REG_PART* buffer = new REG_PART();
@@ -127,18 +118,12 @@ void ParticionDAO::borrar(unsigned int img, unsigned int txt, unsigned int pos){
 
 		//doy de baja el registro de los indices
 		this->index_Prim->eliminar(claveBuscada);
-		this->index_Img->eliminar((double) img);
-		this->index_Txt->eliminar((double) txt);
-		if(buffer->libre)
-			this->index_Libres->eliminar(StringUtils::concat
-									(buffer->posicion,buffer->longitud));
-
-		//cargo la nueva pagina del indice, ya que sufrio modificaciones
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol.ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+		this->index_Img->eliminar((double) img, reg.getOffset());
+		this->index_Txt->eliminar((double) txt, reg.getOffset());
+		if(buffer->libre){
+			double claveCompLibres = StringUtils::concat(buffer->posicion,buffer->longitud);
+			this->index_Libres->eliminar(claveCompLibres, reg.getOffset());
+		}
 	}
 }
 
@@ -148,25 +133,28 @@ void ParticionDAO::borrar(Particion part){
 	unsigned int txt = part.getID_Txt();
 	unsigned int pos = part.getPosicion();
 
+	//obtengo la pag candidata
 	double claveBuscada = StringUtils::concat(img,txt,pos);
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((claveBuscada < this->minID) || (claveBuscada > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol.ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;									//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){			//por una busqueda binaria
+		if(candidata[i].getID() == claveBuscada)		//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > claveBuscada)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
 	}
+	/********************************************/
 
-	if(arbol.Buscar(claveBuscada)){
+	if(encontrado){
 
-		RegPagina reg = this->arbol.ValorActual();
+		RegPagina reg = candidata[i];
 
 		//elimino del archivo de datos
 		this->archivo->abrir(DELETE);
@@ -175,89 +163,90 @@ void ParticionDAO::borrar(Particion part){
 
 		//doy de baja el registro de los indices
 		this->index_Prim->eliminar(claveBuscada);
-		this->index_Img->eliminar((double) img);
-		this->index_Txt->eliminar((double) txt);
-		if(part.isLibre())
-			this->index_Libres->eliminar(StringUtils::concat
-								(part.getPosicion(), part.getLongitud()));
-
-		//cargo la nueva pagina del indice, ya que sufrio modificaciones
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol.ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+		this->index_Img->eliminar((double) img, reg.getOffset());
+		this->index_Txt->eliminar((double) txt, reg.getOffset());
+		if(part.isLibre()){
+			double claveCompLibres = StringUtils::concat(part.getPosicion(), part.getLongitud());
+			this->index_Libres->eliminar(claveCompLibres, reg.getOffset());
+		}
 	}
 }
 
 bool ParticionDAO::liberar(unsigned int img, unsigned int txt, unsigned int pos){
 
+	//obtengo la pag candidata
 	double claveBuscada = StringUtils::concat(img,txt,pos);
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((claveBuscada < this->minID) || (claveBuscada > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol.ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;									//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){			//por una busqueda binaria
+		if(candidata[i].getID() == claveBuscada)		//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > claveBuscada)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
 	}
+	/********************************************/
 
-	if(! arbol.Buscar(claveBuscada))
+	if(! encontrado)
 		return false;
 
-	RegPagina reg = this->arbol.ValorActual();
-
+	RegPagina reg = candidata[i];
 	REG_PART* buffer = new REG_PART();
 	this->archivo->abrir(READ);
 	this->archivo->leer(buffer, reg.getOffset());
 	this->archivo->cerrar();
 
-	//recupero la longitud, necesario para dar de baja del indice, actualizo
+	//si el registro esta libre, devuelvo error, porque deberia estar ocupado
+	if(buffer->libre)
+		return false;
+
+	//recupero la longitud, necesario para dar insertar en el indice, actualizo
 	//el valor de estado y sobreescribo en el archivo
 	unsigned int longitud = buffer->longitud;
-	buffer->libre = false;
+	buffer->libre = true;
 	this->archivo->abrir(UPDATE);
 	this->archivo->actualizar(buffer, reg.getOffset());
 	this->archivo->cerrar();
 
 	double claveCompuestaLibres = StringUtils::concat(pos,longitud);
-	this->index_Libres->eliminar(claveCompuestaLibres);
+	this->index_Libres->insertar(claveCompuestaLibres, reg.getOffset());
 
 	return true;
 }
 
 Particion ParticionDAO::getPartByImgTxtPos(unsigned int newImg, unsigned int newTxt, unsigned int newPos){
 
+	//obtengo la pag candidata
 	double claveBuscada = StringUtils::concat(newImg,newTxt,newPos);
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((claveBuscada < this->minID) || (claveBuscada > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol.ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;									//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){			//por una busqueda binaria
+		if(candidata[i].getID() == claveBuscada)		//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > claveBuscada)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
 	}
+	/********************************************/
 
-	bool buscar = arbol.Buscar(claveBuscada);
-
-	if(!buscar){		//si no lo encontro, no existe en el indice
+	if(! encontrado){		//si no lo encontro, no existe en el indice
 		Particion partic(0,0,0,0,0,false);
 		return partic;
 	}
 
-	RegPagina reg = this->arbol.ValorActual();
+	RegPagina reg = candidata[i];
 
 	REG_PART* buffer = new REG_PART();
 	this->archivo->abrir(READ);
