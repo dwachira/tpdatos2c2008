@@ -14,6 +14,7 @@
 #include "../db/file/AVL.h"
 #include "../object/Mensaje.h"
 #include "DAO.h"
+#include <stdlib.h>
 #include <vector>
 using namespace std;
 using namespace object;
@@ -36,7 +37,7 @@ class MensajeDAO : public DAO{
 		Indice*						index_Tamanio;
 
 		StreamFijo*					archivo;
-//		StreamVariable*				stream;
+//		StreamVariable*				stream;		-> en clase DAO
 
 		AVL*						arbol;
 		unsigned int				minID;
@@ -46,14 +47,14 @@ class MensajeDAO : public DAO{
 		 * Se almcena el nombre del mensaje, que es la parte de longitud
 		 * variable, en un archivo aparte y se recupera el offset
 		 */
-//		unsigned long int guardarNombre(string nombre);
+//		unsigned long int guardarNombre(string nombre);		-> en clase DAO
 
 		/*
 		 * A partir del offset recuperado con la funcion anterior, y que fue
 		 * almacenado en el indice junto con los demas datos de longitud fija,
 		 * se puede recuperar del stream de regs de long variable, el nombre
 		 */
-//		string recuperarNombre(unsigned long int offset);
+//		string recuperarNombre(unsigned long int offset);		-> en clase DAO
 
 		/*
 		 * Transformacion a struct de una instancia de clase 'Mensaje'
@@ -99,13 +100,6 @@ class MensajeDAO : public DAO{
 		Mensaje getMsjById(unsigned int newID);
 
 //podria usarse un indice por tamanio de mensaje. aun no le encuentro utilidad
-
-
-		//FUNCIONES PARA UTILIZAR EN EL TRIEDAO. MANEJO DE REGS DE LONG VARIABLE
-
-//		void openStream();
-//		unsigned long int leerProximo(string* cadena);
-//		void closeStream();
 };
 
 }

@@ -15,6 +15,7 @@
 #include "../util/string/StringUtils.h"
 #include <vector>
 #include <list>
+#include <stdlib.h>
 using namespace std;
 using namespace util;
 using namespace object;

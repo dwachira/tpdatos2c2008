@@ -60,12 +60,12 @@ void MensajeManager::agregarMensaje(std::string filename)
 	//volver a calcular el espacio disponible
 
 	if (espacioDisponible > tamanioMensaje) {
-		Mensaje mensaje;
-		//TODO::REMOVE SETID
-		mensaje.setID(0);
-		mensaje.setNombre(filename);
-		mensaje.setTamanio(tamanioMensaje);
-		mensaje.setCant_partes(imagenesSeleccionadas.size());
+		Mensaje mensaje(filename,tamanioMensaje,imagenesSeleccionadas.size());
+
+//		mensaje.setID(0);
+//		mensaje.setNombre(filename);
+//		mensaje.setTamanio(tamanioMensaje);
+//		mensaje.setCant_partes(imagenesSeleccionadas.size());
 
 		mensajeDao.insert(mensaje);
 

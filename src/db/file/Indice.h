@@ -111,6 +111,15 @@ class Indice{
 		void eliminar(double clave);
 
 		/*
+		 * Elimina de un indice secundario una unica ocurrencia de una clave.
+		 * Se recupera el offset leyendo como si se recuperara el registro, y
+		 * luego se va comparando todos los registros con la clave deseada contra
+		 * el offset recuperado. Aquel que posea ese offset, que ademas sera
+		 * uno solo, se da de baja.
+		 */
+		void eliminar(double clave, unsigned int offset);
+
+		/*
 		 * Inserta el dato en el indice manteniendo el orden
 		 */
 		bool insertar(double clave, unsigned long int offset);

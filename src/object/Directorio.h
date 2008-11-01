@@ -11,6 +11,7 @@
 
 #include <string>
 #include "../util/date/Date.h"
+using namespace std;
 
 namespace object{
 
@@ -19,25 +20,30 @@ class Directorio{
 	private:
 
 		unsigned int ID;
-		std::string path;
+		string path;
 		util::Date* fechaUltimaModificacion;
+
+		static unsigned int incrementalId;
+
+		unsigned int getNewId(){return ++incrementalId;}
 
 
 	public:
 
-		Directorio(std::string newPath);
-		Directorio(std::string newPath, util::Date* ultimaModificacion): path(newPath),
-			fechaUltimaModificacion(ultimaModificacion) {}
+		Directorio(string newPath);
+		Directorio(string newPath, util::Date* ultimaModificacion);
+		Directorio(unsigned int newId, string newPath, util::Date* ultimaModificacion);
 		~Directorio();
+
+		static unsigned int getLastAssignedId(){return incrementalId;}
 
 		unsigned int getID() const {return ID;}
 		void setID(unsigned int newID)	{this->ID = newID;}
 
-		std::string getPath() const {return path;}
-		void setPath(std::string newPath) {this->path = newPath;}
+		string getPath() const {return path;}
+		void setPath(string newPath) {this->path = newPath;}
 
-	    util::Date getFechaUltimaModificacion() const
-							{return *fechaUltimaModificacion;}
+	    util::Date getFechaUltimaModificacion() const {return *fechaUltimaModificacion;}
 	    void setFechaUltimaModificacion(util::Date* ultimaModificacion)
 							{this->fechaUltimaModificacion = ultimaModificacion;}
 };

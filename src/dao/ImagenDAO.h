@@ -14,6 +14,7 @@
 #include "../db/file/AVL.h"
 #include "../object/Imagen.h"
 #include "DAO.h"
+#include <stdlib.h>
 #include <vector>
 #include <list>
 using namespace std;
@@ -25,6 +26,7 @@ typedef struct{
 	unsigned int ID;
 	unsigned int ID_Dir;
 	unsigned long int offset_nombre;
+	unsigned int prox_bit_libre;
 	unsigned int tamanio;
 	unsigned int espacio_libre;
 	unsigned long int hash_value;
@@ -40,26 +42,21 @@ class ImagenDAO : public DAO{
 		Indice*						index_Directorio;
 
 		StreamFijo*					archivo;
-//		StreamVariable*				stream;
+//		StreamVariable*				stream;		-> en clase DAO
 
-		AVL*						arbol;
-		unsigned int				minID;
-		unsigned int				maxID;
-
-		static int incrementalId;
 
 		/*
 		 * Se almcena el nombre de la imagen, que es la parte de longitud
 		 * variable, en un archivo aparte y se recupera el offset
 		 */
-//		unsigned long int guardarNombre(string nombre);
+//		unsigned long int guardarNombre(string nombre);		-> en clase DAO
 
 		/*
 		 * A partir del offset recuperado con la funcion anterior, y que fue
 		 * almacenado en el indice junto con los demas datos de longitud fija,
 		 * se puede recuperar del stream de regs de long variable, el nombre
 		 */
-//		string recuperarNombre(unsigned long int offset);
+//		string recuperarNombre(unsigned long int offset);		-> en clase DAO
 
 		/*
 		 * Transformacion a struct de una instancia de clase 'Imagen'
@@ -70,14 +67,6 @@ class ImagenDAO : public DAO{
 
 		ImagenDAO();
 		~ImagenDAO();
-
-		int getLastAssignedId() {
-			return incrementalId;
-		}
-
-		int getNewId() {
-			return ++incrementalId;
-		}
 
 		/*
 		 * Se inserta el nombre de la imagen en el archivo para regs de long
@@ -105,6 +94,7 @@ class ImagenDAO : public DAO{
 		bool updateEspacioLibre(unsigned int ID, unsigned int newEspacioLibre);
 		bool updateDirectorio(unsigned int ID, unsigned int newId_Dir);
 		bool updateHashValue(unsigned int ID, unsigned long int newHashValue);
+		bool updateProxBitLibre(unsigned int ID, unsigned int newProxBitLibre);
 		bool updateNombre(unsigned int ID, string newNombre);
 
 		/*
@@ -123,19 +113,11 @@ class ImagenDAO : public DAO{
 		list<Imagen> getImgsByDirectorio(unsigned int newID_Dir);
 
 		/*
-		 * Se obtienen TODOS los registros del indice ordenados por el
-		 * espacio libre disponible. Se devuelven en una lista donde el primer
-		 * elemento es el que tiene mas espacio libre.
-		 * NOTA: todos los devueltos tienen espacio libre.
+		 * Se obtienen TODOS los registros del indice que tienen espacio libre
+		 * ordenados en forma descendente. Se devuelven en una lista donde el
+		 * primer elemento es el que tiene mas espacio libre.
 		 */
 		list<Imagen> getImgsSortedByEspacioLibre();
-
-
-		//FUNCIONES PARA UTILIZAR EN EL TRIEDAO. MANEJO DE REGS DE LONG VARIABLE
-
-//		void openStream();
-//		unsigned long int leerProximo(string* cadena);
-//		void closeStream();
 };
 
 }

@@ -220,4 +220,13 @@ int StringUtils::compare(string s1, string s2)
     return 1;
   else return 0;
 }
+
+string StringUtils::toString(double input){
+	stringstream converter;
+	string ret;
+	converter << input;
+	converter >> ret;
+	return ret;
+}
+
 }

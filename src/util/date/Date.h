@@ -12,6 +12,7 @@
 
 #include <sstream>
 #include <ostream>
+#include "../string/StringUtils.h"
 
 namespace util
 {
@@ -28,6 +29,9 @@ private:
 public:
 	static Date* valueOf(unsigned int day, unsigned int month, unsigned int year,
 			unsigned int hour, unsigned int minute);
+
+	static double concatFecha(unsigned int anio, unsigned int mes, unsigned int dia,
+											unsigned int hora, unsigned int minutos);
 
 	Date(const Date& anotherDate) {
 		this->minute = anotherDate.minute;

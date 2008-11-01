@@ -5,7 +5,6 @@
  *      Author: andres
  */
 #include "ParticionDAO.h"
-#include <stdlib.h>
 
 namespace dao {
 
@@ -15,12 +14,12 @@ namespace dao {
 
 ParticionDAO::ParticionDAO(){
 
-	this->index_Prim = new Indice(__BASE_DIR__"/INDEX_PART_Prim.idx", false);
-	this->index_Img = new Indice(__BASE_DIR__"/INDEX_PART_Img.idx", true);
-	this->index_Txt = new Indice(__BASE_DIR__"/INDEX_PART_Txt.idx", true);
-	this->index_Libres = new Indice(__BASE_DIR__"/INDEX_PART_Lib.idx", true);
+	this->index_Prim = new Indice("INDEX_PART_Prim.idx", false);
+	this->index_Img = new Indice("INDEX_PART_Img.idx", true);
+	this->index_Txt = new Indice("INDEX_PART_Txt.idx", true);
+	this->index_Libres = new Indice("INDEX_PART_Lib.idx", true);
 
-	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_PART.str", sizeof(REG_PART));
+	this->archivo = new StreamFijo("STREAMFIJO_PART.str", sizeof(REG_PART));
 }
 
 ParticionDAO::~ParticionDAO(){
@@ -126,13 +125,6 @@ void ParticionDAO::borrar(unsigned int img, unsigned int txt, unsigned int pos){
 		this->archivo->borrar(reg.getOffset());
 		this->archivo->cerrar();
 
-		//cargo la nueva pagina del indice, ya que sufrio modificaciones
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol.ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
-
 		//doy de baja el registro de los indices
 		this->index_Prim->eliminar(claveBuscada);
 		this->index_Img->eliminar((double) img);
@@ -140,6 +132,13 @@ void ParticionDAO::borrar(unsigned int img, unsigned int txt, unsigned int pos){
 		if(buffer->libre)
 			this->index_Libres->eliminar(StringUtils::concat
 									(buffer->posicion,buffer->longitud));
+
+		//cargo la nueva pagina del indice, ya que sufrio modificaciones
+		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
+		this->arbol.ArmarArbol(candidata);
+		//actualizo los limites del arbol
+		this->minID = candidata[0].getID();
+		this->maxID = candidata[candidata.size()-1].getID();
 	}
 }
 
@@ -174,13 +173,6 @@ void ParticionDAO::borrar(Particion part){
 		this->archivo->borrar(reg.getOffset());
 		this->archivo->cerrar();
 
-		//cargo la nueva pagina del indice, ya que sufrio modificaciones
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
-		this->arbol.ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
-
 		//doy de baja el registro de los indices
 		this->index_Prim->eliminar(claveBuscada);
 		this->index_Img->eliminar((double) img);
@@ -188,6 +180,13 @@ void ParticionDAO::borrar(Particion part){
 		if(part.isLibre())
 			this->index_Libres->eliminar(StringUtils::concat
 								(part.getPosicion(), part.getLongitud()));
+
+		//cargo la nueva pagina del indice, ya que sufrio modificaciones
+		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(claveBuscada);
+		this->arbol.ArmarArbol(candidata);
+		//actualizo los limites del arbol
+		this->minID = candidata[0].getID();
+		this->maxID = candidata[candidata.size()-1].getID();
 	}
 }
 

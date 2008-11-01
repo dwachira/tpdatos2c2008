@@ -91,12 +91,13 @@ void DirectorioManager::buscarImagenes(Directorio& directorio) const
 			StegoBusiness* stego = StegoFactory::newInstance(fullFileName);
 			if (stego != NULL) {
 				lstat(fullFileName.data(),&fileStats);
-				Imagen imagen;
-				imagen.setTamanio(fileStats.st_size);
-				imagen.setNombre(fullFileName);
-				imagen.setID_Dir(directorio.getID());
-				imagen.setEspacio_libre(stego->getFreeSpace());
-				imagen.setProximo_bit_libre(stego->getFirstFreeBit());
+				Imagen imagen(directorio.getID(),stego->getFreeSpace(),
+							stego->getFirstFreeBit(),0,fileStats.st_size,fullFileName);
+//				imagen.setTamanio(fileStats.st_size);
+//				imagen.setNombre(fullFileName);
+//				imagen.setID_Dir(directorio.getID());
+//				imagen.setEspacio_libre(stego->getFreeSpace());
+//				imagen.setProximo_bit_libre(stego->getFirstFreeBit());
 				imagenDAO.insert(imagen);
 				delete stego;
 			}
@@ -109,7 +110,8 @@ void DirectorioManager::buscarImagenes(Directorio& directorio) const
 std::list<Directorio*> business::DirectorioManager::getDirectorios() const
 {
 	list<Directorio*> directorios;
-	for (int i = 1; i <= directorioDAO.getLastAssignedId(); i++)
+//	for (int i = 1; i <= directorioDAO.getLastAssignedId(); i++)
+	for (unsigned int i = 1; i <= object::Directorio::getLastAssignedId(); i++)
 		directorios.push_back(directorioDAO.getDirById(i));
 	return directorios;
 }

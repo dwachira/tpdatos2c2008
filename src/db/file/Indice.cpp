@@ -112,6 +112,84 @@ void Indice::eliminar(double clave){
 	}
 }
 
+void Indice::eliminar(double clave, unsigned int offset){
+
+	if(this->cantPaginas > 0){
+		vector<RegPagina> candidata = this->getPaginaCandidata(clave);
+		if(candidata.size() > 0){
+			bool claveBuscada = false;
+			bool offsetBuscado = false;
+			bool salir = false;
+			int i = 0;
+			//voy a recorrer la pagina candidata, que es la actual, buscando un registro
+			//con la clave y el offset recibidos por parametro
+			while(!salir && !claveBuscada && !offsetBuscado && i < this->pActual->getCantReg()){
+				//salteo todos los registros del principio hasta la 1er ocurrencia de la clave
+				while(!claveBuscada && i < this->pActual->getCantReg()){
+					if(this->pActual->registros[i].getID() == clave)
+						claveBuscada = true;		//la clave coincide, empieza la lista
+					else
+						i++;
+				}
+				//ahora recorro los de clave deseada buscando aquel con el offset deseado
+				//si no encontro nada, va a salir porque el contador se excedio y va a terminar
+				//la ejecucion de la funcion
+				if(claveBuscada){
+					while(claveBuscada && !offsetBuscado && i < this->pActual->getCantReg()){
+						if(this->pActual->registros[i].getID() != clave)
+							claveBuscada = false;		//termino la lista con claves deseadas y
+						else{							//el offset deseado no estaba
+							if(this->pActual->registros[i].getOffset() == offset)
+								offsetBuscado = true;		//coincide el offset, encontre el registro
+							else
+								i++;
+						}
+					}
+					if(!claveBuscada)		//es el caso en que recorrio toda la secuencia con las
+						salir = true;		//claves deseadas, pero ningun registro tenia el offset
+					else if(!offsetBuscado){			//es el caso que llego al final de la pagina
+							claveBuscada = false;		//viendo las claves deseadas, pero no encontro
+							i = 0;						//el offset. Entonces cargo la pag siguiente
+							this->cargarPagina(this->pActual->getIDPagSig());
+					}
+				}
+			}
+			if(claveBuscada && offsetBuscado){
+				this->pActual->eliminar(clave, offset);
+				if(this->pActual->getCantReg() == 0){
+					//recupero la siguiente y la anterior
+					Pagina pAntAux;
+					Pagina pSigAux;
+					this->archivo->abrir(READ);
+					this->archivo->leer(&pAntAux, this->pActual->getIDPagAnt());
+					this->archivo->leer(&pSigAux, this->pActual->getIDPagSig());
+					this->archivo->cerrar();
+
+					//corrigo los enlaces y guardo a disco
+					pAntAux.setIDPagSig(pSigAux.getIDPagina());
+					pSigAux.setIDPagAnt(pAntAux.getIDPagina());
+					this->archivo->abrir(UPDATE);
+					this->archivo->actualizar(&pAntAux,pAntAux.getIDPagina());
+					this->archivo->actualizar(&pSigAux,pSigAux.getIDPagina());
+					this->archivo->cerrar();
+
+					//borro la que quedo vacia y cargo la siguiente porque el
+					//indicador quedo invalido al borrar la pagina vacia
+					this->archivo->abrir(DELETE);
+					this->archivo->borrar(this->pActual->getIDPagina());
+					this->archivo->cerrar();
+					this->cargarPagina(pSigAux.getIDPagina());
+				}
+				else{	//sino, guardo la pagina a disco
+					this->archivo->abrir(UPDATE);
+					this->archivo->actualizar(this->pActual, this->pActual->getIDPagina());
+					this->archivo->cerrar();
+				}
+			}
+		}
+	}
+}
+
 bool Indice::insertar(double clave, unsigned long int offset){
 
 	Pagina pAux;
@@ -292,6 +370,19 @@ void Indice::cargarPagina(unsigned long int ID_pagina){
 
 bool Indice::contieneDato(double clave){
 
+	bool encontrado = false;
+	int i = 0;
+	while(!encontrado && i<this->pActual->getCantReg()){
+		if(this->pActual->registros[i].getID() == clave)
+			encontrado = true;
+		else
+			i++;
+	}
+	return encontrado;
+	/*
+	for(int i=0; i<this->pActual->getCantReg(); i++)
+		vector.push_back(this->pActual->registros[i]);
+
 	AVL* arbol = new AVL();
 	vector<RegPagina> vector;
 	vector.clear();
@@ -299,7 +390,7 @@ bool Indice::contieneDato(double clave){
 	vector = this->armarVector();
 	arbol->ArmarArbol(vector);
 	return (arbol->Buscar(clave));
-	/*
+	*//*
 	bool encontrado = false;
 	int	pos = 0;
 
