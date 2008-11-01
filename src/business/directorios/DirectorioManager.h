@@ -12,6 +12,7 @@
 #include "../../object/Directorio.h"
 #include "DirectorioIteradorImagenes.h"
 #include "../../dao/manager/ManagerDAO.h"
+#include "../../dao/TrieDAO.h"
 
 namespace business {
 
@@ -21,19 +22,36 @@ private:
 	dao::DirectorioDAO& directorioDAO;
 	dao::ImagenDAO& imagenDAO;
 	dao::ParticionDAO& particionDAO;
+	dao::TrieDAO& trieDao;
 	void accederDirectorio(std::string path) const;
 public:
-	DirectorioManager(dao::ManagerDAO& manager) : directorioDAO(manager.getDirectorioDAO()),
-		imagenDAO(manager.getImagenDAO()), particionDAO(manager.getParticionDAO()) {}
+	DirectorioManager(dao::ManagerDAO& manager, dao::TrieDAO& trie) : directorioDAO(manager.getDirectorioDAO()),
+		imagenDAO(manager.getImagenDAO()), particionDAO(manager.getParticionDAO()), trieDao(trie) {}
+
+	/*@throws RecursoInaccesibleException, EntidadYaExistenteException */
+	void agregarDirectorio(const std::string path);
+
+	/**Agrega la imagen en la base de datos con todos los datos necesarios**/
+	/**Devuelve true si pudo y false si no.**/
+	bool agregarImagenEnDirectorio(Directorio& directorio, std::string filename) const;
+
+	/*@throws RecursoInexistenteException*/
+	bool directorioEnUso(std::string path) const;
 
 	/*@throws DirectoryAccessException */
-	void agregarDirectorio(const std::string path) const;
+	void actualizarFechaDeModificacion(Directorio& directorio);
 
-	bool directorioEnUso(const Directorio& directory) const;
+	/**
+	 * Remueve el directorio y sus respectivas imagenes asociadas de la base de datos.
+	 * @throws RecursoInaccesibleException
+	 */
+	void removerDirectorio(std::string path) const;
 
-	void removerDirectorio(const long id) const;
+	DirectorioDAO& getDirectorioDao() const {
+		return directorioDAO;
+	}
 
-	/*@throws DirectoryAccessException */
+	/*@throws RecursoInaccesibleException */
 	DirectorioIteradorImagenes obtenerIteradorDeImagenes(Directorio& directorio) const;
 
 	std::list<Directorio*> getDirectorios() const;

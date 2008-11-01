@@ -54,6 +54,10 @@ class Particion{
 		void liberar() {this->libre = false;}
 		void ocupar() {this->libre = true;}
 
+		bool operator < (const Particion& particion) {
+			return this->posicion < particion.posicion;
+		}
+
 };
 
 }

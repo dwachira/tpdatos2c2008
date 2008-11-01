@@ -11,22 +11,29 @@
 #include <string>
 #include "../../object/Mensaje.h"
 #include "../../dao/manager/ManagerDAO.h"
+#include "../../dao/TrieDAO.h"
+#include "../directorios/DirectorioManager.h"
 #include "../compressor/CompressorBusiness.h"
 
 namespace business {
 
 class MensajeManager {
 private:
-	ImagenDAO& imagenDao;
-	ParticionDAO& particionDao;
+	dao::ImagenDAO& imagenDao;
+	dao::ParticionDAO& particionDao;
 	MensajeDAO& mensajeDao;
 	CompressorBusiness compressor;
+	DirectorioManager& directorioManager;
+	dao::TrieDAO& trieDao;
 	static std::string TMP_COMPRESSED_FILE_NAME;
 public:
-	MensajeManager(ManagerDAO& manager) : imagenDao(manager.getImagenDAO()), particionDao(manager.getParticionDAO()),
-											mensajeDao(manager.getMensajeDAO()) {}
+	MensajeManager(dao::ManagerDAO& manager, DirectorioManager& directorioMan, dao::TrieDAO& trie) : imagenDao(manager.getImagenDAO()), particionDao(manager.getParticionDAO()),
+											mensajeDao(manager.getMensajeDAO()),
+											directorioManager(directorioMan), trieDao(trie) {}
+	/*@throw EspacioInsuficienteException, RecursoInaccesibleException*/
 	void agregarMensaje(std::string filename);
 	void quitarMensaje(std::string filename);
+	void quitarMensajesEnDirectorio(std::string dirpath);
 	void quitarMensaje(Mensaje& mensaje);
 	void obtenerMensaje(std::string filename, std::string destino);
 	virtual ~MensajeManager();

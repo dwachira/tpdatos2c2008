@@ -7,6 +7,10 @@
 
 #include "MensajeManager.h"
 #include "../compressor/CompressorBusiness.h"
+#include "../../object/exceptions/RecursoInaccesibleException.h"
+#include "../../object/exceptions/EspacioInsuficienteException.h"
+#include "../es/EntradaSalidaManager.h"
+#include "../../dao/DirectorioDAO.h"
 #include "../stego/StegoFactory.h"
 #include "../stego/StegoBusiness.h"
 #include <sys/stat.h>
@@ -16,7 +20,9 @@
 #include <string>
 #include <iostream>
 #include <sys/types.h>
+#include "../../object/exceptions/EntidadInexistenteException.h"
 using namespace std;
+using namespace dao;
 
 namespace business {
 
@@ -25,17 +31,19 @@ std::string MensajeManager::TMP_COMPRESSED_FILE_NAME  = "tmp_file";
 void MensajeManager::agregarMensaje(std::string filename)
 {
 
+	/** Comprimo el mensaje **/
 	FILE* file = fopen(filename.c_str(),"rb");
 	if (file == NULL) {
-		//No se pudo abrir el archivo.
-		return;
+		throw new RecursoInaccesibleException();
 	}
 	FILE* tmpfile = fopen(TMP_COMPRESSED_FILE_NAME.c_str(),"wb");
 
 	compressor.compress(file,tmpfile);
 	fclose(tmpfile);
 	fclose(file);
+	/***************************/
 
+	/**Busco imagenes**/
 	ifstream filestrm(TMP_COMPRESSED_FILE_NAME.c_str());
 	filestrm.seekg (0, ios::end);
 	unsigned int tamanioMensaje = filestrm.tellg();
@@ -47,27 +55,58 @@ void MensajeManager::agregarMensaje(std::string filename)
 	unsigned int espacioDisponible = 0;
 	list<Imagen>::iterator it = imagenesDisponibles.begin();
 
+
 	while ((it != imagenesDisponibles.end())&&(espacioDisponible < tamanioMensaje)) {
 		Imagen& imagen = (*it);
-		espacioDisponible += imagen.getEspacio_libre();
-		imagenesSeleccionadas.push_back(imagen);
+		if (EntradaSalidaManager::recursoEsAccesible(imagen.getNombre())) {
+			espacioDisponible += imagen.getEspacio_libre();
+			imagenesSeleccionadas.push_back(imagen);
+		}
 	}
 
-//	if (espacioDisponible < tamanioMensaje) {
-//		buscarImagenes()
-//	}
+	//Si el espacioDisponible no alcanza, hay que escanear los directorios en busca de nuevas imagenes
+	if (espacioDisponible < tamanioMensaje) {
 
-	//volver a calcular el espacio disponible
+		list<Directorio> directorios = directorioManager.getDirectorioDao().getDirsSortedByFechaModif();
+
+		for (list<Directorio>::iterator iter = directorios.begin(); iter != directorios.end(); iter++) {
+			Directorio& directorio = *iter;
+
+			util::Date fechaModificacionAlmacenada = directorio.getFechaUltimaModificacion();
+			directorioManager.actualizarFechaDeModificacion(directorio);
+ 			if (fechaModificacionAlmacenada < directorio.getFechaUltimaModificacion()) {
+
+ 				list<Imagen> imagenesEnDirectorio = imagenDao.getImgsByDirectorio(directorio.getID());
+				DirectorioIteradorImagenes iteradorDirectorio = directorioManager.obtenerIteradorDeImagenes(directorio);
+				while ((iteradorDirectorio.hasNext())) {
+
+					std::string pathImagen = iteradorDirectorio.next();
+					if (EntradaSalidaManager::recursoEsAccesible(pathImagen)) {
+						Imagen imagenEnDir(pathImagen);
+						list<Imagen>::iterator listBeginning = imagenesEnDirectorio.begin();
+						list<Imagen>::iterator listEnding = imagenesEnDirectorio.end();
+						if (find(listBeginning,listEnding,imagenEnDir) == listEnding) {
+							if (directorioManager.agregarImagenEnDirectorio(directorio,pathImagen)) {
+								imagenesSeleccionadas.push_back(imagenEnDir);
+								if ((espacioDisponible += imagenEnDir.getTamanio()) >= tamanioMensaje)
+									break;
+							}
+						}
+					}
+				}
+				if (espacioDisponible >= tamanioMensaje)
+					break;
+			}
+
+		}
+
+	}
 
 	if (espacioDisponible > tamanioMensaje) {
 		Mensaje mensaje(filename,tamanioMensaje,imagenesSeleccionadas.size());
 
-//		mensaje.setID(0);
-//		mensaje.setNombre(filename);
-//		mensaje.setTamanio(tamanioMensaje);
-//		mensaje.setCant_partes(imagenesSeleccionadas.size());
-
 		mensajeDao.insert(mensaje);
+		trieDao.insertCadena(MENSAJES,filename,mensaje.getID());
 
 		unsigned int streamsize = tamanioMensaje;
 		unsigned int numeroDeParticion = 0;
@@ -78,10 +117,8 @@ void MensajeManager::agregarMensaje(std::string filename)
 				streamsize = espacioEnImagen;
 			}
 			char* buffer = new char[streamsize];
-
 			filestrm.read(buffer,streamsize);
-			std::string mensajeComprimido(buffer);
-			std::cout<<mensajeComprimido<<std::endl;
+			cout<<buffer<<endl;
 			std::string tiraDeBits("");
 			for (unsigned int i = 0; i < streamsize  ; i++) {
 				for (int j = 0; j < 8; j++)
@@ -90,23 +127,18 @@ void MensajeManager::agregarMensaje(std::string filename)
 					else
 						tiraDeBits.append("0");
 			}
-			std::cout<<tiraDeBits<<std::endl;
-			Particion particion;
-			particion.setBit_inicio(imagen.getProximo_bit_libre());
-			particion.setID_Img(imagen.getID());
-			particion.setID_Txt(mensaje.getID());
-			particion.setPosicion(numeroDeParticion);
-			particion.setLongitud(streamsize);
-			particion.ocupar();
+			cout<<tiraDeBits<<endl;
+			Particion particion(imagen.getID(),mensaje.getID(),numeroDeParticion,
+				imagen.getProximo_bit_libre(),streamsize,false);
 
 			StegoBusiness* stego = StegoFactory::newInstance((*it2).getNombre());
 
 			imagen.setProximo_bit_libre(stego->setMessage(particion.getBit_inicio(),tiraDeBits));
+			imagenDao.updateProxBitLibre(imagen.getID(),imagen.getProximo_bit_libre());
 			imagen.setEspacio_libre(imagen.getEspacio_libre()-streamsize);
-			//imagen.setHash_value()
+			//imagenDao.updateEspacioLibre(imagen.getID(),imagen.getEspacio_libre());
 
 			particionDao.insert(particion);
-			//managerDAO.getImagenDAO().upate(imagen);
 
 			streamsize = tamanioMensaje - streamsize;
 			numeroDeParticion++;
@@ -114,11 +146,35 @@ void MensajeManager::agregarMensaje(std::string filename)
 		}
 	}
 	else {
-		//throw espacio insuficiente
+		throw new EspacioInsuficienteException();
 	}
 
 	remove(TMP_COMPRESSED_FILE_NAME.c_str());
 
+}
+
+void MensajeManager::quitarMensajesEnDirectorio(std::string dirpath) {
+	unsigned int dirId = trieDao.getIndice(DIRECTORIOS,dirpath);
+
+	if (dirId != 0) {
+		Directorio* directory = directorioManager.getDirectorioDao().getDirById(dirId);
+
+		list<Imagen> imagenes = imagenDao.getImgsByDirectorio(directory->getID());
+
+		for(list<Imagen>::iterator it = imagenes.begin(); it != imagenes.end(); it++) {
+			list<Particion> particiones = particionDao.getPartsByImg((*it).getID());
+			for (list<Particion>::iterator it2 = particiones.begin(); it2 != particiones.end(); it2++) {
+				Particion& particion = *it2;
+				const Mensaje& mensaje = mensajeDao.getMsjById(particion.getID_Txt());
+				trieDao.deleteCadena(MENSAJES,mensaje.getNombre());
+				mensajeDao.borrar(mensaje);
+			}
+		}
+		delete directory;
+
+	}
+	else
+		throw new EntidadInexistenteException();
 }
 
 void MensajeManager::quitarMensaje(std::string filename)
@@ -144,41 +200,54 @@ void MensajeManager::quitarMensaje(std::string filename)
 
 void MensajeManager::obtenerMensaje(std::string filename, std::string destino)
 {
-	fstream fromImage(TMP_COMPRESSED_FILE_NAME.c_str(), fstream::binary | fstream::out);
+	int mensajeId = trieDao.getIndice(MENSAJES,filename);
 
-	Mensaje mensaje = mensajeDao.getMsjById(0);
+	if (mensajeId == 0)
+		throw new EntidadInexistenteException();
+	else {
+		FILE* salida = fopen(destino.c_str(),"w+b");
 
-	//TODO:: Chequear si vienen ordenadas por posicion
-	list<Particion> particiones = particionDao.getPartsByTxt(mensaje.getID());
-
-	for (list<Particion>::iterator it = particiones.begin(); it != particiones.end(); it++) {
-		Particion& particion = *it;
-		const Imagen& imagen = imagenDao.getImgById(particion.getID_Img());
-		StegoBusiness* stego = StegoFactory::newInstance(imagen.getNombre());
-		const string& chunk = stego->getMessage(particion.getBit_inicio(),particion.getLongitud()*8);
-		std::cout<<chunk<<std::endl;
-		string encodedMessage("");
-		const char* buffer = chunk.c_str();
-		for (unsigned int i = 0; i < chunk.size(); i+=8) {
-			char byte = 0x0;
-			for (int j = 0; j < 7; j++) {
-				if (memcmp(buffer+i+j,"1",1) == 0)
-					byte = byte | (1<<j);
-			}
-			encodedMessage.push_back(byte);
+		if (salida == NULL) {
+			throw new RecursoInaccesibleException();
 		}
-		cout<<encodedMessage<<endl;
-		fromImage.write(encodedMessage.c_str(),encodedMessage.size());
+
+		fstream fromImage(TMP_COMPRESSED_FILE_NAME.c_str(), fstream::binary | fstream::out);
+
+		Mensaje mensaje = mensajeDao.getMsjById(mensajeId);
+
+		list<Particion> particiones = particionDao.getPartsByTxt(mensaje.getID());
+
+		//Ordeno las particiones por posicion.
+		particiones.sort();
+
+		for (list<Particion>::iterator it = particiones.begin(); it != particiones.end(); it++) {
+			Particion& particion = *it;
+			const Imagen& imagen = imagenDao.getImgById(particion.getID_Img());
+			StegoBusiness* stego = StegoFactory::newInstance(imagen.getNombre());
+			const string& chunk = stego->getMessage(particion.getBit_inicio(),particion.getLongitud()*8);
+			cout<<chunk<<endl;
+			string encodedMessage("");
+			const char* buffer = chunk.c_str();
+			for (unsigned int i = 0; i < chunk.size(); i+=8) {
+				char byte = 0x0;
+				for (int j = 0; j < 7; j++) {
+					if (memcmp(buffer+i+j,"1",1) == 0)
+						byte = byte | (1<<j);
+				}
+				encodedMessage.push_back(byte);
+			}
+			cout<<encodedMessage<<endl;
+			fromImage.write(encodedMessage.c_str(),encodedMessage.size());
+		}
+		fromImage.close();
+
+		FILE* tmp_file = fopen(TMP_COMPRESSED_FILE_NAME.c_str(),"rb");
+
+		compressor.decompress(tmp_file,salida);
+		fclose(tmp_file);
+		remove(TMP_COMPRESSED_FILE_NAME.c_str());
+		fclose(salida);
 	}
-	fromImage.close();
-
-	FILE* tmp_file = fopen(TMP_COMPRESSED_FILE_NAME.c_str(),"rb");
-	FILE* salida = fopen(destino.c_str(),"w+b");
-
-	compressor.decompress(tmp_file,salida);
-	fclose(tmp_file);
-	remove(TMP_COMPRESSED_FILE_NAME.c_str());
-	fclose(salida);
 }
 
 MensajeManager::~MensajeManager() {
