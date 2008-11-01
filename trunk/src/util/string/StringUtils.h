@@ -30,10 +30,10 @@ public:
 	static string& replaceAll(string& input, const string& from,  const string& to);
 	static string trim(string input);
 	static string toString(unsigned int input);
+	static string toString(double input);
 	static double concat(unsigned int input1, unsigned int input2);
 	static double concat(unsigned int input1, unsigned int input2, unsigned int input3);
 	static int compare(string s1, string s2);
-
 };
 
 }

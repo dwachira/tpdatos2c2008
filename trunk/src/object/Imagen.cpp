@@ -8,21 +8,12 @@
 
 namespace object{
 
+unsigned int Imagen::incrementalId = 0;
 
-std::string Imagen::BMP = "bmp";
-std::string Imagen::GIF = "gif";
-std::string Imagen::JPG = "jpg";
-std::string Imagen::PNG = "png";
-
-Imagen::Imagen() {
-
-	this->ID = 0;
-	this->ID_Dir = 0;
-	this->nombre = "";
-	this->tamanio = 0;
-	this->espacio_libre = 0;
-	this->hash_value = 0;
-}
+string Imagen::BMP = "bmp";
+string Imagen::GIF = "gif";
+string Imagen::JPG = "jpg";
+string Imagen::PNG = "png";
 
 Imagen::Imagen(const Imagen &img){
 
@@ -31,21 +22,21 @@ Imagen::Imagen(const Imagen &img){
 	this->nombre = img.nombre;
 	this->tamanio = img.tamanio;
 	this->espacio_libre = img.espacio_libre;
+	this->proximo_bit_libre = img.proximo_bit_libre;
 	this->hash_value = img.hash_value;
 }
 
-/*
-Imagen::Imagen(unsigned int ID, unsigned int ID_Dir, string nombre, unsigned int tamanio,
-		unsigned int espacio_libre, unsigned long int hash_value){
-
-	this->ID = ID;
-	this->ID_Dir = ID_Dir;
-	this->nombre = nombre;
-	this->tamanio = tamanio;
-	this->espacio_libre = espacio_libre;
-	this->hash_value = hash_value;
+Imagen::Imagen(unsigned int pID_Dir,unsigned int pEspacio_Libre,unsigned int pProximo_Bit_Libre,
+		unsigned long int pHash_Value,unsigned int pTamanio,string pNombre) :
+				ID_Dir(pID_Dir),espacio_libre(pEspacio_Libre),proximo_bit_libre (pProximo_Bit_Libre),
+				hash_value(pHash_Value),tamanio(pTamanio),nombre(pNombre){
+	this->ID = getNewId();
 }
-*/
+
+Imagen::Imagen(unsigned int pID, unsigned int pID_Dir, unsigned int pEspacio_Libre,
+		unsigned int pProximo_Bit_Libre, unsigned long int pHash_Value, unsigned int pTamanio, string pNombre) :
+				ID(pID),ID_Dir(pID_Dir),espacio_libre(pEspacio_Libre),proximo_bit_libre (pProximo_Bit_Libre),
+				hash_value(pHash_Value),tamanio(pTamanio),nombre(pNombre){}
 
 Imagen::~Imagen() {
 
@@ -55,6 +46,7 @@ Imagen::~Imagen() {
 	this->tamanio = 0;
 	this->espacio_libre = 0;
 	this->hash_value = 0;
+	this->proximo_bit_libre = 0;
 }
 
 }

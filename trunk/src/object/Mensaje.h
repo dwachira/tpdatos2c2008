@@ -23,16 +23,18 @@ class Mensaje{
 		unsigned int tamanio;
 		int cant_partes;
 
+		static unsigned int incrementalId;
+
+		unsigned int getNewId(){return ++incrementalId;}
+
 	public:
 
-		Mensaje();
 		Mensaje(const Mensaje &msj);
-		Mensaje(unsigned int newID, string newNombre, unsigned int newTamanio,
-				int newCant): ID(newID),nombre(newNombre),tamanio(newTamanio),
-														cant_partes(newCant){}
+		Mensaje(string newNombre, unsigned int newTamanio,int newCant);
+		Mensaje(unsigned int newId,string newNombre,unsigned int newTamanio,int newCant);
 		~Mensaje();
 
-
+		static unsigned int getLastAssignedId(){return incrementalId;}
 
 		unsigned int getID() {return ID;}
 		void setID(unsigned int ID) {this->ID = ID;}

@@ -81,6 +81,51 @@ Date* Date::valueOf(unsigned int day, unsigned int month, unsigned int year,
 		return NULL;
 }
 
+double Date::concatFecha(unsigned int anio, unsigned int mes, unsigned int dia,
+												unsigned int hora, unsigned int minutos){
+
+	string s1, s2, s3, s4, s5;
+
+	if(minutos == 0)
+		s5 == "00";
+	else
+		if(minutos < 10)
+			s5 = "0" + StringUtils::toString(minutos);
+		else
+			s5 = StringUtils::toString(minutos);
+
+	if(hora == 0)
+		s4 = "00";
+	else
+		if(hora < 10)
+			s4 = "0" + StringUtils::toString(hora);
+		else
+			s4 = StringUtils::toString(hora);
+
+	if(dia < 10)
+		s3 = "0" + StringUtils::toString(dia);
+	else
+		s3 = StringUtils::toString(dia);
+
+	if(mes < 10)
+		s2 = "0" + StringUtils::toString(mes);
+	else
+		s2 = StringUtils::toString(mes);
+
+	if(anio == 0)
+		s1 = "00";
+	else
+		if(anio < 10)
+			s1 = "0" + StringUtils::toString(anio);
+		else
+			s1 = StringUtils::toString(anio);
+
+	string output = s1 + s2 + s3 + s4 + s5;
+	double result = atof(output.c_str());
+	return result;
+}
+
+
 Date::~Date() {
 	// TODO Auto-generated destructor stub
 }

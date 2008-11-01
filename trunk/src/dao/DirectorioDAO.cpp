@@ -5,13 +5,8 @@
  *      Author: andres
  */
 #include "DirectorioDAO.h"
-#include <stdlib.h>
-
-using namespace util;
 
 namespace dao {
-
-int DirectorioDAO::incrementalId = 0;
 
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR
@@ -19,11 +14,11 @@ int DirectorioDAO::incrementalId = 0;
 
 DirectorioDAO::DirectorioDAO(){
 
-	this->index_Prim = new Indice((__BASE_DIR__"/INDEX_DIR_Prim.idx"), false);
-	this->index_FechaModif = new Indice((__BASE_DIR__"/INDEX_DIR_FechaModif.idx"), true);
+	this->index_Prim = new Indice("INDEX_DIR_Prim.idx", false);
+	this->index_FechaModif = new Indice("INDEX_DIR_FechaModif.idx", true);
 
-	this->archivo = new StreamFijo((__BASE_DIR__"/STREAMFIJO_DIR.str"), sizeof(REG_DIR));
-	this->stream = new StreamVariable((__BASE_DIR__"/STREAM_DIR.str"));
+	this->archivo = new StreamFijo("STREAMFIJO_DIR.str", sizeof(REG_DIR));
+	this->stream = new StreamVariable("STREAM_DIR.str");
 }
 
 DirectorioDAO::~DirectorioDAO(){
@@ -49,13 +44,12 @@ bool DirectorioDAO::insert(Directorio& dir){
 	if(offset_path == 0)
 		return false;
 
-	//Asigno un nuevo id al directorio
-	dir.setID(getNewId());
 	//genero el 'struct' para almacenar los datos en el stream de registros
 	//de longitud fija
 	REG_DIR* buffer = aStruct(dir, offset_path);
 
 	bool open = this->archivo->abrir(WRITE);
+	//******* NO ALMACENO EL REG. FIJO PERO SI PUDO ALMACENAR EL NOMBRE *******
 	if(! open)
 		return false;
 
@@ -75,10 +69,10 @@ bool DirectorioDAO::insert(Directorio& dir){
 	if(! insertar)
 		return false;
 
-	double claveCompuestaFecha;
 	//se arma la clave compuesta concatenando los valores de la fecha
-	claveCompuestaFecha = buffer->anio*100000000 + buffer->mes*1000000 +
-				buffer->dia*10000 + buffer->hora*100 + buffer->min;
+	double claveCompuestaFecha = Date::concatFecha(buffer->anio, buffer->mes,
+									buffer->dia, buffer->hora, buffer->min);
+
 	this->index_FechaModif->insertar(claveCompuestaFecha, offset_registro);
 
 	free(buffer);
@@ -87,12 +81,14 @@ bool DirectorioDAO::insert(Directorio& dir){
 
 void DirectorioDAO::borrar(unsigned int id){
 
-	//obtengo la pag candidata y armo el arbol con la misma
+	//obtengo la pag candidata
 	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) id);
+
+	/********************************************/
 	bool encontrado = false;
-	unsigned int i = 0;
-	while(!encontrado && i<candidata.size()){
-		if(candidata[i].getID() == id)
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == id)			//para hacerlo mas eficiente
 			encontrado = true;
 		else{
 			if(candidata[i].getID() > id)
@@ -101,6 +97,7 @@ void DirectorioDAO::borrar(unsigned int id){
 				i++;							//salga como un error.
 		}
 	}
+	/********************************************/
 
 	if(encontrado){
 
@@ -118,9 +115,10 @@ void DirectorioDAO::borrar(unsigned int id){
 		//doy de baja el registro de los indices
 		this->index_Prim->eliminar((double) id);
 
-		double claveCompuestaFecha = buffer->anio*100000000 + buffer->mes*1000000 +
-						buffer->dia*10000 + buffer->hora*100 + buffer->min;
-		this->index_FechaModif->eliminar(claveCompuestaFecha);
+		//se arma la clave compuesta concatenando los valores de la fecha
+		double claveCompuestaFecha = Date::concatFecha(buffer->anio, buffer->mes,
+											buffer->dia, buffer->hora, buffer->min);
+		this->index_FechaModif->eliminar(claveCompuestaFecha, reg.getOffset());
 
 		//elimino el nombre del directorio del archivo de regs de long variable
 		this->stream->borrar(buffer->offset_path);
@@ -143,11 +141,13 @@ bool DirectorioDAO::update(unsigned int ID, unsigned int anio, unsigned int mes,
 
 	//obtengo la pag candidata y busco el Id solicitado
 	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
+
+	/********************************************/
 	bool encontrado = false;
-	unsigned int i = 0;
-	while(!encontrado && i<candidata.size()){
-		if(candidata[i].getID() == ID)
-			encontrado = true;
+	unsigned int i = 0;							//TODO esto se deberia
+	while(!encontrado && i<candidata.size()){	//reemplazar por una
+		if(candidata[i].getID() == ID)			//busqueda binaria
+			encontrado = true;					//para hacerlo mas eficiente
 		else{
 			if(candidata[i].getID() > ID)
 				i = candidata.size();			//si el leido es mayor, me pase
@@ -155,6 +155,7 @@ bool DirectorioDAO::update(unsigned int ID, unsigned int anio, unsigned int mes,
 				i++;							//salga como un error.
 		}
 	}
+	/********************************************/
 
 	if(!encontrado)
 		return false;
@@ -186,11 +187,13 @@ bool DirectorioDAO::update(unsigned int ID, unsigned int anio, unsigned int mes,
 	this->archivo->cerrar();
 
 	//y elimino y inserto del indice pertinente
-	double claveCompuestaFecha = anioViejo*100000000 + mesViejo*1000000 +
-										diaViejo*10000 + horaViejo*100 + minViejo;
-	double newClaveCompuestaFecha = anio*100000000 + mes*1000000 + dia*10000 +
-																	hora*100 + min;
-	this->index_FechaModif->eliminar(claveCompuestaFecha);
+	//se arma la clave compuesta concatenando los valores de la fecha
+	double claveCompuestaFecha = Date::concatFecha(anioViejo, mesViejo,
+			diaViejo, horaViejo, minViejo);
+	//y se arma la clave nueva
+	double newClaveCompuestaFecha = Date::concatFecha(anio, mes, dia, hora, min);
+
+	this->index_FechaModif->eliminar(claveCompuestaFecha, reg.getOffset());
 	this->index_FechaModif->insertar(newClaveCompuestaFecha, reg.getOffset());
 
 	return true;
@@ -211,10 +214,12 @@ Directorio* DirectorioDAO::getDirById(unsigned int newID){
 
 	//obtengo la pag candidata y armo el arbol con la misma
 	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) newID);
+
+	/********************************************/
 	bool encontrado = false;
-	unsigned int i = 0;
-	while(!encontrado && i<candidata.size()){
-		if(candidata[i].getID() == newID)
+	unsigned int i = 0;							//TODO esto se deberia
+	while(!encontrado && i<candidata.size()){	//reemplazar por una
+		if(candidata[i].getID() == newID)		//busqueda binaria
 			encontrado = true;
 		else{
 			if(candidata[i].getID() > newID)
@@ -223,10 +228,10 @@ Directorio* DirectorioDAO::getDirById(unsigned int newID){
 				i++;							//salga como un error.
 		}
 	}
+	/********************************************/
 
-	if(!encontrado){
+	if(!encontrado)
 		return NULL;
-	}
 
 	RegPagina reg = candidata[i];
 	REG_DIR* buffer = new REG_DIR();
@@ -234,11 +239,11 @@ Directorio* DirectorioDAO::getDirById(unsigned int newID){
 	this->archivo->leer(buffer, reg.getOffset());
 	this->archivo->cerrar();
 
+	unsigned int id = buffer->ID;
 	string nombre = this->recuperarNombre(buffer->offset_path);
 	Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
 			buffer->hora,buffer->min);
-	Directorio* dir = new Directorio(nombre,lastModification);
-	dir->setID(buffer->ID);
+	Directorio* dir = new Directorio(id,nombre,lastModification);
 	return dir;
 }
 
@@ -251,11 +256,11 @@ list<Directorio> DirectorioDAO::getDirsSortedByFechaModif(){
 	this->archivo->abrir(READ);
 	for(unsigned int i=0; i<resultados.size(); i++){
 		this->archivo->leer(buffer, resultados[i].getOffset());
+		unsigned int id = buffer->ID;
 		string nombre = this->recuperarNombre(buffer->offset_path);
 		Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
 				buffer->hora,buffer->min);
-		Directorio* dir = new Directorio(nombre,lastModification);
-		dir->setID(buffer->ID);
+		Directorio* dir = new Directorio(id,nombre,lastModification);
 		lista.push_back(*dir);
 	}
 
@@ -264,23 +269,7 @@ list<Directorio> DirectorioDAO::getDirsSortedByFechaModif(){
 
 	return lista;
 }
-/*
-void DirectorioDAO::openStream(){
 
-	this->stream->abrir(READ);
-	this->stream->seek_beg();
-}
-
-unsigned long int DirectorioDAO::leerProximo(string* cadena){
-
-	return this->stream->leerProximo(cadena);
-}
-
-void DirectorioDAO::closeStream(){
-
-	this->stream->cerrar();
-}
-*/
 
 /*******************************************************
  * METODOS PRIVADOS

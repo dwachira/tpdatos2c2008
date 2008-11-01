@@ -8,18 +8,21 @@
 
 namespace object{
 
-Directorio::Directorio(std::string newPath) : path(newPath) {
+unsigned int Directorio::incrementalId = 0;
+
+Directorio::Directorio(string newPath) : path(newPath) {
 	this->fechaUltimaModificacion = util::Date::valueOf(0, 0, 0, 0, 0);
+	this->ID = getNewId();
 }
 
-/*
-Directorio::Directorio(unsigned int newID, string newPath, util::Date* newModif){
-
-	this->ID = newID;
-	this->path = newPath;
-	this->ultimaModif = newModif;
+Directorio::Directorio(std::string newPath, util::Date* ultimaModificacion) :
+					path(newPath), fechaUltimaModificacion(ultimaModificacion) {
+	this->ID = getNewId();
 }
-*/
+
+Directorio::Directorio(unsigned int newId, string newPath, util::Date* ultimaModificacion):
+				ID(newId),path(newPath),fechaUltimaModificacion(ultimaModificacion){}
+
 Directorio::~Directorio() {
 	delete this->fechaUltimaModificacion;
 }

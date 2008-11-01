@@ -5,11 +5,8 @@
  *      Author: andres
  */
 #include "ImagenDAO.h"
-#include <stdlib.h>
 
 namespace dao {
-
-int ImagenDAO::incrementalId = 0;
 
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR
@@ -17,16 +14,12 @@ int ImagenDAO::incrementalId = 0;
 
 ImagenDAO::ImagenDAO(){
 
-	this->index_Prim = new Indice(__BASE_DIR__"/INDEX_IMG_Prim.idx", false);
-	this->index_Espacio = new Indice(__BASE_DIR__"/INDEX_IMG_Espacio.idx", true);
-	this->index_Directorio = new Indice(__BASE_DIR__"/INDEX_IMG_Directorio.idx", true);
+	this->index_Prim = new Indice("INDEX_IMG_Prim.idx", false);
+	this->index_Espacio = new Indice("INDEX_IMG_Espacio.idx", true);
+	this->index_Directorio = new Indice("INDEX_IMG_Directorio.idx", true);
 
-	this->arbol = new AVL();
-	this->minID = 0;
-	this->maxID = 0;
-
-	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_IMG.str", sizeof(REG_IMG));
-	this->stream = new StreamVariable(__BASE_DIR__"/STREAM_IMG.str");
+	this->archivo = new StreamFijo("STREAMFIJO_IMG.str", sizeof(REG_IMG));
+	this->stream = new StreamVariable("STREAM_IMG.str");
 }
 
 ImagenDAO::~ImagenDAO(){
@@ -34,8 +27,6 @@ ImagenDAO::~ImagenDAO(){
 	delete(this->index_Prim);
 	delete(this->index_Espacio);
 	delete(this->index_Directorio);
-
-	delete(this->arbol);
 
 	delete(this->archivo);
 	delete(this->stream);
@@ -55,13 +46,12 @@ bool ImagenDAO::insert(Imagen& img){
 	if(offset_nombre == 0)
 		return false;
 
-	img.setID(getNewId());
-
 	//genero el 'struct' para almacenar los datos en el stream de registros
 	//de longitud fija
 	REG_IMG* buffer = aStruct(img, offset_nombre);
 
 	bool open = this->archivo->abrir(WRITE);
+	//******* NO ALMACENO EL REG. FIJO PERO SI PUDO ALMACENAR EL NOMBRE *******
 	if(! open)
 		return false;
 
@@ -84,40 +74,33 @@ bool ImagenDAO::insert(Imagen& img){
 	this->index_Directorio->insertar((double) buffer->ID_Dir, offset_registro);
 	this->index_Espacio->insertar((double) buffer->espacio_libre, offset_registro);
 
-	//si lo que inserte iba dentro de la pagina que se mantiene en buffer, la
-	//vuelvo a cargar despues de la insercion.
-	if((img.getID() >= this->minID) && (img.getID() <= this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) img.getID());
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
-	}
-
 	free(buffer);
 	return true;
 }
 
 void ImagenDAO::borrar(unsigned int id){
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((id < this->minID) || (id > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) id);
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+	//obtengo la pag candidata
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) id);
+
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == id)			//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > id)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
 	}
+	/********************************************/
 
-	if(arbol->Buscar((double) id)){
+	if(encontrado){
 
-		RegPagina reg = this->arbol->ValorActual();
+		RegPagina reg = candidata[i];
 
 		//recupero la informacion almacenada, requerido para poder dar de baja un indice
 		REG_IMG* buffer = new REG_IMG();
@@ -130,19 +113,13 @@ void ImagenDAO::borrar(unsigned int id){
 		this->archivo->borrar(reg.getOffset());
 		this->archivo->cerrar();
 
-		//cargo la nueva pagina del indice, ya que sufrio modificaciones
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(id);
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
-
 		//doy de baja el registro de los indices
 		this->index_Prim->eliminar((double) id);
-		this->index_Espacio->eliminar((double) buffer->espacio_libre);
-		this->index_Directorio->eliminar((double) buffer->ID_Dir);
+		this->index_Espacio->eliminar((double) buffer->espacio_libre, reg.getOffset());
+		this->index_Directorio->eliminar((double) buffer->ID_Dir, reg.getOffset());
 
-		//elimino el nombre de la iamgen del archivo de regs de long variable
+
+		//elimino el nombre de la imagen del archivo de regs de long variable
 		this->stream->borrar(buffer->offset_nombre);
 	}
 }
@@ -150,7 +127,6 @@ void ImagenDAO::borrar(unsigned int id){
 void ImagenDAO::borrar(Imagen& img){
 
 	unsigned int id = img.getID();
-
 	return borrar(id);
 
 	//debo utilizar la otra funcion porque no puedo evitar tener que leer desde
@@ -161,25 +137,28 @@ void ImagenDAO::borrar(Imagen& img){
 
 bool ImagenDAO::updateDirectorio(unsigned int ID, unsigned int newId_Dir){
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((ID < this->minID) || (ID > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
-	}
+	//obtengo la pag candidata
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
 
-	if(! arbol->Buscar((double) ID))
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == ID)			//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > ID)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
+	}
+	/********************************************/
+
+	if(!encontrado)
 		return false;
 
-	//si encontro el dato, lo recupero para actualizarlo
-	RegPagina reg = this->arbol->ValorActual();
+	RegPagina reg = candidata[i];
 	REG_IMG* buffer = new REG_IMG();
 	this->archivo->abrir(READ);
 	this->archivo->leer(buffer, reg.getOffset());
@@ -195,7 +174,7 @@ bool ImagenDAO::updateDirectorio(unsigned int ID, unsigned int newId_Dir){
 	this->archivo->cerrar();
 
 	//finalmente, doy de baja e inserto del indice correspondiente
-	this->index_Directorio->eliminar((double) dirViejo);
+	this->index_Directorio->eliminar((double) dirViejo, reg.getOffset());
 	this->index_Directorio->insertar((double) newId_Dir, reg.getOffset());
 
 	return true;
@@ -203,25 +182,28 @@ bool ImagenDAO::updateDirectorio(unsigned int ID, unsigned int newId_Dir){
 
 bool ImagenDAO::updateEspacioLibre(unsigned int ID, unsigned int newEspacioLibre){
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((ID < this->minID) || (ID > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
-	}
+	//obtengo la pag candidata
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
 
-	if(! arbol->Buscar((double) ID))
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == ID)			//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > ID)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
+	}
+	/********************************************/
+
+	if(!encontrado)
 		return false;
 
-	//si encontro el dato, lo recupero para actualizarlo
-	RegPagina reg = this->arbol->ValorActual();
+	RegPagina reg = candidata[i];
 	REG_IMG* buffer = new REG_IMG();
 	this->archivo->abrir(READ);
 	this->archivo->leer(buffer, reg.getOffset());
@@ -237,7 +219,7 @@ bool ImagenDAO::updateEspacioLibre(unsigned int ID, unsigned int newEspacioLibre
 	this->archivo->cerrar();
 
 	//finalmente, doy de baja e inserto del indice correspondiente
-	this->index_Espacio->eliminar((double) espacioViejo);
+	this->index_Espacio->eliminar((double) espacioViejo, reg.getOffset());
 	this->index_Espacio->insertar((double) newEspacioLibre, reg.getOffset());
 
 	return true;
@@ -245,25 +227,28 @@ bool ImagenDAO::updateEspacioLibre(unsigned int ID, unsigned int newEspacioLibre
 
 bool ImagenDAO::updateHashValue(unsigned int ID, unsigned long int newHashValue){
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((ID < this->minID) || (ID > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
-	}
+	//obtengo la pag candidata
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
 
-	if(! arbol->Buscar((double) ID))
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == ID)			//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > ID)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
+	}
+	/********************************************/
+
+	if(!encontrado)
 		return false;
 
-	//si encontro el dato, lo recupero para actualizarlo
-	RegPagina reg = this->arbol->ValorActual();
+	RegPagina reg = candidata[i];
 	REG_IMG* buffer = new REG_IMG();
 	this->archivo->abrir(READ);
 	this->archivo->leer(buffer, reg.getOffset());
@@ -278,27 +263,68 @@ bool ImagenDAO::updateHashValue(unsigned int ID, unsigned long int newHashValue)
 	return true;
 }
 
-bool ImagenDAO::updateNombre(unsigned int ID, string newNombre){
+bool ImagenDAO::updateProxBitLibre(unsigned int ID, unsigned int newProxBitLibre){
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((ID < this->minID) || (ID > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+	//obtengo la pag candidata
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
+
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == ID)			//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > ID)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
 	}
+	/********************************************/
 
-	if(! arbol->Buscar((double) ID))
+	if(!encontrado)
 		return false;
 
-	//si encontro el dato, lo recupero para actualizarlo
-	RegPagina reg = this->arbol->ValorActual();
+	RegPagina reg = candidata[i];
+	REG_IMG* buffer = new REG_IMG();
+	this->archivo->abrir(READ);
+	this->archivo->leer(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//actualizo el campo a modificar y sobreescribo en el archivo
+	buffer->prox_bit_libre = newProxBitLibre;
+	this->archivo->abrir(UPDATE);
+	this->archivo->actualizar(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	return true;
+}
+
+bool ImagenDAO::updateNombre(unsigned int ID, string newNombre){
+
+	//obtengo la pag candidata
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
+
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == ID)			//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > ID)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
+	}
+	/********************************************/
+
+	if(!encontrado)
+		return false;
+
+	RegPagina reg = candidata[i];
 	REG_IMG* buffer = new REG_IMG();
 	this->archivo->abrir(READ);
 	this->archivo->leer(buffer, reg.getOffset());
@@ -323,28 +349,30 @@ bool ImagenDAO::updateNombre(unsigned int ID, string newNombre){
 
 Imagen ImagenDAO::getImgById(unsigned int newID){
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((newID < this->minID) || (newID > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) newID);
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+	//obtengo la pag candidata
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) newID);
+
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == newID)		//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > newID)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
 	}
+	/********************************************/
 
-	bool buscar = arbol->Buscar((double) newID);
-
-	if(!buscar){		//si no lo encontro, no existe en el indice
+	if(!encontrado){		//si no lo encontro, no existe en el indice
 		Imagen img(0,0,0,0,0,0,"");
 		return img;
 	}
 
-	RegPagina reg = this->arbol->ValorActual();
+	RegPagina reg = candidata[i];
 
 	REG_IMG* buffer = new REG_IMG();
 	this->archivo->abrir(READ);
@@ -352,7 +380,7 @@ Imagen ImagenDAO::getImgById(unsigned int newID){
 	this->archivo->cerrar();
 
 	string nombre = this->recuperarNombre(buffer->offset_nombre);
-	Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,0,
+	Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre, buffer->prox_bit_libre,
 								buffer->hash_value, buffer->tamanio, nombre);
 	free(buffer);
 	return img;
@@ -368,8 +396,8 @@ list<Imagen> ImagenDAO::getImgsByDirectorio(unsigned int newID_Dir){
 	for(unsigned int i=0; i<resultados.size(); i++){
 		this->archivo->leer(buffer, resultados[i].getOffset());
 		string nombre = this->recuperarNombre(buffer->offset_nombre);
-		Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,0,
-							buffer->hash_value, buffer->tamanio, nombre);
+		Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,
+				buffer->prox_bit_libre, buffer->hash_value, buffer->tamanio, nombre);
 		lista.push_back(img);
 	}
 
@@ -392,8 +420,8 @@ list<Imagen> ImagenDAO::getImgsSortedByEspacioLibre(){
 		this->archivo->leer(buffer, resultados[i].getOffset());
 		if(buffer->espacio_libre > 0){
 			string nombre = this->recuperarNombre(buffer->offset_nombre);
-			Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,0,
-								buffer->hash_value, buffer->tamanio, nombre);
+			Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,
+					buffer->prox_bit_libre,	buffer->hash_value, buffer->tamanio, nombre);
 			lista.push_back(img);
 		}
 	}
@@ -403,23 +431,7 @@ list<Imagen> ImagenDAO::getImgsSortedByEspacioLibre(){
 
 	return lista;
 }
-/*
-void ImagenDAO::openStream(){
 
-	this->stream->abrir(READ);
-	this->stream->seek_beg();
-}
-
-unsigned long int ImagenDAO::leerProximo(string* cadena){
-
-	return this->stream->leerProximo(cadena);
-}
-
-void ImagenDAO::closeStream(){
-
-	this->stream->cerrar();
-}
-*/
 
 /*******************************************************
  * METODOS PRIVADOS
@@ -457,6 +469,7 @@ REG_IMG* ImagenDAO::aStruct(Imagen img, unsigned long int offset_nombre){
 	buffer->espacio_libre = img.getEspacio_libre();
 	buffer->hash_value = img.getHash_value();
 	buffer->tamanio = img.getTamanio();
+	buffer->prox_bit_libre = img.getProximo_bit_libre();
 	buffer->offset_nombre = offset_nombre;
 
 	return buffer;

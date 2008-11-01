@@ -29,7 +29,9 @@ int TestAddDirectory::test() {
 	}
 
 	std::list<Imagen> imagenes = managerDAO.getImagenDAO().
-		getImgsByDirectorio(managerDAO.getDirectorioDAO().getLastAssignedId());
+		getImgsByDirectorio(object::Directorio::getLastAssignedId());
+//	std::list<Imagen> imagenes = managerDAO.getImagenDAO().
+//		getImgsByDirectorio(managerDAO.getDirectorioDAO().getLastAssignedId());
 	for (std::list<Imagen>::iterator it = imagenes.begin(); it != imagenes.end(); it++)
 		std::cout<<(*it).getNombre()<<std::endl;
 	return 0;

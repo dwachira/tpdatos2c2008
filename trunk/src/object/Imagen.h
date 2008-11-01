@@ -26,31 +26,31 @@ class Imagen{
 		unsigned int tamanio;
 		string nombre;
 
-		static std::string GIF;
-		static std::string JPG;
-		static std::string PNG;
-		static std::string BMP;
+		static string GIF;
+		static string JPG;
+		static string PNG;
+		static string BMP;
 
+		static unsigned int incrementalId;
+
+		unsigned int getNewId(){return ++incrementalId;}
 
 	public:
 
-		Imagen();
 		Imagen(const Imagen &img);
+		//constructor con ID incluido. Cuando se lee del indice por ejemplo.
 		Imagen(unsigned int pID, unsigned int pID_Dir, unsigned int pEspacio_Libre, unsigned int pProximo_Bit_Libre,
-				unsigned long int pHash_Value, unsigned int pTamanio, string pNombre):
-							ID(pID),ID_Dir(pID_Dir), espacio_libre(pEspacio_Libre), proximo_bit_libre (pProximo_Bit_Libre),
-							hash_value(pHash_Value),tamanio(pTamanio),nombre(pNombre){}
+						unsigned long int pHash_Value, unsigned int pTamanio, string pNombre);
+		//constructor sin ID incluido. Cuando se crea por primera vez el elemento.
+		Imagen(unsigned int pID_Dir, unsigned int pEspacio_Libre, unsigned int pProximo_Bit_Libre,
+				unsigned long int pHash_Value, unsigned int pTamanio, string pNombre);
 		~Imagen();
 
-		unsigned int getProximo_bit_libre() const
-		{
-			return proximo_bit_libre;
-		}
+		static unsigned int getLastAssignedId(){return incrementalId;}
 
+		unsigned int getProximo_bit_libre() const {return proximo_bit_libre;}
 		void setProximo_bit_libre(unsigned int proximo_bit_libre)
-		{
-			this->proximo_bit_libre = proximo_bit_libre;
-		}
+								{this->proximo_bit_libre = proximo_bit_libre;}
 
 		unsigned int getID() const {return ID;}
 		void setID(unsigned int ID) {this->ID = ID;}

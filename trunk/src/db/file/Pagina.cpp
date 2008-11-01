@@ -66,6 +66,33 @@ void Pagina::insertar(RegPagina newReg){
 	}
 }
 
+void Pagina::eliminar(double ID, unsigned long int offset){
+	bool encontrado = false;
+	int i = 0;
+	while(!encontrado && i < this->cantReg){
+		if(this->registros[i].getID() == ID){
+			if(this->registros[i].getOffset() == offset)
+				encontrado = true;
+			else
+				i++;
+		}
+		else
+			i++;
+	}
+	if(encontrado){
+		int destino = i;int origen = i+1;
+		while(origen < this->cantReg){
+			double newID = registros[origen].getID();
+			unsigned long int newOffset = registros[origen].getOffset();
+			registros[destino].setID(newID);
+			registros[destino].setOffset(newOffset);
+			origen++;
+			destino++;
+		}
+		this->cantReg--;
+	}
+}
+
 void Pagina::eliminar(double ID){
 
 	if(this->cantReg > 0){

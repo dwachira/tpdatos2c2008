@@ -5,7 +5,6 @@
  *      Author: andres
  */
 #include "MensajeDAO.h"
-#include <stdlib.h>
 
 namespace dao {
 
@@ -15,11 +14,11 @@ namespace dao {
 
 MensajeDAO::MensajeDAO(){
 
-	this->index_Prim = new Indice(__BASE_DIR__"/INDEX_MSJ_Prim.idx", false);
-	this->index_Tamanio = new Indice(__BASE_DIR__"/INDEX_MSJ_Tamanio.idx", true);
+	this->index_Prim = new Indice("INDEX_MSJ_Prim.idx", false);
+	this->index_Tamanio = new Indice("INDEX_MSJ_Tamanio.idx", true);
 
-	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_MSJ.str", sizeof(REG_MSJ));
-	this->stream = new StreamVariable(__BASE_DIR__"/STREAM_MSJ.str");
+	this->archivo = new StreamFijo("STREAMFIJO_MSJ.str", sizeof(REG_MSJ));
+	this->stream = new StreamVariable("STREAM_MSJ.str");
 
 	this->arbol = new AVL();
 }
@@ -54,6 +53,7 @@ bool MensajeDAO::insert(Mensaje& msj){
 	REG_MSJ* buffer = aStruct(msj, offset_nombre);
 
 	bool open = this->archivo->abrir(WRITE);
+	//******* NO ALMACENO EL REG. FIJO PERO SI PUDO ALMACENAR EL NOMBRE *******
 	if(! open)
 		return false;
 
@@ -121,16 +121,16 @@ void MensajeDAO::borrar(unsigned int id){
 		this->archivo->borrar(reg.getOffset());
 		this->archivo->cerrar();
 
+		//doy de baja el registro de los indices
+		this->index_Prim->eliminar((double) id);
+		this->index_Tamanio->eliminar((double) buffer->tamanio);
+
 		//cargo la nueva pagina del indice, ya que sufrio modificaciones
 		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(id);
 		this->arbol->ArmarArbol(candidata);
 		//actualizo los limites del arbol
 		this->minID = candidata[0].getID();
 		this->maxID = candidata[candidata.size()-1].getID();
-
-		//doy de baja el registro de los indices
-		this->index_Prim->eliminar((double) id);
-		this->index_Tamanio->eliminar((double) buffer->tamanio);
 
 		//elimino el nombre del mensaje del archivo de regs de long variable
 		this->stream->borrar(buffer->offset_nombre);
@@ -167,7 +167,7 @@ bool MensajeDAO::update(unsigned int ID, int newCantPartes){
 	if(! arbol->Buscar((double) ID))
 		return false;
 
-	//recupero la informacion almacenada, requerido para poder dar de baja un indice
+	//recupero la informacion almacenada
 	RegPagina reg = this->arbol->ValorActual();
 	REG_MSJ* buffer = new REG_MSJ();
 	this->archivo->abrir(READ);
@@ -219,23 +219,7 @@ Mensaje MensajeDAO::getMsjById(unsigned int newID){
 	free(buffer);
 	return msj;
 }
-/*
-void MensajeDAO::openStream(){
 
-	this->stream->abrir(READ);
-	this->stream->seek_beg();
-}
-
-unsigned long int MensajeDAO::leerProximo(string* cadena){
-
-	return this->stream->leerProximo(cadena);
-}
-
-void MensajeDAO::closeStream(){
-
-	this->stream->cerrar();
-}
-*/
 
 /*******************************************************
  * METODOS PRIVADOS
@@ -277,4 +261,3 @@ REG_MSJ* MensajeDAO::aStruct(Mensaje msj, unsigned long int offset_nombre){
 }
 
 }
-
