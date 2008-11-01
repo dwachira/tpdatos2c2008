@@ -43,10 +43,6 @@ class ParticionDAO{
 
 		StreamFijo*					archivo;
 
-		AVL							arbol;
-		unsigned int				minID;
-		unsigned int				maxID;
-
 		/*
 		 * Transformacion a struct de una instancia de clase 'Particion'
 		 */
@@ -76,6 +72,7 @@ class ParticionDAO{
 
 		/*
 		 * Dada una operacion de Baja de una Particion, se marca como libre.
+		 * Como requisito, el registro indicado debe estar ocupado
 		 */
 		bool liberar(unsigned int img, unsigned int txt, unsigned int pos);
 
