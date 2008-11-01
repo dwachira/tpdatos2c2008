@@ -10,11 +10,6 @@ namespace object{
 
 unsigned int Imagen::incrementalId = 0;
 
-string Imagen::BMP = "bmp";
-string Imagen::GIF = "gif";
-string Imagen::JPG = "jpg";
-string Imagen::PNG = "png";
-
 Imagen::Imagen(const Imagen &img){
 
 	this->ID = img.ID;
@@ -47,6 +42,12 @@ Imagen::~Imagen() {
 	this->espacio_libre = 0;
 	this->hash_value = 0;
 	this->proximo_bit_libre = 0;
+}
+
+bool operator== (const Imagen& left, const Imagen& right) {
+	if ((left.getNombre().compare(right.getNombre())) == 0)
+		return true;
+	return false;
 }
 
 }

@@ -9,7 +9,10 @@
 #include "../../dao/DirectorioDAO.h"
 #include "../stego/StegoBusiness.h"
 #include "../stego/StegoFactory.h"
-#include "../../object/exceptions/DirectoryAccessException.h"
+#include "../../object/exceptions/RecursoInaccesibleException.h"
+#include "../../object/exceptions/EntidadYaExistenteException.h"
+#include "../../object/exceptions/EntidadInexistenteException.h"
+#include "../es/EntradaSalidaManager.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
@@ -25,95 +28,124 @@ using namespace std;
 
 namespace business {
 
-void DirectorioManager::accederDirectorio(std::string path) const {
-	struct stat fileStats;
-	if (lstat(path.data(),&fileStats) == -1) {
-		if (errno == EACCES) {
-			throw new DirectoryAccessException("No tienes permiso de lectura en el directorio");
-		}
-		else
-			throw new DirectoryAccessException();
-	}
-}
-
 DirectorioIteradorImagenes DirectorioManager::obtenerIteradorDeImagenes(Directorio& directorio) const{
-	accederDirectorio(directorio.getPath());
-	return DirectorioIteradorImagenes(directorio);
+	if (EntradaSalidaManager::recursoEsAccesible(directorio.getPath()))
+		return DirectorioIteradorImagenes(directorio);
+	else
+		throw new RecursoInaccesibleException();
 }
 
-void DirectorioManager::agregarDirectorio(std::string path) const
+void DirectorioManager::agregarDirectorio(string path)
 {
-	//TODO::Preguntar si el directorio ya existe en la base de datos.
-	accederDirectorio(path);
-	Directorio unDirectorio(path);
-	directorioDAO.insert(unDirectorio);
-	buscarImagenes(unDirectorio);		//ESCANEAR Directorio EN BUSCA DE IMAGENES
 
-}
-
-void DirectorioManager::removerDirectorio(long  id) const
-{
-	Directorio* directorio = directorioDAO.getDirById(id);
-	if (directorio != NULL) {
-		//dao.remove(Directorio);
+	if (trieDao.getIndice(DIRECTORIOS,path) == 0) {
+		if (EntradaSalidaManager::recursoEsAccesible(path)) {
+			Directorio unDirectorio(path);
+			actualizarFechaDeModificacion(unDirectorio);
+			directorioDAO.insert(unDirectorio);
+			trieDao.insertCadena(DIRECTORIOS,path,unDirectorio.getID());
+			buscarImagenes(unDirectorio);
+		}
+		else {
+			throw new RecursoInaccesibleException();
+		}
 	}
+	else
+		throw new EntidadYaExistenteException();
+
 }
 
-bool DirectorioManager::directorioEnUso(const Directorio & directory) const
+void DirectorioManager::removerDirectorio(string  path) const
 {
-	bool isBeingUsed = false;
-	list<Imagen> imagenes = imagenDAO.getImgsByDirectorio(directory.getID());
-	list<Imagen>::iterator it = imagenes.begin();
-	while ( (it != imagenes.end()) && (!isBeingUsed) ) {
-		const list<Particion>& particiones = particionDAO.getPartsByImg((*it).getID());
-		if (particiones.size() > 0)
-			isBeingUsed = true;
+	unsigned int dirId = trieDao.getIndice(DIRECTORIOS,path);
+
+	if ( dirId != 0 ) {
+		list<Imagen> imagenesEnDir = imagenDAO.getImgsByDirectorio(dirId);
+		for (list<Imagen>::iterator it = imagenesEnDir.begin(); it != imagenesEnDir.end(); it++) {
+			Imagen& imagen = *it;
+			list<Particion> particionesPorImagen = particionDAO.getPartsByImg(imagen.getID());
+			for (list<Particion>::iterator it2 = particionesPorImagen.begin(); it2 != particionesPorImagen.end(); it2++) {
+				particionDAO.borrar(*it2);
+			}
+			imagenDAO.borrar(imagen);
+			trieDao.deleteCadena(IMAGENES,imagen.getNombre());
+		}
+		directorioDAO.borrar(dirId);
+		trieDao.deleteCadena(DIRECTORIOS,path);
 	}
-	return isBeingUsed;
+	else
+		throw new EntidadInexistenteException();
+}
+
+bool DirectorioManager::directorioEnUso(string path) const
+{
+	unsigned int dirId = trieDao.getIndice(DIRECTORIOS,path);
+
+	if (dirId != 0) {
+		Directorio* directory = directorioDAO.getDirById(dirId);
+		bool isBeingUsed = false;
+		list<Imagen> imagenes = imagenDAO.getImgsByDirectorio(directory->getID());
+		list<Imagen>::iterator it = imagenes.begin();
+		while ( (it != imagenes.end()) && (!isBeingUsed) ) {
+			const list<Particion>& particiones = particionDAO.getPartsByImg((*it).getID());
+			if (particiones.size() > 0)
+				isBeingUsed = true;
+		}
+		delete directory;
+		return isBeingUsed;
+	}
+	else
+		throw new EntidadInexistenteException();
+}
+
+bool DirectorioManager::agregarImagenEnDirectorio(Directorio& directorio, string filename) const {
+	StegoBusiness* stego = StegoFactory::newInstance(filename);
+	struct stat fileStats;
+	if (stego != NULL) {
+		lstat(filename.data(),&fileStats);
+		Imagen imagen(directorio.getID(),stego->getFreeSpace(),stego->getFirstFreeBit(),
+				0,fileStats.st_size,filename);
+		imagenDAO.insert(imagen);
+		trieDao.insertCadena(IMAGENES,imagen.getNombre(),imagen.getID());
+		delete stego;
+		return true;
+	}
+	else
+		return false;
 }
 
 void DirectorioManager::buscarImagenes(Directorio& directorio) const
 {
-	struct stat dirStats;
+	DirectorioIteradorImagenes iterador = obtenerIteradorDeImagenes(directorio);
 
-	//VEO LA FECHA DE ULTIMA MODIFICACION DEL DIRECTORIO Y LA COMPARO CON LA ALMACENADA
-	lstat(directorio.getPath().data(),&dirStats);
-	struct tm* timeAux = gmtime(&dirStats.st_mtim.tv_sec);
-	Date* lastModification = Date::valueOf(timeAux->tm_mday, timeAux->tm_mon + 1,
-			timeAux->tm_year + 1900, timeAux->tm_hour, timeAux->tm_min);
-
-	if ( directorio.getFechaUltimaModificacion() < *lastModification ) {
-		DirectorioIteradorImagenes iterador = obtenerIteradorDeImagenes(directorio);
-		struct stat fileStats;
-		while (iterador.hasNext()) {
-			string entryName = iterador.next();
-			string fullFileName = directorio.getPath() + "/" + entryName;
-			StegoBusiness* stego = StegoFactory::newInstance(fullFileName);
-			if (stego != NULL) {
-				lstat(fullFileName.data(),&fileStats);
-				Imagen imagen(directorio.getID(),stego->getFreeSpace(),
-							stego->getFirstFreeBit(),0,fileStats.st_size,fullFileName);
-//				imagen.setTamanio(fileStats.st_size);
-//				imagen.setNombre(fullFileName);
-//				imagen.setID_Dir(directorio.getID());
-//				imagen.setEspacio_libre(stego->getFreeSpace());
-//				imagen.setProximo_bit_libre(stego->getFirstFreeBit());
-				imagenDAO.insert(imagen);
-				delete stego;
-			}
-		}
-	directorio.setFechaUltimaModificacion(lastModification);
-	//TODO::DAO.UPDATE DIRECTORIO !
+	while (iterador.hasNext()) {
+		string entryName = iterador.next();
+		string fullFileName = directorio.getPath() + "/" + entryName;
+		agregarImagenEnDirectorio(directorio,fullFileName);
 	}
 }
 
 std::list<Directorio*> business::DirectorioManager::getDirectorios() const
 {
 	list<Directorio*> directorios;
-//	for (int i = 1; i <= directorioDAO.getLastAssignedId(); i++)
 	for (unsigned int i = 1; i <= object::Directorio::getLastAssignedId(); i++)
 		directorios.push_back(directorioDAO.getDirById(i));
 	return directorios;
+}
+
+void DirectorioManager::actualizarFechaDeModificacion(Directorio & directorio)
+{
+	if (EntradaSalidaManager::recursoEsAccesible(directorio.getPath())) {
+		struct stat dirStats;
+
+		//VEO LA FECHA DE ULTIMA MODIFICACION DEL DIRECTORIO Y LA COMPARO CON LA ALMACENADA
+		lstat(directorio.getPath().data(),&dirStats);
+		struct tm* timeAux = gmtime(&dirStats.st_mtim.tv_sec);
+		Date* lastModification = Date::valueOf(timeAux->tm_mday, timeAux->tm_mon + 1,
+				timeAux->tm_year + 1900, timeAux->tm_hour, timeAux->tm_min);
+		directorio.setFechaUltimaModificacion(lastModification);
+		directorioDAO.update(directorio.getID(),directorio.getFechaUltimaModificacion());
+	}
 }
 
 DirectorioManager::~DirectorioManager() {

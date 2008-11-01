@@ -75,7 +75,7 @@ class MensajeDAO{
 		 * registro del archivo de datos, se da de baja de todos los indices,
 		 * y se elimina el nombre del mismo del archivo de regs de long variable.
 		 */
-		void borrar(Mensaje& msj);
+		void borrar(const Mensaje& msj);
 		void borrar(unsigned int id);
 
 		/*

@@ -17,7 +17,8 @@ TestAddDirectory::TestAddDirectory() {
 
 int TestAddDirectory::test() {
 	dao::ManagerDAO managerDAO;
-	business::DirectorioManager manager(managerDAO);
+	dao::TrieDAO trieDao(managerDAO);
+	business::DirectorioManager manager(managerDAO,trieDao);
 	string expectedDir(__TEST_DIR__"");
 
 	//Unit under test
@@ -29,9 +30,8 @@ int TestAddDirectory::test() {
 	}
 
 	std::list<Imagen> imagenes = managerDAO.getImagenDAO().
-		getImgsByDirectorio(object::Directorio::getLastAssignedId());
-//	std::list<Imagen> imagenes = managerDAO.getImagenDAO().
-//		getImgsByDirectorio(managerDAO.getDirectorioDAO().getLastAssignedId());
+		getImgsByDirectorio(trieDao.getIndice(DIRECTORIOS,expectedDir));
+
 	for (std::list<Imagen>::iterator it = imagenes.begin(); it != imagenes.end(); it++)
 		std::cout<<(*it).getNombre()<<std::endl;
 	return 0;

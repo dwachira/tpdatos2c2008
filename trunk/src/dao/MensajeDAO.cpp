@@ -120,7 +120,7 @@ void MensajeDAO::borrar(unsigned int id){
 	}
 }
 
-void MensajeDAO::borrar(Mensaje& msj){
+void MensajeDAO::borrar(const Mensaje& msj){
 
 	unsigned int id = msj.getID();
 	return borrar(id);

@@ -36,16 +36,16 @@ class Mensaje{
 
 		static unsigned int getLastAssignedId(){return incrementalId;}
 
-		unsigned int getID() {return ID;}
+		unsigned int getID() const {return ID;}
 		void setID(unsigned int ID) {this->ID = ID;}
 
-		string getNombre() {return nombre;}
+		string getNombre() const {return nombre;}
 		void setNombre(string nombre) {this->nombre = nombre;}
 
-		unsigned int getTamanio() {return tamanio;}
+		unsigned int getTamanio() const {return tamanio;}
 		void setTamanio(unsigned int tamanio) {this->tamanio = tamanio;}
 
-		int getCant_partes() {return cant_partes;}
+		int getCant_partes() const {return cant_partes;}
 		void setCant_partes(int cant_partes) {this->cant_partes = cant_partes;}
 
 };

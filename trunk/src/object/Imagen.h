@@ -26,22 +26,20 @@ class Imagen{
 		unsigned int tamanio;
 		string nombre;
 
-		static string GIF;
-		static string JPG;
-		static string PNG;
-		static string BMP;
-
 		static unsigned int incrementalId;
 
 		unsigned int getNewId(){return ++incrementalId;}
 
 	public:
 
+		/*Este constructor es para poder comparar una nueva imagen con las ya existentes en la base de datos*/
+		Imagen(string pNombre) : nombre(pNombre) {}
+
 		Imagen(const Imagen &img);
 		//constructor con ID incluido. Cuando se lee del indice por ejemplo.
 		Imagen(unsigned int pID, unsigned int pID_Dir, unsigned int pEspacio_Libre, unsigned int pProximo_Bit_Libre,
 						unsigned long int pHash_Value, unsigned int pTamanio, string pNombre);
-		//constructor sin ID incluido. Cuando se crea por primera vez el elemento.
+		//constructor sin ID incluido. Cuando se crea por primera vez el objeto.
 		Imagen(unsigned int pID_Dir, unsigned int pEspacio_Libre, unsigned int pProximo_Bit_Libre,
 				unsigned long int pHash_Value, unsigned int pTamanio, string pNombre);
 		~Imagen();
@@ -70,6 +68,7 @@ class Imagen{
 		unsigned long int getHash_value() const {return hash_value;}
 		void setHash_value(unsigned long int hash_value) {this->hash_value = hash_value;}
 
+		friend bool operator== (const Imagen& left, const Imagen& right);
 };
 
 }

@@ -17,8 +17,9 @@ TestAgregarYRecuperarMensaje::TestAgregarYRecuperarMensaje() {
 
 int TestAgregarYRecuperarMensaje::test() {
 	dao::ManagerDAO managerDAO;
-	business::DirectorioManager directoryManager(managerDAO);
-	business::MensajeManager mensajeManager(managerDAO);
+	dao::TrieDAO trieDao(managerDAO);
+	business::DirectorioManager directoryManager(managerDAO,trieDao);
+	business::MensajeManager mensajeManager(managerDAO,directoryManager,trieDao);
 	directoryManager.agregarDirectorio(__TEST_DIR__"");
 
 	mensajeManager.agregarMensaje(__TEST_DIR__"/prueba_entrada.txt");
