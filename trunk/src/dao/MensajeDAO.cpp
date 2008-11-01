@@ -19,8 +19,6 @@ MensajeDAO::MensajeDAO(){
 
 	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_MSJ.str", sizeof(REG_MSJ));
 	this->stream = new StreamVariable(__BASE_DIR__"/STREAM_MSJ.str");
-
-	this->arbol = new AVL();
 }
 
 MensajeDAO::~MensajeDAO(){
@@ -30,8 +28,6 @@ MensajeDAO::~MensajeDAO(){
 
 	delete(this->archivo);
 	delete(this->stream);
-
-	delete(this->arbol);
 }
 
 
@@ -75,16 +71,6 @@ bool MensajeDAO::insert(Mensaje& msj){
 
 	this->index_Tamanio->insertar((double) buffer->tamanio, offset_registro);
 
-	//si lo que inserte iba dentro de la pagina que se mantiene en buffer, la
-	//vuelvo a cargar despues de la insercion.
-	if((msj.getID() >= this->minID) && (msj.getID() <= this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) msj.getID());
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
-	}
 
 	free(buffer);
 	return true;
@@ -92,23 +78,27 @@ bool MensajeDAO::insert(Mensaje& msj){
 
 void MensajeDAO::borrar(unsigned int id){
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((id < this->minID) || (id > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) id);
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+	//obtengo la pag candidata
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) id);
+
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == id)			//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > id)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
 	}
+	/********************************************/
 
-	if(arbol->Buscar((double) id)){
+	if(encontrado){
 
-		RegPagina reg = this->arbol->ValorActual();
+		RegPagina reg = candidata[i];
 
 		//recupero la informacion almacenada, requerido para poder dar de baja un indice
 		REG_MSJ* buffer = new REG_MSJ();
@@ -123,14 +113,7 @@ void MensajeDAO::borrar(unsigned int id){
 
 		//doy de baja el registro de los indices
 		this->index_Prim->eliminar((double) id);
-		this->index_Tamanio->eliminar((double) buffer->tamanio);
-
-		//cargo la nueva pagina del indice, ya que sufrio modificaciones
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata(id);
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+		this->index_Tamanio->eliminar((double) buffer->tamanio,reg.getOffset());
 
 		//elimino el nombre del mensaje del archivo de regs de long variable
 		this->stream->borrar(buffer->offset_nombre);
@@ -150,25 +133,28 @@ void MensajeDAO::borrar(Mensaje& msj){
 
 bool MensajeDAO::update(unsigned int ID, int newCantPartes){
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((ID < this->minID) || (ID > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
-	}
+	//obtengo la pag candidata
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
 
-	if(! arbol->Buscar((double) ID))
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == ID)			//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > ID)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
+	}
+	/********************************************/
+
+	if(!encontrado)
 		return false;
 
-	//recupero la informacion almacenada
-	RegPagina reg = this->arbol->ValorActual();
+	RegPagina reg = candidata[i];
 	REG_MSJ* buffer = new REG_MSJ();
 	this->archivo->abrir(READ);
 	this->archivo->leer(buffer, reg.getOffset());
@@ -185,28 +171,30 @@ bool MensajeDAO::update(unsigned int ID, int newCantPartes){
 
 Mensaje MensajeDAO::getMsjById(unsigned int newID){
 
-	//primero verifico con el arbol cargado en memoria. Si la clave buscada es
-	//menor a la minima clave de ese arbol, o mayor a la maxima clave de ese
-	//arbol, entonces tengo que cargar la pagina candidata a poseer la clave
-	//que estoy buscando. Sino, sigo trabajando con el arbol que ya tengo cargado
-	//sin tener que acceder al disco ni recorrer el archivo
-	if((newID < this->minID) || (newID > this->maxID)){
-		//obtengo la pag candidata y armo el arbol con la misma
-		vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) newID);
-		this->arbol->ArmarArbol(candidata);
-		//actualizo los limites del arbol
-		this->minID = candidata[0].getID();
-		this->maxID = candidata[candidata.size()-1].getID();
+	//obtengo la pag candidata
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) newID);
+
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == newID)		//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > newID)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
 	}
+	/********************************************/
 
-	bool buscar = arbol->Buscar((double) newID);
-
-	if(!buscar){		//si no lo encontro, no existe en el indice
+	if(!encontrado){		//si no lo encontro, no existe en el indice
 		Mensaje msj(0,"",0,0);
 		return msj;
 	}
 
-	RegPagina reg = this->arbol->ValorActual();
+	RegPagina reg = candidata[i];
 
 	REG_MSJ* buffer = new REG_MSJ();
 	this->archivo->abrir(READ);

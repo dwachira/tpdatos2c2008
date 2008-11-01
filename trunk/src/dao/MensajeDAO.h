@@ -11,7 +11,6 @@
 #include "../db/file/StreamFijo.h"
 #include "../db/file/StreamVariable.h"
 #include "../db/file/Indice.h"
-#include "../db/file/AVL.h"
 #include "../object/Mensaje.h"
 #include "DAO.h"
 #include <stdlib.h>
@@ -39,9 +38,6 @@ class MensajeDAO : public DAO{
 		StreamFijo*					archivo;
 //		StreamVariable*				stream;		-> en clase DAO
 
-		AVL*						arbol;
-		unsigned int				minID;
-		unsigned int				maxID;
 
 		/*
 		 * Se almcena el nombre del mensaje, que es la parte de longitud

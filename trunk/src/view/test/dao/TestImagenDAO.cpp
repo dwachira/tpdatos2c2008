@@ -137,6 +137,8 @@ int TestImagenDAO::test(){
 	return 0;
 }
 
+/*************************************************************************************/
+
 void TestImagenDAO::print(Imagen* img){
 
 	std::cout << "**ID=" << img->getID() <<
