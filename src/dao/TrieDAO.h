@@ -26,13 +26,13 @@ class TrieDAO{
 	private:
 
 		ManagerDAO&			daoManager;
-		Trie 				directorios;		//path de los directorios del sistema
-		Trie				imagenes;			//nombre de las imagenes utilizadas
-		Trie 				mensajes;			//nombre de los mensajes ocultos
+		Trie* 				directorios;		//path de los directorios del sistema
+		Trie*				imagenes;			//nombre de las imagenes utilizadas
+		Trie* 				mensajes;			//nombre de los mensajes ocultos
 
 	public:
 
-		TrieDAO(ManagerDAO& managerDao) : daoManager(managerDao) {}
+		TrieDAO(ManagerDAO& managerDao);
 		~TrieDAO();
 
 		/*
