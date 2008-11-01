@@ -14,12 +14,10 @@
 #include "../object/Directorio.h"
 #include "../util/string/StringUtils.h"
 #include "DAO.h"
-#include <stdlib.h>
 #include <vector>
 #include <list>
 using namespace std;
 using namespace object;
-using namespace util;
 
 namespace dao {
 

@@ -14,11 +14,11 @@ namespace dao {
 
 MensajeDAO::MensajeDAO(){
 
-	this->index_Prim = new Indice("INDEX_MSJ_Prim.idx", false);
-	this->index_Tamanio = new Indice("INDEX_MSJ_Tamanio.idx", true);
+	this->index_Prim = new Indice(__BASE_DIR__"/INDEX_MSJ_Prim.idx", false);
+	this->index_Tamanio = new Indice(__BASE_DIR__"/INDEX_MSJ_Tamanio.idx", true);
 
-	this->archivo = new StreamFijo("STREAMFIJO_MSJ.str", sizeof(REG_MSJ));
-	this->stream = new StreamVariable("STREAM_MSJ.str");
+	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_MSJ.str", sizeof(REG_MSJ));
+	this->stream = new StreamVariable(__BASE_DIR__"/STREAM_MSJ.str");
 
 	this->arbol = new AVL();
 }
