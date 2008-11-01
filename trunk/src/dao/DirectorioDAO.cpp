@@ -42,7 +42,7 @@ bool DirectorioDAO::insert(Directorio& dir){
 
 	//almaceno el nombre en el stream que maneja registros de longitud
 	//variable y recupero el offset de insercion
-	unsigned long int offset_path = guardarNombre(dir.getPath());
+	unsigned long int offset_path = guardarPath(dir.getPath());
 	//si devuelve 0, indica que no pudo almacenar la informacion
 	if(offset_path == 0)
 		return false;
@@ -243,7 +243,7 @@ Directorio* DirectorioDAO::getDirById(unsigned int newID){
 	this->archivo->cerrar();
 
 	unsigned int id = buffer->ID;
-	string nombre = this->recuperarNombre(buffer->offset_path);
+	string nombre = this->recuperarPath(buffer->offset_path);
 	Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
 			buffer->hora,buffer->min);
 	Directorio* dir = new Directorio(id,nombre,lastModification);
@@ -260,7 +260,7 @@ list<Directorio> DirectorioDAO::getDirsSortedByFechaModif(){
 	for(unsigned int i=0; i<resultados.size(); i++){
 		this->archivo->leer(buffer, resultados[i].getOffset());
 		unsigned int id = buffer->ID;
-		string nombre = this->recuperarNombre(buffer->offset_path);
+		string nombre = this->recuperarPath(buffer->offset_path);
 		Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
 				buffer->hora,buffer->min);
 		Directorio* dir = new Directorio(id,nombre,lastModification);
@@ -273,11 +273,16 @@ list<Directorio> DirectorioDAO::getDirsSortedByFechaModif(){
 	return lista;
 }
 
+vector<RegPagina> DirectorioDAO::recorrer(){
+
+	return (this->index_Prim->recorrerIndice());
+}
+
 
 /*******************************************************
  * METODOS PRIVADOS
  *******************************************************/
-/*
+
 unsigned long int DirectorioDAO::guardarPath(string nombre){
 
 	bool open = this->stream->abrir(WRITE);
@@ -301,7 +306,7 @@ string DirectorioDAO::recuperarPath(unsigned long int offset){
 
 	return nombre;
 }
-*/
+
 REG_DIR* DirectorioDAO::aStruct(const Directorio& dir, unsigned long int offset_path){
 
 	REG_DIR* buffer = new REG_DIR();

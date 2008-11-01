@@ -208,11 +208,16 @@ Mensaje MensajeDAO::getMsjById(unsigned int newID){
 	return msj;
 }
 
+vector<RegPagina> MensajeDAO::recorrer(){
+
+	return (this->index_Prim->recorrerIndice());
+}
+
 
 /*******************************************************
  * METODOS PRIVADOS
  *******************************************************/
-/*
+
 unsigned long int MensajeDAO::guardarNombre(string nombre){
 
 	bool open = this->stream->abrir(WRITE);
@@ -236,7 +241,7 @@ string MensajeDAO::recuperarNombre(unsigned long int offset){
 
 	return nombre;
 }
-*/
+
 REG_MSJ* MensajeDAO::aStruct(Mensaje msj, unsigned long int offset_nombre){
 
 	REG_MSJ* buffer = new REG_MSJ();
