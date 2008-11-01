@@ -12,7 +12,6 @@
 #include "../db/file/StreamVariable.h"
 #include "../db/file/Indice.h"
 #include "../object/Mensaje.h"
-#include "DAO.h"
 #include <stdlib.h>
 #include <vector>
 using namespace std;
@@ -28,7 +27,7 @@ typedef struct{
 }REG_MSJ;
 
 
-class MensajeDAO : public DAO{
+class MensajeDAO{
 
 	private:
 
@@ -36,21 +35,21 @@ class MensajeDAO : public DAO{
 		Indice*						index_Tamanio;
 
 		StreamFijo*					archivo;
-//		StreamVariable*				stream;		-> en clase DAO
+		StreamVariable*				stream;
 
 
 		/*
 		 * Se almcena el nombre del mensaje, que es la parte de longitud
 		 * variable, en un archivo aparte y se recupera el offset
 		 */
-//		unsigned long int guardarNombre(string nombre);		-> en clase DAO
+		unsigned long int guardarNombre(string nombre);
 
 		/*
 		 * A partir del offset recuperado con la funcion anterior, y que fue
 		 * almacenado en el indice junto con los demas datos de longitud fija,
 		 * se puede recuperar del stream de regs de long variable, el nombre
 		 */
-//		string recuperarNombre(unsigned long int offset);		-> en clase DAO
+		string recuperarNombre(unsigned long int offset);
 
 		/*
 		 * Transformacion a struct de una instancia de clase 'Mensaje'
@@ -96,6 +95,12 @@ class MensajeDAO : public DAO{
 		Mensaje getMsjById(unsigned int newID);
 
 //podria usarse un indice por tamanio de mensaje. aun no le encuentro utilidad
+
+
+		/*
+		 * funcinoalidad para la carga inicial del Trie correspondiente
+		 */
+		vector<RegPagina> recorrer();
 };
 
 }

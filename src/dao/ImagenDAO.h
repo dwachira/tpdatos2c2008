@@ -12,7 +12,6 @@
 #include "../db/file/StreamVariable.h"
 #include "../db/file/Indice.h"
 #include "../object/Imagen.h"
-#include "DAO.h"
 #include <stdlib.h>
 #include <vector>
 #include <list>
@@ -32,7 +31,7 @@ typedef struct{
 }REG_IMG;
 
 
-class ImagenDAO : public DAO{
+class ImagenDAO{
 
 	private:
 
@@ -41,21 +40,21 @@ class ImagenDAO : public DAO{
 		Indice*						index_Directorio;
 
 		StreamFijo*					archivo;
-//		StreamVariable*				stream;		-> en clase DAO
+		StreamVariable*				stream;
 
 
 		/*
 		 * Se almcena el nombre de la imagen, que es la parte de longitud
 		 * variable, en un archivo aparte y se recupera el offset
 		 */
-//		unsigned long int guardarNombre(string nombre);		-> en clase DAO
+		unsigned long int guardarNombre(string nombre);
 
 		/*
 		 * A partir del offset recuperado con la funcion anterior, y que fue
 		 * almacenado en el indice junto con los demas datos de longitud fija,
 		 * se puede recuperar del stream de regs de long variable, el nombre
 		 */
-//		string recuperarNombre(unsigned long int offset);		-> en clase DAO
+		string recuperarNombre(unsigned long int offset);
 
 		/*
 		 * Transformacion a struct de una instancia de clase 'Imagen'
@@ -117,6 +116,12 @@ class ImagenDAO : public DAO{
 		 * primer elemento es el que tiene mas espacio libre.
 		 */
 		list<Imagen> getImgsSortedByEspacioLibre();
+
+
+		/*
+		 * funcinoalidad para la carga inicial del Trie correspondiente
+		 */
+		vector<RegPagina> recorrer();
 };
 
 }

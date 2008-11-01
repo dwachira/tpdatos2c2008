@@ -13,8 +13,9 @@
 #define DIRECTORIOS 9
 
 #include "../db/trie/Trie.h"
-#include "DAO.h"
 #include "./manager/ManagerDAO.h"
+#include "../db/file/RegPagina.h"
+#include <vector>
 
 using namespace std;
 

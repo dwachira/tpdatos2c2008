@@ -32,29 +32,36 @@ TrieDAO::~TrieDAO(){
 
 void TrieDAO::loadTrie(int codigoTrie){
 
-	DAO dao;
-	Trie* trie;
+	vector<RegPagina> result;
 	switch(codigoTrie){
-		case IMAGENES: dao = daoManager.getImagenDAO();
-					   trie = this->imagenes;
+		case IMAGENES: result = daoManager.getImagenDAO().recorrer();
 					   break;
-		case MENSAJES: dao = daoManager.getMensajeDAO();
-					   trie = this->mensajes;
+		case MENSAJES: result = daoManager.getMensajeDAO().recorrer();
 					   break;
-		case DIRECTORIOS: dao = daoManager.getDirectorioDAO();
-						  trie = this->directorios;
+		case DIRECTORIOS: result = daoManager.getDirectorioDAO().recorrer();
 						  break;
 	}
 
-	dao.openStream();
-	string buffer;
-	unsigned long int offset = dao.leerProximo(&buffer);
-	while(offset != 0){
-		trie->insertCadena(buffer, offset);
-		buffer.clear();
-		offset = dao.leerProximo(&buffer);
+	unsigned int i = 0;
+	while(i < result.size()){
+
+		unsigned int id = result[i].getID();
+		string cadena;
+
+		switch(codigoTrie){
+			case IMAGENES: cadena = daoManager.getImagenDAO().getImgById(id).getNombre();
+						   this->imagenes->insertCadena(cadena,id);
+						   break;
+			case MENSAJES: cadena = daoManager.getMensajeDAO().getMsjById(id).getNombre();
+						   this->mensajes->insertCadena(cadena,id);
+						   break;
+			case DIRECTORIOS: cadena = daoManager.getDirectorioDAO().getDirById(id)->getPath();
+							  this->directorios->insertCadena(cadena,id);
+							  break;
+		}
+
+		i++;
 	}
-	dao.closeStream();
 }
 
 bool TrieDAO::insertCadena(int codigoTrie, string cadena, unsigned int indice){

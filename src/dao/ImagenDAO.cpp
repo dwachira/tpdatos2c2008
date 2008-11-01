@@ -432,11 +432,16 @@ list<Imagen> ImagenDAO::getImgsSortedByEspacioLibre(){
 	return lista;
 }
 
+vector<RegPagina> ImagenDAO::recorrer(){
+
+	return (this->index_Prim->recorrerIndice());
+}
+
 
 /*******************************************************
  * METODOS PRIVADOS
  *******************************************************/
-/*
+
 unsigned long int ImagenDAO::guardarNombre(string nombre){
 
 	bool open = this->stream->abrir(WRITE);
@@ -460,7 +465,7 @@ string ImagenDAO::recuperarNombre(unsigned long int offset){
 
 	return nombre;
 }
-*/
+
 REG_IMG* ImagenDAO::aStruct(Imagen img, unsigned long int offset_nombre){
 
 	REG_IMG* buffer = new REG_IMG();
