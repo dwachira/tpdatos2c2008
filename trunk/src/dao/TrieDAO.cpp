@@ -12,8 +12,17 @@ namespace dao {
  * CONSTRUCTOR Y DESTRUCTOR
  *******************************************************/
 
+TrieDAO::TrieDAO(ManagerDAO& managerDao) : daoManager(managerDao) {
+	this->mensajes = new Trie();
+	this->directorios = new Trie();
+	this->imagenes = new Trie();
+}
+
 TrieDAO::~TrieDAO(){
 
+	delete(this->directorios);
+	delete(this->imagenes);
+	delete(this->mensajes);
 }
 
 
@@ -26,14 +35,14 @@ void TrieDAO::loadTrie(int codigoTrie){
 	DAO dao;
 	Trie* trie;
 	switch(codigoTrie){
-		case IMAGENES: dao = daoManager->getImagenDAO();
-					   trie = & (this->imagenes);
+		case IMAGENES: dao = daoManager.getImagenDAO();
+					   trie = this->imagenes;
 					   break;
-		case MENSAJES: dao = daoManager->getMensajeDAO();
-					   trie = & (this->mensajes);
+		case MENSAJES: dao = daoManager.getMensajeDAO();
+					   trie = this->mensajes;
 					   break;
-		case DIRECTORIOS: dao = daoManager->getDirectorioDAO();
-						  trie = & (this->directorios);
+		case DIRECTORIOS: dao = daoManager.getDirectorioDAO();
+						  trie = this->directorios;
 						  break;
 	}
 
@@ -52,11 +61,11 @@ bool TrieDAO::insertCadena(int codigoTrie, string cadena, unsigned int indice){
 
 	Trie* trie;
 	switch(codigoTrie){
-		case IMAGENES: trie = & (this->imagenes);
+		case IMAGENES: trie = this->imagenes;
 					break;
-		case MENSAJES: trie = & (this->mensajes);
+		case MENSAJES: trie = this->mensajes;
 					break;
-		case DIRECTORIOS: trie = & (this->directorios);
+		case DIRECTORIOS: trie = this->directorios;
 					break;
 	}
 
@@ -68,11 +77,11 @@ unsigned int TrieDAO::getIndice(int codigoTrie, string cadena){
 
 	Trie* trie;
 	switch(codigoTrie){
-		case IMAGENES: trie = & (this->imagenes);
+		case IMAGENES: trie = this->imagenes;
 					break;
-		case MENSAJES: trie = & (this->mensajes);
+		case MENSAJES: trie = this->mensajes;
 					break;
-		case DIRECTORIOS: trie = & (this->directorios);
+		case DIRECTORIOS: trie = this->directorios;
 					break;
 	}
 
@@ -83,11 +92,11 @@ bool TrieDAO::deleteCadena(int codigoTrie, string cadena){
 
 	Trie* trie;
 	switch(codigoTrie){
-		case IMAGENES: trie = & (this->imagenes);
+		case IMAGENES: trie = this->imagenes;
 					break;
-		case MENSAJES: trie = & (this->mensajes);
+		case MENSAJES: trie = this->mensajes;
 					break;
-		case DIRECTORIOS: trie = & (this->directorios);
+		case DIRECTORIOS: trie = this->directorios;
 					break;
 	}
 
