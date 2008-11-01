@@ -12,10 +12,6 @@ namespace dao {
  * CONSTRUCTOR Y DESTRUCTOR
  *******************************************************/
 
-TrieDAO::TrieDAO(){
-
-}
-
 TrieDAO::~TrieDAO(){
 
 }
