@@ -11,7 +11,6 @@
 #include "../db/file/StreamFijo.h"
 #include "../db/file/StreamVariable.h"
 #include "../db/file/Indice.h"
-#include "../db/file/AVL.h"
 #include "../object/Imagen.h"
 #include "DAO.h"
 #include <stdlib.h>
