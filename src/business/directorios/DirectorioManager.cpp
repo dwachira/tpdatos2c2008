@@ -98,13 +98,15 @@ bool DirectorioManager::directorioEnUso(string path) const
 		throw new EntidadInexistenteException();
 }
 
-bool DirectorioManager::agregarImagenEnDirectorio(Directorio& directorio, string filename) const {
-	StegoBusiness* stego = StegoFactory::newInstance(filename);
+bool DirectorioManager::agregarImagenEnDirectorio(Directorio& directorio, Imagen& imagen) const {
+	StegoBusiness* stego = StegoFactory::newInstance(imagen.getNombre());
 	struct stat fileStats;
 	if (stego != NULL) {
-		lstat(filename.data(),&fileStats);
-		Imagen imagen(directorio.getID(),stego->getFreeSpace(),stego->getFirstFreeBit(),
-				0,fileStats.st_size,filename);
+		lstat(imagen.getNombre().data(),&fileStats);
+		imagen.setID_Dir(directorio.getID());
+		imagen.setEspacio_libre(stego->getFreeSpace());
+		imagen.setProximo_bit_libre(stego->getFirstFreeBit());
+		imagen.setTamanio(fileStats.st_size);
 		imagenDAO.insert(imagen);
 		trieDao.insertCadena(IMAGENES,imagen.getNombre(),imagen.getID());
 		delete stego;
@@ -120,8 +122,8 @@ void DirectorioManager::buscarImagenes(Directorio& directorio) const
 
 	while (iterador.hasNext()) {
 		string entryName = iterador.next();
-		string fullFileName = directorio.getPath() + "/" + entryName;
-		agregarImagenEnDirectorio(directorio,fullFileName);
+		Imagen imagen(entryName);
+		agregarImagenEnDirectorio(directorio,imagen);
 	}
 }
 

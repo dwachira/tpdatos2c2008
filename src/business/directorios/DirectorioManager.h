@@ -10,6 +10,7 @@
 #include <string>
 #include <list>
 #include "../../object/Directorio.h"
+#include "../../object/Imagen.h"
 #include "DirectorioIteradorImagenes.h"
 #include "../../dao/manager/ManagerDAO.h"
 #include "../../dao/TrieDAO.h"
@@ -33,7 +34,7 @@ public:
 
 	/**Agrega la imagen en la base de datos con todos los datos necesarios**/
 	/**Devuelve true si pudo y false si no.**/
-	bool agregarImagenEnDirectorio(Directorio& directorio, std::string filename) const;
+	bool agregarImagenEnDirectorio(Directorio& directorio, Imagen& filename) const;
 
 	/*@throws RecursoInexistenteException*/
 	bool directorioEnUso(std::string path) const;

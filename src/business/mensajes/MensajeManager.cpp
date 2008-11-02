@@ -86,10 +86,11 @@ void MensajeManager::agregarMensaje(std::string filename)
 						list<Imagen>::iterator listBeginning = imagenesEnDirectorio.begin();
 						list<Imagen>::iterator listEnding = imagenesEnDirectorio.end();
 						if (find(listBeginning,listEnding,imagenEnDir) == listEnding) {
-							if (directorioManager.agregarImagenEnDirectorio(directorio,pathImagen)) {
+							if (directorioManager.agregarImagenEnDirectorio(directorio,imagenEnDir)) {
 								imagenesSeleccionadas.push_back(imagenEnDir);
-								if ((espacioDisponible += imagenEnDir.getTamanio()) >= tamanioMensaje)
+								if ((espacioDisponible += imagenEnDir.getTamanio()) >= tamanioMensaje) {
 									break;
+								}
 							}
 						}
 					}
