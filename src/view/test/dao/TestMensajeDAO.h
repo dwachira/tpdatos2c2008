@@ -21,17 +21,16 @@ using namespace util;
 
 class TestMensajeDAO : public TestCase{
 
-	private:
-		void print(Mensaje* dir);
-		void insertar(MensajeDAO* dao, Mensaje* dir);
-		void borrar(MensajeDAO* dao, unsigned int id);
-		void getById(MensajeDAO* dao, unsigned int id);
-		void update(MensajeDAO* dao, unsigned int id, int newCant);
-
 	public:
 		TestMensajeDAO();
 		~TestMensajeDAO();
 		int test();
+
+		static void print(Mensaje* dir);
+		static void insertar(MensajeDAO* dao, Mensaje* dir);
+		static void borrar(MensajeDAO* dao, unsigned int id);
+		static void getById(MensajeDAO* dao, unsigned int id);
+		static void update(MensajeDAO* dao, unsigned int id, int newCant);
 };
 
 #endif /* TESTMENSAJEDAO_H_ */

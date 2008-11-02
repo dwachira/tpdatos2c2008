@@ -177,7 +177,7 @@ void TestImagenDAO::getImgsByDir(ImagenDAO* dao, unsigned int id){
 	list<Imagen> lista = dao->getImgsByDirectorio(id);
 	list<Imagen>::iterator it;
 	for(it=lista.begin();it!=lista.end();it++){
-		this->print(&(*it));
+		print(&(*it));
 	}
 }
 
