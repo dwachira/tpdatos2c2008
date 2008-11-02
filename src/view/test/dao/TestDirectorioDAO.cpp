@@ -53,6 +53,7 @@ int TestDirectorioDAO::test(){
 	this->getById(dDAO,6);
 	this->getById(dDAO,7);
 
+	std::cout << "" << std::endl;
 	this->borrar(dDAO,2);
 	this->getById(dDAO,2);
 	std::cout << "OJO. Debia dar NULL porque en el paso anterior se elimino." << std::endl;
@@ -65,10 +66,12 @@ int TestDirectorioDAO::test(){
 		this->print(&(*it));
 	}
 
-
+	std::cout << "" << std::endl;
 	Date* newFecha = Date::valueOf(27,12,92,13,33);
 	this->update(dDAO,2,newFecha);
 	std::cout << "OJO. Debia dar Falso porque se quiso updatear algo eliminado" << std::endl;
+	std::cout << "" << std::endl;
+	this->getById(dDAO,1);
 	this->update(dDAO,1,newFecha);
 	std::cout << "OJO. Recordar que se modifico la Fecha del Dir1 en el paso anterior." << std::endl;
 	this->getById(dDAO,1);
