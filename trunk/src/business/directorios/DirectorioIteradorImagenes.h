@@ -20,6 +20,7 @@ class DirectorioIteradorImagenes {
 private:
 	DIR* osDir;
 	struct dirent* nextDirEntry;
+	std::string directoryPath;
 	static std::string GIF;
 	static std::string JPG;
 	static std::string PNG;

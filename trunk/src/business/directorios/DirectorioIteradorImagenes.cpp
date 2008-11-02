@@ -17,7 +17,8 @@ string DirectorioIteradorImagenes::JPG = "JPG";
 string DirectorioIteradorImagenes::PNG = "PNG";
 
 DirectorioIteradorImagenes::DirectorioIteradorImagenes(object::Directorio& dir) {
-	osDir = opendir(dir.getPath().data());
+	directoryPath = dir.getPath();
+	osDir = opendir(directoryPath.data());
 	obtenerSiguienteImagen();
 }
 
@@ -36,7 +37,7 @@ string DirectorioIteradorImagenes::next()
 {
 	std::string entry(nextDirEntry->d_name);
 	obtenerSiguienteImagen();
-	return entry;
+	return directoryPath + "/" + entry;
 }
 
 bool DirectorioIteradorImagenes::hasNext() const

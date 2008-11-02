@@ -33,7 +33,7 @@ class Imagen{
 	public:
 
 		/*Este constructor es para poder comparar una nueva imagen con las ya existentes en la base de datos*/
-		Imagen(string pNombre) : nombre(pNombre) {}
+		Imagen(string pNombre) : nombre(pNombre) { hash_value = 0; }
 
 		Imagen(const Imagen &img);
 		//constructor con ID incluido. Cuando se lee del indice por ejemplo.
