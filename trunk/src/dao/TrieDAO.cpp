@@ -42,25 +42,50 @@ void TrieDAO::loadTrie(int codigoTrie){
 						  break;
 	}
 
-	unsigned int i = 0;
-	while(i < result.size()){
+	if(result.size() > 0){
+		unsigned int i = 0;
+		unsigned int id;
+		while(i < result.size()){
 
-		unsigned int id = result[i].getID();
-		string cadena;
+			id = result[i].getID();
+			string cadena;
 
-		switch(codigoTrie){
-			case IMAGENES: cadena = daoManager.getImagenDAO().getImgById(id).getNombre();
-						   this->imagenes->insertCadena(cadena,id);
-						   break;
-			case MENSAJES: cadena = daoManager.getMensajeDAO().getMsjById(id).getNombre();
-						   this->mensajes->insertCadena(cadena,id);
-						   break;
-			case DIRECTORIOS: cadena = daoManager.getDirectorioDAO().getDirById(id)->getPath();
-							  this->directorios->insertCadena(cadena,id);
-							  break;
+			switch(codigoTrie){
+				case IMAGENES: cadena = daoManager.getImagenDAO().getImgById(id).getNombre();
+							   this->imagenes->insertCadena(cadena,id);
+							   break;
+				case MENSAJES: cadena = daoManager.getMensajeDAO().getMsjById(id).getNombre();
+							   this->mensajes->insertCadena(cadena,id);
+							   break;
+				case DIRECTORIOS: cadena = daoManager.getDirectorioDAO().getDirById(id)->getPath();
+							   this->directorios->insertCadena(cadena,id);
+								  break;
+			}
+
+			i++;
 		}
 
-		i++;
+		//ahora, en ID quedo el ultimo id leido, o sea, el ultimo id asignado
+		//lo seteo en la clase correspondiente para empezar a numerar desde ahi.
+		switch(codigoTrie){
+			case IMAGENES: object::Imagen::setIncrementalId(id);
+						   break;
+			case MENSAJES: object::Mensaje::setIncrementalId(id);
+						   break;
+			case DIRECTORIOS: object::Directorio::setIncrementalId(id);
+						   break;
+		}
+	}
+	else{	//si el vector estaba vacio, el indice estaba vacio, no habia registros
+			//por lo tanto se asigna cero al contador estatico que genera los ids
+		switch(codigoTrie){
+			case IMAGENES: object::Imagen::setIncrementalId(0);
+						   break;
+			case MENSAJES: object::Mensaje::setIncrementalId(0);
+						   break;
+			case DIRECTORIOS: object::Directorio::setIncrementalId(0);
+						   break;
+		}
 	}
 }
 
