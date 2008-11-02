@@ -8,7 +8,7 @@
 
 namespace object{
 
-unsigned int Imagen::incrementalId = 0;
+unsigned int Imagen::incrementalId = 0;		//si lo borro, no compila
 
 Imagen::Imagen(const Imagen &img){
 

@@ -8,7 +8,7 @@
 
 namespace object{
 
-unsigned int Mensaje::incrementalId = 0;
+unsigned int Mensaje::incrementalId = 0;		//si lo borro, no compila
 
 Mensaje::Mensaje(const Mensaje &msj){
 
