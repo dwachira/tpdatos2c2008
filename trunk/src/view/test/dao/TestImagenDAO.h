@@ -21,24 +21,22 @@ using namespace util;
 
 class TestImagenDAO : public TestCase{
 
-	private:
-		void print(Imagen* img);
-		void insertar(ImagenDAO* dao, Imagen* img);
-		void getById(ImagenDAO* dao, unsigned int id);
-		void borrar(ImagenDAO* dao, unsigned int id);
-		void getImgsByDir(ImagenDAO* dao, unsigned int id);
-
-		void updateEspacio(ImagenDAO* dao, unsigned int id, unsigned int newEspacio);
-		void updateDirectorio(ImagenDAO* dao, unsigned int id, unsigned int newDir);
-		void updateHash(ImagenDAO* dao, unsigned int id, unsigned long int newHash);
-		void updateProxBit(ImagenDAO* dao, unsigned int id, unsigned int newProxBit);
-		void updateNombre(ImagenDAO* dao, unsigned int id, string newNombre);
-
 	public:
 		TestImagenDAO();
 		~TestImagenDAO();
 		int test();
 
+		static void print(Imagen* img);
+		static void insertar(ImagenDAO* dao, Imagen* img);
+		static void getById(ImagenDAO* dao, unsigned int id);
+		static void borrar(ImagenDAO* dao, unsigned int id);
+		static void getImgsByDir(ImagenDAO* dao, unsigned int id);
+
+		static void updateEspacio(ImagenDAO* dao, unsigned int id, unsigned int newEspacio);
+		static void updateDirectorio(ImagenDAO* dao, unsigned int id, unsigned int newDir);
+		static void updateHash(ImagenDAO* dao, unsigned int id, unsigned long int newHash);
+		static void updateProxBit(ImagenDAO* dao, unsigned int id, unsigned int newProxBit);
+		static void updateNombre(ImagenDAO* dao, unsigned int id, string newNombre);
 };
 
 #endif /* TESTIMAGENDAO_H_ */
