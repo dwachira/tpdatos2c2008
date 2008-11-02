@@ -45,6 +45,7 @@ class Imagen{
 		~Imagen();
 
 		static unsigned int getLastAssignedId(){return incrementalId;}
+		static void setIncrementalId(unsigned int newId){incrementalId = newId;}
 
 		unsigned int getProximo_bit_libre() const {return proximo_bit_libre;}
 		void setProximo_bit_libre(unsigned int proximo_bit_libre)

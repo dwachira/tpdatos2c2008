@@ -35,6 +35,7 @@ class Mensaje{
 		~Mensaje();
 
 		static unsigned int getLastAssignedId(){return incrementalId;}
+		static void setIncrementalId(unsigned int newId){incrementalId = newId;}
 
 		unsigned int getID() const {return ID;}
 		void setID(unsigned int ID) {this->ID = ID;}
