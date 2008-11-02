@@ -9,7 +9,7 @@ unsigned int GIFStego::getFreeSpace(){
  if(imagen.isGrayScale()) std::cout<<"ESCALA DE GRISES"<<std::endl;
  if(imagen.isAnimated()) std::cout<<"GIF ANIMADOOOO"<<std::endl;
        		
- if(sort_palette) {
+ if(imagen.getPaletteSize()>16) {
  	 //solo ordeno la paleta si se trata de una imagen que no es escala de grises
  	 if(!imagen.isGrayScale())
  	 	palette.sortPaletteByDistance();  //dejo todo preparado para realizar luego el lsb
@@ -23,7 +23,7 @@ unsigned int GIFStego::setMessage(unsigned long int first_pos,std::string mensaj
 unsigned int last_pos;
 if(!error){
 	 
-  	  if (sort_palette){
+  	  if (imagen.getPaletteSize()>16){//set del mensaje sobre los indices
   	  	   Pixel pixel;
            getPixel(first_pos,pixel);
   	  	   last_pos=palette.doIndexesLSB(pixel,mensaje)+first_pos;
@@ -38,7 +38,7 @@ std::string GIFStego::getMessage(unsigned long int first_bit,unsigned int longit
 std::string mensaje;	
 
 if(!error) {	
-	if(sort_palette){
+	if(imagen.getPaletteSize()>16){
 			Pixel pixel;
     		getPixel(first_bit,pixel);
 			mensaje.append(palette.getMessageFromIndexes(pixel,longitud));

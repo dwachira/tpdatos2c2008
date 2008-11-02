@@ -15,8 +15,7 @@ class LSBStegoBusiness: public StegoBusiness
     	/*Representacion de la imagen*/
     	FIBitmap imagen;
     	ImagePalette palette;
-        bool sort_palette;//define si se reordenara la paleta de colores o no
-        
+              
   		virtual unsigned int changePixel(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados);
     	virtual std::string getMessageFromPixel(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados);
     	std::string getLSBMessage(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados);

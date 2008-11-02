@@ -35,13 +35,13 @@ unsigned int pos_pixel=0;
              
 }
 unsigned int PNGStego::getFreeSpace(){
-	if((imagen.getBpp()<=8)&&(!imagen.isGrayScale()))
-       if (sort_palette){
+	if((imagen.getBpp()<=8)&&(!imagen.isGrayScale())){
+       if (imagen.getPaletteSize()>16){
        	    palette.sortPaletteByDistance();
        	    return ((imagen.getHeight())*(imagen.getWidth())/8);
        }
-       else return (imagen.getPaletteSize()*3)/8;
-      
+       else return (imagen.getPaletteSize()*3)/8;//solo se hara lsb sobre la paleta de colores
+	} 
 	unsigned int space;
 	space=((((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp()/8)*(this->enable_bpp)))/8);
 	if(imagen.getBpp()==32)
