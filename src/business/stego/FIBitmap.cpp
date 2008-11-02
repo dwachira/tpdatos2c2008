@@ -40,7 +40,7 @@ bool FIBitmap::load(int flag){
        		width=FreeImage_GetWidth(imagen); 
        		color_type=FreeImage_GetColorType(imagen);
        		palette_offset=getPaletteOffset();
-            
+            std::cout<<"bpp "<<bpp<<std::endl;
             error=false;
   	}else error=true;	
   } else error=true;	

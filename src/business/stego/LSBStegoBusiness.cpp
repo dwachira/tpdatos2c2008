@@ -3,16 +3,17 @@
 
 
 LSBStegoBusiness::LSBStegoBusiness(std::string filename):StegoBusiness(filename),
-error(false),enable_bpp(1),imagen(filename),palette(imagen),sort_palette(true)
+error(false),enable_bpp(1),imagen(filename),palette(imagen)
 {
 	error=imagen.load();
-	if(imagen.getPaletteSize()<=16) sort_palette=false;
-	std::cout<<imagen.getPaletteSize()<<std::endl;
+
 }
 
 //si uso el lsb sobre la paleta --->devolver cero
 unsigned int LSBStegoBusiness::getFirstFreeBit(){
-	if(!sort_palette) return 0;
+	//solo se aplicara lsb a la paleta si esta posee un tamaño inferior a 16 colores
+	//y no es en escala de grises
+	if((imagen.getBpp()<=8)&&(!imagen.isGrayScale())&&(imagen.getPaletteSize()<=16)) return 0;
 	return (8-this->enable_bpp);
 }
 
@@ -145,13 +146,13 @@ unsigned int LSBStegoBusiness::setMessage(unsigned long int first_pos,std::strin
 unsigned int bits_procesados=0;
 Pixel pixel;
 unsigned int last_pos=0;
-if(sort_palette) getPixel(first_pos,pixel);
+getPixel(first_pos,pixel);
 /*Posicion inicial del mensaje dentro del pixel*/
 unsigned int pos=pixel.getNumero_de_bit();
 if(!error){
         
        if((imagen.getBpp()<=8)&&(!imagen.isGrayScale())){
-           if(sort_palette) last_pos+=palette.doIndexesLSB(pixel,mensaje);
+           if(imagen.getPaletteSize()>16) last_pos+=palette.doIndexesLSB(pixel,mensaje);
            else last_pos=palette.doPaletteLSB(first_pos,mensaje);    
        }
        else{//se puede trabajar con los pixeles
@@ -193,8 +194,8 @@ unsigned int pos=pixel.getNumero_de_bit();
 std::string binario;
 if(!error){
   	  
-      if((imagen.getBpp()<=8)&&(imagen.getColorType()>1))
-      	    if(sort_palette) mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
+      if((imagen.getBpp()<=8)&&(!imagen.isGrayScale()))
+      	    if(imagen.getPaletteSize()>16) mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
       	    else mensaje.append(palette.getMessageFromPalette(first_pos,longitud));
       else{
        		BYTE *bits = imagen.getBits();
