@@ -40,6 +40,11 @@ class TrieDAO{
 		 * Se procede a cargar desde el archivo secuencial, de registros de longitud
 		 * variable, todas las cadenas con sus correspondientes indices. Segun el
 		 * codigoTrie ingresado se define el caso a trabajar.
+		 * Ademas, se recupera el ultimo Id generado para el caso indicado, y se
+		 * setea como inicio del contador usado para generar codigos.
+		 * Si la lectura del indice resulta nula, indica que no habia registros
+		 * almacenados, y por esa razon, no se carga nada al Trie y el contador
+		 * se inicializa con 0.
 		 */
 		void loadTrie(int codigoTrie);
 
