@@ -62,6 +62,7 @@ void MensajeManager::agregarMensaje(std::string filename)
 			espacioDisponible += imagen.getEspacio_libre();
 			imagenesSeleccionadas.push_back(imagen);
 		}
+		it++;
 	}
 
 	//Si el espacioDisponible no alcanza, hay que escanear los directorios en busca de nuevas imagenes
@@ -119,7 +120,7 @@ void MensajeManager::agregarMensaje(std::string filename)
 			}
 			char* buffer = new char[streamsize];
 			filestrm.read(buffer,streamsize);
-			cout<<buffer<<endl;
+
 			std::string tiraDeBits("");
 			for (unsigned int i = 0; i < streamsize  ; i++) {
 				for (int j = 0; j < 8; j++)
@@ -128,7 +129,7 @@ void MensajeManager::agregarMensaje(std::string filename)
 					else
 						tiraDeBits.append("0");
 			}
-			cout<<tiraDeBits<<endl;
+
 			Particion particion(imagen.getID(),mensaje.getID(),numeroDeParticion,
 				imagen.getProximo_bit_libre(),streamsize,false);
 
@@ -137,7 +138,7 @@ void MensajeManager::agregarMensaje(std::string filename)
 			imagen.setProximo_bit_libre(stego->setMessage(particion.getBit_inicio(),tiraDeBits));
 			imagenDao.updateProxBitLibre(imagen.getID(),imagen.getProximo_bit_libre());
 			imagen.setEspacio_libre(imagen.getEspacio_libre()-streamsize);
-			//imagenDao.updateEspacioLibre(imagen.getID(),imagen.getEspacio_libre());
+			imagenDao.updateEspacioLibre(imagen.getID(),imagen.getEspacio_libre());
 
 			particionDao.insert(particion);
 
@@ -226,18 +227,19 @@ void MensajeManager::obtenerMensaje(std::string filename, std::string destino)
 			const Imagen& imagen = imagenDao.getImgById(particion.getID_Img());
 			StegoBusiness* stego = StegoFactory::newInstance(imagen.getNombre());
 			const string& chunk = stego->getMessage(particion.getBit_inicio(),particion.getLongitud()*8);
-			cout<<chunk<<endl;
+
 			string encodedMessage("");
 			const char* buffer = chunk.c_str();
+
 			for (unsigned int i = 0; i < chunk.size(); i+=8) {
-				char byte = 0x0;
-				for (int j = 0; j < 7; j++) {
+				unsigned char byte = 0x0;
+				for (int j = 0; j < 8; j++) {
 					if (memcmp(buffer+i+j,"1",1) == 0)
 						byte = byte | (1<<j);
 				}
 				encodedMessage.push_back(byte);
 			}
-			cout<<encodedMessage<<endl;
+
 			fromImage.write(encodedMessage.c_str(),encodedMessage.size());
 		}
 		fromImage.close();

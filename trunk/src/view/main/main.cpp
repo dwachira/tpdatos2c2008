@@ -18,14 +18,13 @@
 int main(int argc, char* argv[]){
 
 	std::vector<TestCase*> tests;
-	tests.push_back(new TestAddDirectory());
+	//tests.push_back(new TestAddDirectory());
 	tests.push_back(new TestAgregarYRecuperarMensaje());
+	//tests.push_back(new TestCompressor());
 
-	for (int i = 0; i < sizeof(tests) ; i++)
+	for (int i = 0; i < tests.size() ; i++)
 		tests[i]->test();
 
-/*	BlowfishTest bt;
-	bt.test();*/
 
 /*	TestDirectorioDAO* TestDir = new TestDirectorioDAO();
 	TestDir->test();			//no correr los dos en simultaneo. La idea es
