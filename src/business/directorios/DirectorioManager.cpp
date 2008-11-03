@@ -105,6 +105,7 @@ bool DirectorioManager::agregarImagenEnDirectorio(Directorio& directorio, Imagen
 		lstat(imagen.getNombre().data(),&fileStats);
 		imagen.setID_Dir(directorio.getID());
 		imagen.setEspacio_libre(stego->getFreeSpace());
+		std::cout<<imagen.getEspacio_libre()<<std::endl;
 		imagen.setProximo_bit_libre(stego->getFirstFreeBit());
 		imagen.setTamanio(fileStats.st_size);
 		imagenDAO.insert(imagen);
