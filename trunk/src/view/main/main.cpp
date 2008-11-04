@@ -2,6 +2,7 @@
 #include <config.h>
 #endif
 
+#include "../test/md5/MD5Test.h"
 #include "../test/blowfish/BlowfishTest.h"
 #include "../test/TestAddDirectory.h"
 #include "../test/TestAgregarYRecuperarMensaje.h"
@@ -22,7 +23,7 @@ int main(int argc, char* argv[]){
 	tests.push_back(new TestAgregarYRecuperarMensaje());
 	//tests.push_back(new TestCompressor());
 
-	for (int i = 0; i < tests.size() ; i++)
+	for (unsigned int i = 0; i < tests.size() ; i++)
 		tests[i]->test();
 
 
@@ -44,5 +45,7 @@ int main(int argc, char* argv[]){
 	//TestTrie->test2();
 	//TestTrie->test3();*/
 
+	/*MD5Test md5Test;
+	md5Test.test();*/
 	return 0;
 }

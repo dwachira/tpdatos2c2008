@@ -40,6 +40,7 @@ bool Controller::directorioEnUso(std::string path) {
 	} catch (EntidadInexistenteException e) {
 		//MOSTRAS MENSAJE ADECUADO
 	}
+	return true;
 }
 
 void Controller::removerDirectorio(std::string path) {
