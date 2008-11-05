@@ -30,7 +30,7 @@ public:
 		imagenDAO(manager.getImagenDAO()), particionDAO(manager.getParticionDAO()), trieDao(trie) {}
 
 	/*@throws RecursoInaccesibleException, EntidadYaExistenteException */
-	void agregarDirectorio(const std::string path);
+	void agregarDirectorio(const std::string& path);
 
 	/**Agrega la imagen en la base de datos con todos los datos necesarios**/
 	/**Devuelve true si pudo y false si no.**/
@@ -55,7 +55,7 @@ public:
 	/*@throws RecursoInaccesibleException */
 	DirectorioIteradorImagenes obtenerIteradorDeImagenes(Directorio& directorio) const;
 
-	std::list<Directorio*> getDirectorios() const;
+	std::list<string> getDirectorios() const;
 
 	void buscarImagenes(Directorio& directory) const;
 

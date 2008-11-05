@@ -28,14 +28,22 @@ using namespace std;
 
 namespace business {
 
+bool compararDirectoriosPorPath(Directorio& iz, Directorio& der) {
+	return (iz.getPath() < der.getPath());
+}
+
+string transformDirectorioToString(Directorio& dir) {
+	return dir.getPath();
+}
+
 DirectorioIteradorImagenes DirectorioManager::obtenerIteradorDeImagenes(Directorio& directorio) const{
 	if (EntradaSalidaManager::recursoEsAccesible(directorio.getPath()))
 		return DirectorioIteradorImagenes(directorio);
 	else
-		throw new RecursoInaccesibleException();
+		throw RecursoInaccesibleException();
 }
 
-void DirectorioManager::agregarDirectorio(string path)
+void DirectorioManager::agregarDirectorio(const std::string& path)
 {
 
 	if (trieDao.getIndice(DIRECTORIOS,path) == 0) {
@@ -47,11 +55,11 @@ void DirectorioManager::agregarDirectorio(string path)
 			buscarImagenes(unDirectorio);
 		}
 		else {
-			throw new RecursoInaccesibleException();
+			throw RecursoInaccesibleException();
 		}
 	}
 	else
-		throw new EntidadYaExistenteException();
+		throw EntidadYaExistenteException();
 
 }
 
@@ -74,7 +82,7 @@ void DirectorioManager::removerDirectorio(string  path) const
 		trieDao.deleteCadena(DIRECTORIOS,path);
 	}
 	else
-		throw new EntidadInexistenteException();
+		throw EntidadInexistenteException();
 }
 
 bool DirectorioManager::directorioEnUso(string path) const
@@ -95,7 +103,7 @@ bool DirectorioManager::directorioEnUso(string path) const
 		return isBeingUsed;
 	}
 	else
-		throw new EntidadInexistenteException();
+		throw EntidadInexistenteException();
 }
 
 bool DirectorioManager::agregarImagenEnDirectorio(Directorio& directorio, Imagen& imagen) const {
@@ -128,12 +136,14 @@ void DirectorioManager::buscarImagenes(Directorio& directorio) const
 	}
 }
 
-std::list<Directorio*> business::DirectorioManager::getDirectorios() const
+std::list<string> business::DirectorioManager::getDirectorios() const
 {
-	list<Directorio*> directorios;
-	for (unsigned int i = 1; i <= object::Directorio::getLastAssignedId(); i++)
-		directorios.push_back(directorioDAO.getDirById(i));
-	return directorios;
+	list<Directorio> directorios = directorioDAO.getDirsSortedByFechaModif();
+	directorios.sort(compararDirectoriosPorPath);
+	list<string> nombres;
+	nombres.resize(directorios.size());
+	transform(directorios.begin(),directorios.end(),nombres.begin(),transformDirectorioToString);
+	return nombres;
 }
 
 void DirectorioManager::actualizarFechaDeModificacion(Directorio & directorio)

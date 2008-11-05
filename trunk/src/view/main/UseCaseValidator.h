@@ -4,19 +4,21 @@
 
 #include <string>
 #include <map>
+#include "Controller.h"
 using namespace std;
 
 class UseCaseValidator
 {
 private:
 	string action;
-	string parameter;
+	string firstParameter;
+	string secondParameter;
 
 	void loadMap(map<string, int> &useCases);
-	
+
 public:
-	UseCaseValidator(string action, string parameter);
-	void execute();
+	UseCaseValidator(string action, string firstParameter,string secondParameter);
+	void execute(Controller& controller);
 	virtual ~UseCaseValidator();
 };
 

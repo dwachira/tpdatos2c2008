@@ -22,13 +22,16 @@ void Controller::agregarMensaje(std::string filename) {
 	}
 }
 
-void Controller::agregarDirectorio(std::string path) {
+void Controller::agregarDirectorio(std::string& path) {
 	try {
 			directorioManager.agregarDirectorio(path);
 		}catch (RecursoInaccesibleException e) {
-			//MOSTRAR MENSAJE ADECUADO
+			std::cout<<"No se puede acceder al directorio."
+					"Compruebe que lo haya escrito bien y que, ademas, tenga"
+					"permisos de escritura sobre el mismo"<<std::endl;
+
 		}catch (EntidadYaExistenteException e) {
-			//MOSTRAR MENSAJE ADECUADO
+			std::cout<<"El directorio ya existe en el sistema"<<std::endl;
 		}
 }
 
@@ -48,6 +51,8 @@ void Controller::removerDirectorio(std::string path) {
 		if (directorioManager.directorioEnUso(path)) {
 			//PREGUNTAR AL USUARIO QUE DESEA HACER EN ESTE CASO
 		}
+		else
+			directorioManager.removerDirectorio(path);
 	} catch (EntidadInexistenteException e) {
 		//MOSTRAS MENSAJE ADECUADO
 	}
@@ -58,9 +63,22 @@ void Controller::removerMensaje(std::string filename) {
 }
 
 void Controller::obtenerMensaje(std::string filename, std::string pathDestino) {
-
+	try {
+		mensajeManager.obtenerMensaje(filename,pathDestino);
+	}catch (EntidadInexistenteException e) {
+		std::cout<<"El mensaje solicitado no se encuentra en la base de datos. Compruebe el nombre"<<std::endl;
+	}catch (RecursoInaccesibleException e) {
+		std::cout<<"No se puede escribir en el destino."<<std::endl;
+	}
 }
 
+void Controller::mostrarDirectorios() {
+	list<string> directorios = directorioManager.getDirectorios();
+	//TODO::DARLE UN FORMATO MAS MEJOR :P
+	for(list<string>::iterator it = directorios.begin(); it != directorios.end(); it++) {
+		std::cout<<*it<<std::endl;
+	}
+}
 
 Controller::~Controller() {
 	// TODO Auto-generated destructor stub
