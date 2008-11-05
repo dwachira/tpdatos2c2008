@@ -25,8 +25,9 @@
 <option id="gnu.cpp.compiler.exe.debug.option.optimization.level.201166806" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.exe.debug.option.debugging.level.945700093" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.option.preprocessor.def.113655619" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
-<listOptionValue builtIn="false" value="&quot;__BASE_DIR__=&quot;\&quot;${workspace_loc}/Stegno\&quot;&quot;&quot;"/>
+<listOptionValue builtIn="false" value="&quot;__BASE_DIR__=&quot;\&quot;${workspace_loc}/Stegno/system\&quot;&quot;&quot;"/>
 <listOptionValue builtIn="false" value="&quot;__TEST_DIR__=&quot;\&quot;${workspace_loc}/Stegno/test_data\&quot;&quot;&quot;"/>
+<listOptionValue builtIn="false" value="BITS_ARQUITECTURA=32"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1769727610" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
@@ -50,6 +51,9 @@
 </tool>
 </toolChain>
 </folderInfo>
+<sourceEntries>
+<entry excluding="lib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+</sourceEntries>
 </configuration>
 </storageModule>
 
@@ -594,7 +598,7 @@
 <option id="gnu.cpp.compiler.exe.release.option.optimization.level.1311834258" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.exe.release.option.debugging.level.287313687" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.option.preprocessor.def.453798146" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
-<listOptionValue builtIn="false" value="&quot;__BASE_DIR__=&quot;\&quot;${workspace_loc}/Stego\&quot;&quot;&quot;"/>
+<listOptionValue builtIn="false" value="&quot;__BASE_DIR__=&quot;\&quot;${workspace_loc}/Stego/system\&quot;&quot;"/>
 <listOptionValue builtIn="false" value="&quot;__TEST_DIR__=&quot;\&quot;${workspace_loc}/Stegno/test_data\&quot;&quot;&quot;"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1717949730" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -619,6 +623,9 @@
 </tool>
 </toolChain>
 </folderInfo>
+<sourceEntries>
+<entry excluding="lib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+</sourceEntries>
 </configuration>
 </storageModule>
 
