@@ -2,6 +2,7 @@
 #include <config.h>
 #endif
 
+#include "PrimaryView.h"
 #include "../test/md5/MD5Test.h"
 #include "../test/blowfish/BlowfishTest.h"
 #include "../test/TestAddDirectory.h"
@@ -18,13 +19,17 @@
 
 int main(int argc, char* argv[]){
 
-	std::vector<TestCase*> tests;
-	//tests.push_back(new TestAddDirectory());
-	tests.push_back(new TestAgregarYRecuperarMensaje());
-	//tests.push_back(new TestCompressor());
+	PrimaryView mainApp;
+	mainApp.start();
 
-	for (unsigned int i = 0; i < tests.size() ; i++)
-		tests[i]->test();
+//	std::vector<TestCase*> tests;
+//	tests.push_back(new TestAddDirectory());
+//	tests.push_back(new TestAgregarYRecuperarMensaje());
+//	tests.push_back(new TestDirectorioDAO());
+//	tests.push_back(new TestCompressor());
+//
+//	for (unsigned int i = 0; i < tests.size() ; i++)
+//		tests[i]->test();
 
 
 /*	TestDirectorioDAO* TestDir = new TestDirectorioDAO();

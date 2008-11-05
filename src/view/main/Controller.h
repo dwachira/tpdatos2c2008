@@ -11,18 +11,25 @@
 #include "../../business/directorios/DirectorioManager.h"
 #include "../../business/mensajes/MensajeManager.h"
 #include <string>
+#include "../../dao/manager/ManagerDAO.h"
+using namespace dao;
 
 class Controller {
 private:
-	business::DirectorioManager& directorioManager;
-	business::MensajeManager& mensajeManager;
+	dao::ManagerDAO managerDao;
+	dao::TrieDAO trieDao;
+	business::DirectorioManager directorioManager;
+	business::MensajeManager mensajeManager;
 public:
-	Controller(business::DirectorioManager& dirMan, business::MensajeManager& menMan) :
-		directorioManager(dirMan), mensajeManager(menMan) {}
+	Controller() : trieDao(managerDao), directorioManager(managerDao,trieDao), mensajeManager(managerDao,directorioManager,trieDao) {
+		trieDao.loadTrie(DIRECTORIOS);
+		trieDao.loadTrie(MENSAJES);
+		trieDao.loadTrie(IMAGENES);
+	}
 
 	void agregarMensaje(std::string filename);
 
-	void agregarDirectorio(std::string path);
+	void agregarDirectorio(std::string& path);
 
 	bool directorioEnUso(std::string path);
 
@@ -31,6 +38,8 @@ public:
 	void removerMensaje(std::string filename);
 
 	void obtenerMensaje(std::string filename, std::string pathDestino);
+
+	void mostrarDirectorios();
 
 	virtual ~Controller();
 };

@@ -26,7 +26,7 @@ using namespace dao;
 
 namespace business {
 
-std::string MensajeManager::TMP_COMPRESSED_FILE_NAME  = "tmp_file";
+std::string MensajeManager::TMP_COMPRESSED_FILE_NAME  = __BASE_DIR__"/tmp_file";
 
 void MensajeManager::agregarMensaje(std::string filename)
 {
@@ -34,7 +34,7 @@ void MensajeManager::agregarMensaje(std::string filename)
 	/** Comprimo el mensaje **/
 	FILE* file = fopen(filename.c_str(),"rb");
 	if (file == NULL) {
-		throw new RecursoInaccesibleException();
+		throw RecursoInaccesibleException();
 	}
 	FILE* tmpfile = fopen(TMP_COMPRESSED_FILE_NAME.c_str(),"wb");
 
@@ -148,7 +148,7 @@ void MensajeManager::agregarMensaje(std::string filename)
 		}
 	}
 	else {
-		throw new EspacioInsuficienteException();
+		throw EspacioInsuficienteException();
 	}
 
 	remove(TMP_COMPRESSED_FILE_NAME.c_str());
@@ -176,7 +176,7 @@ void MensajeManager::quitarMensajesEnDirectorio(std::string dirpath) {
 
 	}
 	else
-		throw new EntidadInexistenteException();
+		throw EntidadInexistenteException();
 }
 
 void MensajeManager::quitarMensaje(std::string filename)
@@ -205,12 +205,12 @@ void MensajeManager::obtenerMensaje(std::string filename, std::string destino)
 	int mensajeId = trieDao.getIndice(MENSAJES,filename);
 
 	if (mensajeId == 0)
-		throw new EntidadInexistenteException();
+		throw EntidadInexistenteException();
 	else {
 		FILE* salida = fopen(destino.c_str(),"w+b");
 
 		if (salida == NULL) {
-			throw new RecursoInaccesibleException();
+			throw RecursoInaccesibleException();
 		}
 
 		fstream fromImage(TMP_COMPRESSED_FILE_NAME.c_str(), fstream::binary | fstream::out);

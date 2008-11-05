@@ -5,60 +5,55 @@
 
 using namespace business;
 
-UseCaseValidator::UseCaseValidator(string action, string parameter)
+UseCaseValidator::UseCaseValidator(string action, string firstParameter,string secondParameter)
 {
 	this->action = action;
-	this->parameter = parameter;
+	this->firstParameter = firstParameter;
+	this->secondParameter = secondParameter;
 }
 
-void UseCaseValidator::execute(){
+void UseCaseValidator::execute(Controller& controller){
 	map<string, int> useCases;
 	map<string, int>::iterator it;
 	loadMap(useCases);
-	
+
 	it = useCases.find(action);
 	int call;
 	if(it == useCases.end())
 		call = -1;
 	else call = it->second;
-	
-	ManagerDAO managerDao;
-	TrieDAO trieDao(managerDao);
-	DirectorioManager directorioManager(managerDao,trieDao);
-	MensajeManager mensajeManager(managerDao,directorioManager,trieDao);
-	Controller controller(directorioManager,mensajeManager);
-	
+
 	switch(call){
 		case 1:{
-			controller.agregarDirectorio(parameter);
+			controller.agregarDirectorio(firstParameter);
 			break;
 		}
 		case 2:{
-			controller.removerDirectorio(parameter);
+			controller.removerDirectorio(firstParameter);
 			break;
 		}
 		case 3:{
-			controller.agregarMensaje(parameter);
+			controller.agregarMensaje(firstParameter);
 			break;
 		}
 		case 4:{
-			controller.removerMensaje(parameter);
+			controller.removerMensaje(firstParameter);
 			break;
 		}
 		case 5:{
-			//controller.obtenerMensaje(parameter);
+			controller.obtenerMensaje(firstParameter,secondParameter);
 			break;
 		}
 		case 6:{
-			//controller.showFiles(parameter);
+			//controller.showFiles(firstParameter);
 			break;
 		}
 		case 7:{
-			//controller.showDirectories(parameter);
+			controller.mostrarDirectorios();
 			break;
 		}
 		case 8:{
-			//controller.changePassword(parameter);
+			//controller.changePassword(firstParameter);
 			break;
 		}
 		case 9:{
@@ -82,12 +77,12 @@ void UseCaseValidator::execute(){
 			break;
 		}
 		default:{
-			
+
 		}
 	}
-	
-	
-	
+
+
+
 }
 
 void UseCaseValidator::loadMap(map<string, int> &useCases){
