@@ -86,6 +86,11 @@ class MensajeDAO{
 		bool update(unsigned int ID, int newCantPartes);
 
 		/*
+		 * Se recuperan todos los mensajes almacenados en el sistema.
+		 */
+		list<Mensaje> getAllMsjs();
+
+		/*
 		 * Se accede al indice primario, ordenado por ID, y se recupera el
 		 * offset del dato con el id solicitado. Luego se accede al archivo para
 		 * regs de long fija y se recupera la informacion almacenada en ese

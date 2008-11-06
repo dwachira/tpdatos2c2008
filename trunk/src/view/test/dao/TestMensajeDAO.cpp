@@ -59,6 +59,17 @@ int TestMensajeDAO::test(){
 
 	this->update(mDAO,2,15);
 
+
+
+	std::cout << "" << std::endl;
+	std::cout << "GETALLMSJS" << std::endl;
+	list<Mensaje> lista = mDAO->getAllMsjs();
+	list<Mensaje>::iterator it;
+	std::cout << "SIZE= " << lista.size() << std::endl;
+	for(it=lista.begin(); it!=lista.end(); it++){
+		this->print(&(*it));
+	}
+
 	std::cout << "" << std::endl;
 	std::cout << "- - - That's All Folks! - - -" << std::endl;
 	return 0;
