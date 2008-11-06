@@ -12,7 +12,7 @@
 #include "../../object/exceptions/EntidadYaExistenteException.h"
 #include "../../object/exceptions/EntidadInexistenteException.h"
 
-void Controller::agregarMensaje(std::string filename) {
+void Controller::agregarMensaje(std::string& filename) {
 	try {
 		mensajeManager.agregarMensaje(filename);
 	}catch (RecursoInaccesibleException e) {
@@ -35,7 +35,7 @@ void Controller::agregarDirectorio(std::string& path) {
 		}
 }
 
-bool Controller::directorioEnUso(std::string path) {
+bool Controller::directorioEnUso(std::string& path) {
 	try {
 		if (directorioManager.directorioEnUso(path)) {
 			//PREGUNTAR AL USUARIO QUE DESEA HACER EN ESTE CASO
@@ -46,7 +46,7 @@ bool Controller::directorioEnUso(std::string path) {
 	return true;
 }
 
-void Controller::removerDirectorio(std::string path) {
+void Controller::removerDirectorio(std::string& path) {
 	try {
 		if (directorioManager.directorioEnUso(path)) {
 			//PREGUNTAR AL USUARIO QUE DESEA HACER EN ESTE CASO
@@ -58,11 +58,15 @@ void Controller::removerDirectorio(std::string path) {
 	}
 }
 
-void Controller::removerMensaje(std::string filename) {
-
+void Controller::removerMensaje(std::string& filename) {
+	try {
+		mensajeManager.quitarMensaje(filename);
+	} catch (EntidadInexistenteException e) {
+		std::cout<<"El mensaje no existe."<<std::endl;
+	}
 }
 
-void Controller::obtenerMensaje(std::string filename, std::string pathDestino) {
+void Controller::obtenerMensaje(std::string& filename, std::string& pathDestino) {
 	try {
 		mensajeManager.obtenerMensaje(filename,pathDestino);
 	}catch (EntidadInexistenteException e) {
@@ -78,6 +82,14 @@ void Controller::mostrarDirectorios() {
 	for(list<string>::iterator it = directorios.begin(); it != directorios.end(); it++) {
 		std::cout<<*it<<std::endl;
 	}
+}
+
+void Controller::mostrarMensajes() {
+//	list<string> mensajes = mensajeManager.getMensajes();
+//	//TODO::DARLE UN FORMATO MAS MEJOR :P
+//	for(list<string>::iterator it = directorios.begin(); it != directorios.end(); it++) {
+//		std::cout<<*it<<std::endl;
+//	}
 }
 
 Controller::~Controller() {

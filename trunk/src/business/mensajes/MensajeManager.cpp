@@ -28,6 +28,14 @@ namespace business {
 
 std::string MensajeManager::TMP_COMPRESSED_FILE_NAME  = __BASE_DIR__"/tmp_file";
 
+bool compararParticionesPorIdImagen(Particion& iz, Particion& der) {
+	return iz.getID_Img() < der.getID_Img();
+}
+
+string transformMensajeToString(Mensaje& mensaje) {
+	return mensaje.getNombre();
+}
+
 void MensajeManager::agregarMensaje(std::string filename)
 {
 
@@ -130,17 +138,31 @@ void MensajeManager::agregarMensaje(std::string filename)
 						tiraDeBits.append("0");
 			}
 
-			Particion particion(imagen.getID(),mensaje.getID(),numeroDeParticion,
-				imagen.getProximo_bit_libre(),streamsize,false);
-
+			list<Particion> particionesEnImagen = particionDao.getPartsByImg(imagen.getID());
 			StegoBusiness* stego = StegoFactory::newInstance((*it2).getNombre());
 
-			imagen.setProximo_bit_libre(stego->setMessage(particion.getBit_inicio(),tiraDeBits));
-			imagenDao.updateProxBitLibre(imagen.getID(),imagen.getProximo_bit_libre());
-			imagen.setEspacio_libre(imagen.getEspacio_libre()-streamsize);
-			imagenDao.updateEspacioLibre(imagen.getID(),imagen.getEspacio_libre());
+			if (particionesEnImagen.size() > 0) {
+				for(list<Particion>::iterator iterPart = particionesEnImagen.begin(); iterPart != particionesEnImagen.end(); iterPart++) {
+					Particion& particion = *iterPart;
+					if (particion.isLibre()) {
+						Particion nuevaParticion(imagen.getID(),mensaje.getID(),numeroDeParticion,
+								particion.getBit_inicio(),particion.getLongitud(),false);
+						particionDao.borrar(particion);
+						particionDao.insert(nuevaParticion);
+						stego->setMessage(nuevaParticion.getBit_inicio(),tiraDeBits.substr(0,nuevaParticion.getLongitud()));
+						tiraDeBits = tiraDeBits.substr(nuevaParticion.getLongitud());
+					}
+				}
+			}
+			if (tiraDeBits.size() > 0) {
+				Particion particion(imagen.getID(),mensaje.getID(),numeroDeParticion,
+					imagen.getProximo_bit_libre(),tiraDeBits.size(),false);
+				particionDao.insert(particion);
 
-			particionDao.insert(particion);
+				imagenDao.updateProxBitLibre(imagen.getID(),stego->setMessage(particion.getBit_inicio(),tiraDeBits));
+			}
+
+			imagenDao.updateEspacioLibre(imagen.getID(),imagen.getEspacio_libre()-streamsize);
 
 			streamsize = tamanioMensaje - streamsize;
 			numeroDeParticion++;
@@ -179,23 +201,31 @@ void MensajeManager::quitarMensajesEnDirectorio(std::string dirpath) {
 		throw EntidadInexistenteException();
 }
 
-void MensajeManager::quitarMensaje(std::string filename)
+void MensajeManager::quitarMensaje(std::string& filename)
 {
-//	Mensaje& mensaje = managerDAO.getMensajeDAO()->getMensajeByNombre(filename);
-//	if (mensaje == NULL) {
-//		//NO EXISTE EL MENSAJE
-//	}
-//	else {
-//		ParticionDAO* particionDAO = managerDAO.getParticionDAO();
-//		list<Particion> particiones = particionDAO->getPartsByTxt(mensaje.getId());
-//		for (list<Particion>::iterator it = particiones.begin(); it != particiones.end();  it++) {
-//			Imagen& imagen = managerDAO.getImagenDAO()->getImgById((*it).getID_Img());
-//			imagen.setEspacio_libre(imagen.getEspacio_libre()+(*it).getLongitud());
-//			//RECUPERAR ESPACIO EN IMAGEN
-//			particionDAO->drop(*it);
-//		}
-//		managerDAO.getMensajeDAO()->drop(mensaje);
-//	}
+	int mensajeId = trieDao.getIndice(MENSAJES,filename);
+	if (mensajeId == 0)
+		throw EntidadInexistenteException();
+	else {
+		Mensaje mensaje = mensajeDao.getMsjById(mensajeId);
+		list<Particion> particiones = particionDao.getPartsByTxt(mensaje.getID());
+
+		if (particiones.size() > 0) {
+			particiones.sort(compararParticionesPorIdImagen);
+			Imagen imagen = imagenDao.getImgById((*particiones.begin()).getID_Img());
+			for (list<Particion>::iterator it = particiones.begin(); it != particiones.end(); it++) {
+				Particion& particion = *it;
+				if (particion.getID_Img() != imagen.getID())
+					imagen = imagenDao.getImgById(particion.getID_Img());
+				imagenDao.updateEspacioLibre(imagen.getID(),imagen.getEspacio_libre()+particion.getLongitud());
+				Particion particionNueva(imagen.getID(),0,0,particion.getBit_inicio(),particion.getLongitud(),true);
+				particionDao.borrar(particion);
+				particionDao.insert(particionNueva);
+			}
+		}
+		mensajeDao.borrar(mensaje);
+		trieDao.deleteCadena(MENSAJES,mensaje.getNombre());
+	}
 }
 
 
@@ -252,6 +282,18 @@ void MensajeManager::obtenerMensaje(std::string filename, std::string destino)
 		fclose(salida);
 	}
 }
+
+list<string> MensajeManager::getMensajes()
+{
+	//TODO::GET ALL MENSAJES EN EL DAO
+//	list<Mensaje> mensajes = mensajeDao.
+//	directorios.sort(compararDirectoriosPorPath);
+//	list<string> nombres;
+//	nombres.resize(directorios.size());
+//	transform(directorios.begin(),directorios.end(),nombres.begin(),transformDirectorioToString);
+//	return nombres;
+}
+
 
 MensajeManager::~MensajeManager() {
 	// TODO Auto-generated destructor stub

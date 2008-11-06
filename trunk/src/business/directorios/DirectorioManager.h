@@ -37,7 +37,7 @@ public:
 	bool agregarImagenEnDirectorio(Directorio& directorio, Imagen& filename) const;
 
 	/*@throws RecursoInexistenteException*/
-	bool directorioEnUso(std::string path) const;
+	bool directorioEnUso(std::string& path) const;
 
 	/*@throws DirectoryAccessException */
 	void actualizarFechaDeModificacion(Directorio& directorio);
@@ -46,7 +46,7 @@ public:
 	 * Remueve el directorio y sus respectivas imagenes asociadas de la base de datos.
 	 * @throws RecursoInaccesibleException
 	 */
-	void removerDirectorio(std::string path) const;
+	void removerDirectorio(std::string& path) const;
 
 	DirectorioDAO& getDirectorioDao() const {
 		return directorioDAO;

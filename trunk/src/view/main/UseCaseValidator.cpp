@@ -45,7 +45,7 @@ void UseCaseValidator::execute(Controller& controller){
 			break;
 		}
 		case 6:{
-			//controller.showFiles(firstParameter);
+			controller.mostrarMensajes();
 			break;
 		}
 		case 7:{
