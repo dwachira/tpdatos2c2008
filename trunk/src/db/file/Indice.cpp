@@ -70,6 +70,7 @@ void Indice::eliminar(double clave){
 		int busqueda = this->buscarPagina(clave);
 		bool existe = this->contieneDato(clave);
 
+
 		while(existe){
 			//mientras se determine que hay algun registro con la clave a borrar
 			//en la pagina actual, se llama a borrar de esa pagina al registro y
@@ -82,24 +83,35 @@ void Indice::eliminar(double clave){
 				Pagina pAntAux;
 				Pagina pSigAux;
 				this->archivo->abrir(READ);
-				this->archivo->leer(&pAntAux, this->pActual->getIDPagAnt());
-				this->archivo->leer(&pSigAux, this->pActual->getIDPagSig());
+
+
+				bool existePagAnt = this->archivo->leer(&pAntAux, this->pActual->getIDPagAnt());
+				bool existePagSig = this->archivo->leer(&pSigAux, this->pActual->getIDPagSig());
 				this->archivo->cerrar();
 
-				//corrigo los enlaces y guardo a disco
-				pAntAux.setIDPagSig(pSigAux.getIDPagina());
-				pSigAux.setIDPagAnt(pAntAux.getIDPagina());
-				this->archivo->abrir(UPDATE);
-				this->archivo->actualizar(&pAntAux,pAntAux.getIDPagina());
-				this->archivo->actualizar(&pSigAux,pSigAux.getIDPagina());
-				this->archivo->cerrar();
+				//TODO:: FIXME this is a hack
+				if ((existePagAnt)&&(existePagSig)) {
 
-				//borro la que quedo vacia y cargo la siguiente porque el
-				//indicador quedo invalido al borrar la pagina vacia
-				this->archivo->abrir(DELETE);
-				this->archivo->borrar(this->pActual->getIDPagina());
-				this->archivo->cerrar();
-				this->cargarPagina(pSigAux.getIDPagina());
+					//corrigo los enlaces y guardo a disco
+					pAntAux.setIDPagSig(pSigAux.getIDPagina());
+					pSigAux.setIDPagAnt(pAntAux.getIDPagina());
+					this->archivo->abrir(UPDATE);
+					this->archivo->actualizar(&pAntAux,pAntAux.getIDPagina());
+					this->archivo->actualizar(&pSigAux,pSigAux.getIDPagina());
+					this->archivo->cerrar();
+
+					//borro la que quedo vacia y cargo la siguiente porque el
+					//indicador quedo invalido al borrar la pagina vacia
+					this->archivo->abrir(DELETE);
+					this->archivo->borrar(this->pActual->getIDPagina());
+					this->archivo->cerrar();
+					this->cargarPagina(pSigAux.getIDPagina());
+				}
+				else {
+					this->pActual = NULL;
+					this->cantPaginas = 0;
+				}
+
 			}
 			else{	//sino, guardo la pagina a disco
 				this->archivo->abrir(UPDATE);
@@ -107,7 +119,9 @@ void Indice::eliminar(double clave){
 				this->archivo->cerrar();
 			}
 			busqueda = this->buscarPagina(clave);
-			existe = this->contieneDato(clave);	//y verifico si hay ocurrencias de la
+			existe = false;
+			if (busqueda != -2)
+				existe = this->contieneDato(clave);	//y verifico si hay ocurrencias de la
 		}									//clave a borrar en las paginas subsiguiente
 	}
 }
