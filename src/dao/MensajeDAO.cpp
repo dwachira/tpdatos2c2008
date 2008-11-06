@@ -208,6 +208,28 @@ Mensaje MensajeDAO::getMsjById(unsigned int newID){
 	return msj;
 }
 
+list<Mensaje> MensajeDAO::getAllMsjs(){
+
+	list<Mensaje> lista;
+	vector<RegPagina> resultados = this->index_Prim->recorrerIndice();
+
+	REG_MSJ* buffer = new REG_MSJ();
+	this->archivo->abrir(READ);
+
+	for(unsigned int i=0; i<resultados.size(); i++){
+		this->archivo->leer(buffer, resultados[i].getOffset());
+
+		string nombre = this->recuperarNombre(buffer->offset_nombre);
+		Mensaje msj(buffer->ID,nombre,buffer->tamanio,buffer->cant_partes);
+		lista.push_back(msj);
+	}
+
+	this->archivo->cerrar();
+	free(buffer);
+
+	return lista;
+}
+
 vector<RegPagina> MensajeDAO::recorrer(){
 
 	return (this->index_Prim->recorrerIndice());
