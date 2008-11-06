@@ -27,19 +27,21 @@ public:
 		trieDao.loadTrie(IMAGENES);
 	}
 
-	void agregarMensaje(std::string filename);
+	void agregarMensaje(std::string& filename);
 
 	void agregarDirectorio(std::string& path);
 
-	bool directorioEnUso(std::string path);
+	bool directorioEnUso(std::string& path);
 
-	void removerDirectorio(std::string path);
+	void removerDirectorio(std::string& path);
 
-	void removerMensaje(std::string filename);
+	void removerMensaje(std::string& filename);
 
-	void obtenerMensaje(std::string filename, std::string pathDestino);
+	void obtenerMensaje(std::string& filename, std::string& pathDestino);
 
 	void mostrarDirectorios();
+
+	void mostrarMensajes();
 
 	virtual ~Controller();
 };

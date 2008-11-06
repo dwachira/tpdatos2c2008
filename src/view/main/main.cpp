@@ -23,11 +23,11 @@ int main(int argc, char* argv[]){
 	mainApp.start();
 
 //	std::vector<TestCase*> tests;
-//	tests.push_back(new TestAddDirectory());
 //	tests.push_back(new TestAgregarYRecuperarMensaje());
+//	tests.push_back(new TestAddDirectory());
 //	tests.push_back(new TestDirectorioDAO());
 //	tests.push_back(new TestCompressor());
-//
+
 //	for (unsigned int i = 0; i < tests.size() ; i++)
 //		tests[i]->test();
 

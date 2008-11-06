@@ -63,7 +63,7 @@ void DirectorioManager::agregarDirectorio(const std::string& path)
 
 }
 
-void DirectorioManager::removerDirectorio(string  path) const
+void DirectorioManager::removerDirectorio(string& path) const
 {
 	unsigned int dirId = trieDao.getIndice(DIRECTORIOS,path);
 
@@ -85,7 +85,7 @@ void DirectorioManager::removerDirectorio(string  path) const
 		throw EntidadInexistenteException();
 }
 
-bool DirectorioManager::directorioEnUso(string path) const
+bool DirectorioManager::directorioEnUso(string& path) const
 {
 	unsigned int dirId = trieDao.getIndice(DIRECTORIOS,path);
 
@@ -98,6 +98,7 @@ bool DirectorioManager::directorioEnUso(string path) const
 			const list<Particion>& particiones = particionDAO.getPartsByImg((*it).getID());
 			if (particiones.size() > 0)
 				isBeingUsed = true;
+			it++;
 		}
 		delete directory;
 		return isBeingUsed;

@@ -24,8 +24,8 @@ int TestAddDirectory::test() {
 	//Unit under test
 	manager.agregarDirectorio(expectedDir);
 
-	list<Directorio*> directorios = manager.getDirectorios();
-	if (expectedDir.compare(directorios.front()->getPath()) != 0) {
+	list<string> directorios = manager.getDirectorios();
+	if (expectedDir.compare(directorios.front()) != 0) {
 		fail("El directorio almacenado no coincide con el ingresado");
 	}
 
