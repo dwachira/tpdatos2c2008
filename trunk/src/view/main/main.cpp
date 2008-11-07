@@ -43,10 +43,10 @@ int main(int argc, char* argv[]){
 	TestMsj->test();
 
 	TestParticionDAO* TestPart = new TestParticionDAO();
-	TestPart->test();
+	TestPart->test();*/
 
-	TestTrieDAO* TestTrie = new TestTrieDAO();
-	TestTrie->test;
+/*	TestTrieDAO* TestTrie = new TestTrieDAO();
+	TestTrie->test();
 	//TestTrie->test2();
 	//TestTrie->test3();*/
 

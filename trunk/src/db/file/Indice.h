@@ -60,6 +60,7 @@ class Indice{
 		 * 		Devuelve  3 si hay que hacer SPLIT de la que quedo como Actual para insertar
 		 * 					y se que el registro no existe.
 		 * 		Devuelve  4 si hay que hacer SPLIT de la que quedo como Actual para insertar.
+		 * 		Devuelve -2 si no hay paginas en el indice.
 		 */
 		int buscarPagina(double clave);
 
