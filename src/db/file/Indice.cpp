@@ -26,7 +26,12 @@ Indice::Indice(const char* nombreFisico, bool esIndiceSecundario){
 	if(this->cantPaginas == 0)
 		this->primeraPagina = 0;
 	else{
-		this->primeraPagina = 1;					//como no se si la primer pagina
+		this->archivo->abrir(READ);
+		this->archivo->seek_beg();
+		Pagina pAux;
+		unsigned long int id = this->archivo->leerProximo(&pAux);
+		this->archivo->cerrar();
+		this->primeraPagina = id;					//como no se si la primer pagina
 		this->cargarPagina(this->primeraPagina);	//tiene ID=1, cargo esa y despues
 		while(this->pActual->tieneAnterior())		//mientras tenga alguna antes, la
 			this->cargarPagina(this->pActual->getIDPagAnt());	//cargo, hasta llegar
@@ -79,27 +84,24 @@ void Indice::eliminar(double clave){
 					//la pagina indicada como Actual y verifico su posterior estado
 
 			if(this->pActual->getCantReg() == 0){
-				//recupero la siguiente y la anterior
-				Pagina pAntAux;
-				Pagina pSigAux;
+
+				Pagina pAntAux; bool hayAnt = this->pActual->tieneAnterior();
+				Pagina pSigAux; bool haySig = this->pActual->tieneSiguiente();
+
+				//si puedo recupero la siguiente y la anterior
 				this->archivo->abrir(READ);
-
-
-				bool existePagAnt = this->archivo->leer(&pAntAux, this->pActual->getIDPagAnt());
-				bool existePagSig = this->archivo->leer(&pSigAux, this->pActual->getIDPagSig());
+				if(hayAnt)	this->archivo->leer(&pAntAux, this->pActual->getIDPagAnt());
+				if(haySig)	this->archivo->leer(&pSigAux, this->pActual->getIDPagSig());
 				this->archivo->cerrar();
 
-				//TODO:: FIXME this is a hack
-				if ((existePagAnt)&&(existePagSig)) {
-
-					//corrigo los enlaces y guardo a disco
+				if(hayAnt && haySig){
+					//en este caso corrijo dos enlaces y actualizo en disco
 					pAntAux.setIDPagSig(pSigAux.getIDPagina());
 					pSigAux.setIDPagAnt(pAntAux.getIDPagina());
 					this->archivo->abrir(UPDATE);
 					this->archivo->actualizar(&pAntAux,pAntAux.getIDPagina());
 					this->archivo->actualizar(&pSigAux,pSigAux.getIDPagina());
 					this->archivo->cerrar();
-
 					//borro la que quedo vacia y cargo la siguiente porque el
 					//indicador quedo invalido al borrar la pagina vacia
 					this->archivo->abrir(DELETE);
@@ -107,11 +109,44 @@ void Indice::eliminar(double clave){
 					this->archivo->cerrar();
 					this->cargarPagina(pSigAux.getIDPagina());
 				}
-				else {
+				if(hayAnt && !haySig){
+					//aca debo corregir solo el enlace de la anterior. (era ultima)
+					pAntAux.setIDPagSig(0);	//no hay siguiente.
+					this->archivo->abrir(UPDATE);
+					this->archivo->actualizar(&pAntAux,pAntAux.getIDPagina());
+					this->archivo->cerrar();
+					//borro la que quedo vacia y cargo la anterior porque el
+					//indicador quedo invalido al borrar la pagina vacia
+					this->archivo->abrir(DELETE);
+					this->archivo->borrar(this->pActual->getIDPagina());
+					this->archivo->cerrar();
+					this->cargarPagina(pAntAux.getIDPagina());
+				}
+				if(!hayAnt && haySig){
+					//aca debo corregir solo el enlace de la siguiente. (era primera)
+					pSigAux.setIDPagAnt(0);
+					this->archivo->abrir(UPDATE);
+					this->archivo->actualizar(&pSigAux,pSigAux.getIDPagina());
+					this->archivo->cerrar();
+					//borro la que quedo vacia y cargo la siguiente porque el
+					//indicador quedo invalido al borrar la pagina vacia
+					this->archivo->abrir(DELETE);
+					this->archivo->borrar(this->pActual->getIDPagina());
+					this->archivo->cerrar();
+					this->primeraPagina = pSigAux.getIDPagina();
+					this->cargarPagina(pSigAux.getIDPagina());
+				}
+				if(!hayAnt && !haySig){
+					//este es el caso en que no quedan mas paginas en el indice.
+					//borro la que quedo vacia y cargo la siguiente porque el
+					//indicador quedo invalido al borrar la pagina vacia
+					this->archivo->abrir(DELETE);
+					this->archivo->borrar(this->pActual->getIDPagina());
+					this->archivo->cerrar();
 					this->pActual = NULL;
 					this->cantPaginas = 0;
+					this->primeraPagina = 0;
 				}
-
 			}
 			else{	//sino, guardo la pagina a disco
 				this->archivo->abrir(UPDATE);
@@ -120,7 +155,7 @@ void Indice::eliminar(double clave){
 			}
 			busqueda = this->buscarPagina(clave);
 			existe = false;
-			if (busqueda != -2)
+			if(this->pActual != NULL)
 				existe = this->contieneDato(clave);	//y verifico si hay ocurrencias de la
 		}									//clave a borrar en las paginas subsiguiente
 	}
@@ -168,25 +203,25 @@ void Indice::eliminar(double clave, unsigned int offset){
 					}
 				}
 			}
-			if(claveBuscada && offsetBuscado){
-				this->pActual->eliminar(clave, offset);
-				if(this->pActual->getCantReg() == 0){
-					//recupero la siguiente y la anterior
-					Pagina pAntAux;
-					Pagina pSigAux;
-					this->archivo->abrir(READ);
-					this->archivo->leer(&pAntAux, this->pActual->getIDPagAnt());
-					this->archivo->leer(&pSigAux, this->pActual->getIDPagSig());
-					this->archivo->cerrar();
+			if(this->pActual->getCantReg() == 0){
 
-					//corrigo los enlaces y guardo a disco
+				Pagina pAntAux; bool hayAnt = this->pActual->tieneAnterior();
+				Pagina pSigAux; bool haySig = this->pActual->tieneSiguiente();
+
+				//si puedo recupero la siguiente y la anterior
+				this->archivo->abrir(READ);
+				if(hayAnt)	this->archivo->leer(&pAntAux, this->pActual->getIDPagAnt());
+				if(haySig)	this->archivo->leer(&pSigAux, this->pActual->getIDPagSig());
+				this->archivo->cerrar();
+
+				if(hayAnt && haySig){
+					//en este caso corrijo dos enlaces y actualizo en disco
 					pAntAux.setIDPagSig(pSigAux.getIDPagina());
 					pSigAux.setIDPagAnt(pAntAux.getIDPagina());
 					this->archivo->abrir(UPDATE);
 					this->archivo->actualizar(&pAntAux,pAntAux.getIDPagina());
 					this->archivo->actualizar(&pSigAux,pSigAux.getIDPagina());
 					this->archivo->cerrar();
-
 					//borro la que quedo vacia y cargo la siguiente porque el
 					//indicador quedo invalido al borrar la pagina vacia
 					this->archivo->abrir(DELETE);
@@ -194,11 +229,48 @@ void Indice::eliminar(double clave, unsigned int offset){
 					this->archivo->cerrar();
 					this->cargarPagina(pSigAux.getIDPagina());
 				}
-				else{	//sino, guardo la pagina a disco
+				if(hayAnt && !haySig){
+					//aca debo corregir solo el enlace de la anterior. (era ultima)
+					pAntAux.setIDPagSig(0);	//no hay siguiente.
 					this->archivo->abrir(UPDATE);
-					this->archivo->actualizar(this->pActual, this->pActual->getIDPagina());
+					this->archivo->actualizar(&pAntAux,pAntAux.getIDPagina());
 					this->archivo->cerrar();
+					//borro la que quedo vacia y cargo la anterior porque el
+					//indicador quedo invalido al borrar la pagina vacia
+					this->archivo->abrir(DELETE);
+					this->archivo->borrar(this->pActual->getIDPagina());
+					this->archivo->cerrar();
+					this->cargarPagina(pAntAux.getIDPagina());
 				}
+				if(!hayAnt && haySig){
+					//aca debo corregir solo el enlace de la siguiente. (era primera)
+					pSigAux.setIDPagAnt(0);
+					this->archivo->abrir(UPDATE);
+					this->archivo->actualizar(&pSigAux,pSigAux.getIDPagina());
+					this->archivo->cerrar();
+					//borro la que quedo vacia y cargo la siguiente porque el
+					//indicador quedo invalido al borrar la pagina vacia
+					this->archivo->abrir(DELETE);
+					this->archivo->borrar(this->pActual->getIDPagina());
+					this->archivo->cerrar();
+					this->primeraPagina = pSigAux.getIDPagina();
+					this->cargarPagina(pSigAux.getIDPagina());
+				}
+				if(!hayAnt && !haySig){
+					//este es el caso en que no quedan mas paginas en el indice.
+					//borro la que quedo vacia y cargo la siguiente porque el
+					//indicador quedo invalido al borrar la pagina vacia
+					this->archivo->abrir(DELETE);
+					this->archivo->borrar(this->pActual->getIDPagina());
+					this->archivo->cerrar();
+					this->pActual = NULL;
+					this->cantPaginas = 0;
+				}
+			}
+			else{	//sino, guardo la pagina a disco
+				this->archivo->abrir(UPDATE);
+				this->archivo->actualizar(this->pActual, this->pActual->getIDPagina());
+				this->archivo->cerrar();
 			}
 		}
 	}
