@@ -22,14 +22,14 @@ Imagen::Imagen(const Imagen &img){
 }
 
 Imagen::Imagen(unsigned int pID_Dir,unsigned int pEspacio_Libre,unsigned int pProximo_Bit_Libre,
-		unsigned long int pHash_Value,unsigned int pTamanio,string pNombre) :
+		string pHash_Value,unsigned int pTamanio,string pNombre) :
 				ID_Dir(pID_Dir),espacio_libre(pEspacio_Libre),proximo_bit_libre (pProximo_Bit_Libre),
 				hash_value(pHash_Value),tamanio(pTamanio),nombre(pNombre){
 	this->ID = getNewId();
 }
 
 Imagen::Imagen(unsigned int pID, unsigned int pID_Dir, unsigned int pEspacio_Libre,
-		unsigned int pProximo_Bit_Libre, unsigned long int pHash_Value, unsigned int pTamanio, string pNombre) :
+		unsigned int pProximo_Bit_Libre, string pHash_Value, unsigned int pTamanio, string pNombre) :
 				ID(pID),ID_Dir(pID_Dir),espacio_libre(pEspacio_Libre),proximo_bit_libre (pProximo_Bit_Libre),
 				hash_value(pHash_Value),tamanio(pTamanio),nombre(pNombre){}
 
@@ -40,7 +40,6 @@ Imagen::~Imagen() {
 	this->nombre = "";
 	this->tamanio = 0;
 	this->espacio_libre = 0;
-	this->hash_value = 0;
 	this->proximo_bit_libre = 0;
 }
 

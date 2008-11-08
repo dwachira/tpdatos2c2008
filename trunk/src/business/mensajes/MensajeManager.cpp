@@ -163,7 +163,7 @@ void MensajeManager::agregarMensaje(std::string filename)
 			}
 
 			imagenDao.updateEspacioLibre(imagen.getID(),imagen.getEspacio_libre()-streamsize);
-
+			imagenDao.updateHashValue(imagen.getID(),hasheador.getHashFromFile(imagen.getNombre()));
 			streamsize = tamanioMensaje - streamsize;
 			numeroDeParticion++;
 			delete buffer;
@@ -285,13 +285,11 @@ void MensajeManager::obtenerMensaje(std::string filename, std::string destino)
 
 list<string> MensajeManager::getMensajes()
 {
-	//TODO::GET ALL MENSAJES EN EL DAO
-//	list<Mensaje> mensajes = mensajeDao.
-//	directorios.sort(compararDirectoriosPorPath);
-//	list<string> nombres;
-//	nombres.resize(directorios.size());
-//	transform(directorios.begin(),directorios.end(),nombres.begin(),transformDirectorioToString);
-//	return nombres;
+	list<Mensaje> mensajes = mensajeDao.getAllMsjs();
+	list<string> nombres;
+	nombres.resize(mensajes.size());
+	transform(mensajes.begin(),mensajes.end(),nombres.begin(),transformMensajeToString);
+	return nombres;
 }
 
 

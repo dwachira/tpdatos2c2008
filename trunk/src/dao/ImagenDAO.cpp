@@ -5,8 +5,10 @@
  *      Author: andres
  */
 #include "ImagenDAO.h"
+#include <cstring>
 
 namespace dao {
+
 
 /*******************************************************
  * CONSTRUCTOR Y DESTRUCTOR
@@ -225,7 +227,7 @@ bool ImagenDAO::updateEspacioLibre(unsigned int ID, unsigned int newEspacioLibre
 	return true;
 }
 
-bool ImagenDAO::updateHashValue(unsigned int ID, unsigned long int newHashValue){
+bool ImagenDAO::updateHashValue(unsigned int ID, string newHashValue){
 
 	//obtengo la pag candidata
 	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
@@ -255,7 +257,7 @@ bool ImagenDAO::updateHashValue(unsigned int ID, unsigned long int newHashValue)
 	this->archivo->cerrar();
 
 	//actualizo el campo a modificar y sobreescribo en el archivo
-	buffer->hash_value = newHashValue;
+	memcpy(buffer->hash_value,newHashValue.data(),HASH_SIZE);
 	this->archivo->abrir(UPDATE);
 	this->archivo->actualizar(buffer, reg.getOffset());
 	this->archivo->cerrar();
@@ -368,7 +370,7 @@ Imagen ImagenDAO::getImgById(unsigned int newID){
 	/********************************************/
 
 	if(!encontrado){		//si no lo encontro, no existe en el indice
-		Imagen img(0,0,0,0,0,0,"");
+		Imagen img(0,0,0,0,"",0,"");
 		return img;
 	}
 
@@ -472,7 +474,7 @@ REG_IMG* ImagenDAO::aStruct(Imagen img, unsigned long int offset_nombre){
 	buffer->ID = img.getID();
 	buffer->ID_Dir = img.getID_Dir();
 	buffer->espacio_libre = img.getEspacio_libre();
-	buffer->hash_value = img.getHash_value();
+	memcpy(buffer->hash_value,img.getHash_value().data(),HASH_SIZE);
 	buffer->tamanio = img.getTamanio();
 	buffer->prox_bit_libre = img.getProximo_bit_libre();
 	buffer->offset_nombre = offset_nombre;

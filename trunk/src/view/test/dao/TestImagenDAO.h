@@ -34,7 +34,7 @@ class TestImagenDAO : public TestCase{
 
 		static void updateEspacio(ImagenDAO* dao, unsigned int id, unsigned int newEspacio);
 		static void updateDirectorio(ImagenDAO* dao, unsigned int id, unsigned int newDir);
-		static void updateHash(ImagenDAO* dao, unsigned int id, unsigned long int newHash);
+		static void updateHash(ImagenDAO* dao, unsigned int id, string newHash);
 		static void updateProxBit(ImagenDAO* dao, unsigned int id, unsigned int newProxBit);
 		static void updateNombre(ImagenDAO* dao, unsigned int id, string newNombre);
 };

@@ -22,7 +22,7 @@ class Imagen{
 		unsigned int ID_Dir;
 		unsigned int espacio_libre;
 		unsigned int proximo_bit_libre;
-		unsigned long int hash_value;
+		string hash_value;
 		unsigned int tamanio;
 		string nombre;
 
@@ -34,17 +34,17 @@ class Imagen{
 
 		/*Este constructor es para poder comparar una nueva imagen con las ya existentes en la base de datos*/
 		Imagen(string pNombre) : nombre(pNombre) {
-			hash_value = 0;
+			hash_value = "";
 			this->ID = getNewId();
 		}
 
 		Imagen(const Imagen &img);
 		//constructor con ID incluido. Cuando se lee del indice por ejemplo.
 		Imagen(unsigned int pID, unsigned int pID_Dir, unsigned int pEspacio_Libre, unsigned int pProximo_Bit_Libre,
-						unsigned long int pHash_Value, unsigned int pTamanio, string pNombre);
+						string pHash_Value, unsigned int pTamanio, string pNombre);
 		//constructor sin ID incluido. Cuando se crea por primera vez el objeto.
 		Imagen(unsigned int pID_Dir, unsigned int pEspacio_Libre, unsigned int pProximo_Bit_Libre,
-				unsigned long int pHash_Value, unsigned int pTamanio, string pNombre);
+				string pHash_Value, unsigned int pTamanio, string pNombre);
 		~Imagen();
 
 		static unsigned int getLastAssignedId(){return incrementalId;}
@@ -69,8 +69,8 @@ class Imagen{
 		unsigned int getEspacio_libre() const {return espacio_libre;}
 		void setEspacio_libre(unsigned int espacio_libre) {this->espacio_libre = espacio_libre;}
 
-		unsigned long int getHash_value() const {return hash_value;}
-		void setHash_value(unsigned long int hash_value) {this->hash_value = hash_value;}
+		string getHash_value() const {return hash_value;}
+		void setHash_value(string hash_value) {this->hash_value = hash_value;}
 
 		friend bool operator== (const Imagen& left, const Imagen& right);
 };

@@ -19,17 +19,17 @@ int TestImagenDAO::test(){
 	ImagenDAO* iDAO = new ImagenDAO();
 
 	//ID_DIR - ESPACIO_LIBRE - PROX_BIT_LIBRE - HASHVALUE - TAMANIO - NOMBRE
-	Imagen* img1 = new Imagen(2, 3457, 221, 77534132, 5679, "La primera.jpg");
+	Imagen* img1 = new Imagen(2, 3457, 221, "RiverCampeon2008", 5679, "La primera.jpg");
 	this->print(img1);
-	Imagen* img2 = new Imagen(1, 210, 15, 65427893, 1200, "Vale2.png");
+	Imagen* img2 = new Imagen(1, 210, 15, "RiverCampeon2004", 1200, "Vale2.png");
 	this->print(img2);
-	Imagen* img3 = new Imagen(7, 3368, 220, 347430272, 3398, "Foto Numero3.bmp");
+	Imagen* img3 = new Imagen(7, 3368, 220, "RiverCampeon2002", 3398, "Foto Numero3.bmp");
 	this->print(img3);
-	Imagen* img4 = new Imagen(4, 210, 351, 38019572, 334, "Se va la cuarta.gif");
+	Imagen* img4 = new Imagen(4, 210, 351, "RiverCampeon2000", 334, "Se va la cuarta.gif");
 	this->print(img4);
-	Imagen* img5 = new Imagen(7, 1, 0, 23890162, 2783, "Quinta-llena.jpg");
+	Imagen* img5 = new Imagen(7, 1, 0, "RiverCampeon1999", 2783, "Quinta-llena.jpg");
 	this->print(img5);
-	Imagen* img6 = new Imagen(4, 3368, 996, 47043986, 12276, "Ultima66.bmp");
+	Imagen* img6 = new Imagen(4, 3368, 996, "RiverCampeon1997", 12276, "Ultima66.bmp");
 	this->print(img6);
 
 	this->insertar(iDAO,img3);
@@ -93,8 +93,8 @@ int TestImagenDAO::test(){
 	std::cout << "" << std::endl;
 	std::cout << "Voy a updatear el hash de la Imagen 2 [35218864], cuyos datos son los siguientes:" << std::endl;
 	this->getById(iDAO,2);
-	this->updateHash(iDAO,3,35218864);
-	this->updateHash(iDAO,2,35218864);
+	this->updateHash(iDAO,3,"BocaBanderasNegr");
+	this->updateHash(iDAO,2,"La12Abandona1rTp");
 	this->getById(iDAO,2);
 	std::cout << "" << std::endl;
 	std::cout << "Voy a updatear el prox bit libre de la Imagen 5 [129], cuyos datos son los siguientes:" << std::endl;
@@ -191,7 +191,7 @@ void TestImagenDAO::updateDirectorio(ImagenDAO* dao, unsigned int id, unsigned i
 	std::cout << "** Update [directorio] de la Imagen -" << id << "- = " << result << std::endl;
 }
 
-void TestImagenDAO::updateHash(ImagenDAO* dao, unsigned int id, unsigned long int newHash){
+void TestImagenDAO::updateHash(ImagenDAO* dao, unsigned int id, string newHash){
 	bool result = dao->updateHashValue(id, newHash);
 	std::cout << "** Update [hash] de la Imagen -" << id << "- = " << result << std::endl;
 }
