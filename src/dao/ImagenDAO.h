@@ -30,6 +30,11 @@ typedef struct{
 	unsigned int tamanio;
 	unsigned int espacio_libre;
 	char hash_value[HASH_SIZE];
+	unsigned int anio;
+	unsigned int mes;
+	unsigned int dia;
+	unsigned int hora;
+	unsigned int min;
 }REG_IMG;
 
 
@@ -89,13 +94,17 @@ class ImagenDAO{
 		 * Se pueden actualizar los campos EspacioLibre (por las modificaciones que
 		 * sufre la imagen), Id de Directorio (por la posibilidad de que una imagen
 		 * sea movida a otro directorio), el hashValue (que se modifica con cada
-		 * cambio que sufre la imagen) y el nombre (en caso que sea renombrada)
+		 * cambio que sufre la imagen), el nombre (en caso que sea renombrada) y
+		 * la fecha de ultima modificacion (verificacion valida de la imagen)
 		 */
 		bool updateEspacioLibre(unsigned int ID, unsigned int newEspacioLibre);
 		bool updateDirectorio(unsigned int ID, unsigned int newId_Dir);
 		bool updateHashValue(unsigned int ID, string newHashValue);
 		bool updateProxBitLibre(unsigned int ID, unsigned int newProxBitLibre);
 		bool updateNombre(unsigned int ID, string newNombre);
+		bool updateFecha(unsigned int ID, util::Date newFecha);
+		bool updateFecha(unsigned int ID, unsigned int anio, unsigned int mes,
+								unsigned int dia, unsigned int hora, unsigned int min);
 
 		/*
 		 * Se accede al indice primario, ordenado por ID, y se recupera el

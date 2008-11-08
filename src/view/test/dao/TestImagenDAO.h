@@ -37,6 +37,7 @@ class TestImagenDAO : public TestCase{
 		static void updateHash(ImagenDAO* dao, unsigned int id, string newHash);
 		static void updateProxBit(ImagenDAO* dao, unsigned int id, unsigned int newProxBit);
 		static void updateNombre(ImagenDAO* dao, unsigned int id, string newNombre);
+		static void updateFecha(ImagenDAO* dao, unsigned int id, util::Date* newFecha);
 };
 
 #endif /* TESTIMAGENDAO_H_ */

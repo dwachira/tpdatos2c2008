@@ -349,6 +349,61 @@ bool ImagenDAO::updateNombre(unsigned int ID, string newNombre){
 	return true;
 }
 
+bool ImagenDAO::updateFecha(unsigned int ID, util::Date newFecha){
+	unsigned int anio = newFecha.getYear();
+	unsigned int mes = newFecha.getMonth();
+	unsigned int dia = newFecha.getDay();
+	unsigned int hora = newFecha.getHour();
+	unsigned int min = newFecha.getMinute();
+
+	return updateFecha(ID, anio, mes, dia, hora, min);
+}
+
+bool ImagenDAO::updateFecha(unsigned int ID, unsigned int anio, unsigned int mes,
+						unsigned int dia, unsigned int hora, unsigned int min){
+
+	//obtengo la pag candidata
+	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
+
+	/********************************************/
+	bool encontrado = false;
+	unsigned int i = 0;							//TODO esto se deberia reemplazar
+	while(!encontrado && i<candidata.size()){	//por una busqueda binaria
+		if(candidata[i].getID() == ID)			//para hacerlo mas eficiente
+			encontrado = true;
+		else{
+			if(candidata[i].getID() > ID)
+				i = candidata.size();			//si el leido es mayor, me pase
+			else								//y asigno el valor para que
+				i++;							//salga como un error.
+		}
+	}
+	/********************************************/
+
+	if(!encontrado)
+		return false;
+
+	RegPagina reg = candidata[i];
+	REG_IMG* buffer = new REG_IMG();
+	this->archivo->abrir(READ);
+	this->archivo->leer(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	//actualizo los valores de la fecha de modificacion
+	buffer->anio = anio;
+	buffer->mes = mes;
+	buffer->dia = dia;
+	buffer->hora = hora;
+	buffer->min = min;
+
+	//y sobreescribo en el archivo
+	this->archivo->abrir(UPDATE);
+	this->archivo->actualizar(buffer, reg.getOffset());
+	this->archivo->cerrar();
+
+	return true;
+}
+
 Imagen ImagenDAO::getImgById(unsigned int newID){
 
 	//obtengo la pag candidata
@@ -370,7 +425,8 @@ Imagen ImagenDAO::getImgById(unsigned int newID){
 	/********************************************/
 
 	if(!encontrado){		//si no lo encontro, no existe en el indice
-		Imagen img(0,0,0,0,"",0,"");
+		util::Date* fecha = util::Date::valueOf(0,0,0,0,0);
+		Imagen img(0,0,0,0,"",0,"",fecha);
 		return img;
 	}
 
@@ -382,8 +438,10 @@ Imagen ImagenDAO::getImgById(unsigned int newID){
 	this->archivo->cerrar();
 
 	string nombre = this->recuperarNombre(buffer->offset_nombre);
+	util::Date* lastModification = util::Date::valueOf(buffer->dia,
+						buffer->mes, buffer->anio, buffer->hora, buffer->min);
 	Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre, buffer->prox_bit_libre,
-								buffer->hash_value, buffer->tamanio, nombre);
+							buffer->hash_value, buffer->tamanio, nombre,lastModification);
 	free(buffer);
 	return img;
 }
@@ -398,8 +456,10 @@ list<Imagen> ImagenDAO::getImgsByDirectorio(unsigned int newID_Dir){
 	for(unsigned int i=0; i<resultados.size(); i++){
 		this->archivo->leer(buffer, resultados[i].getOffset());
 		string nombre = this->recuperarNombre(buffer->offset_nombre);
-		Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,
-				buffer->prox_bit_libre, buffer->hash_value, buffer->tamanio, nombre);
+		util::Date* lastModification = util::Date::valueOf(buffer->dia,
+							buffer->mes, buffer->anio, buffer->hora, buffer->min);
+		Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre, buffer->prox_bit_libre,
+								buffer->hash_value, buffer->tamanio, nombre,lastModification);
 		lista.push_back(img);
 	}
 
@@ -422,8 +482,10 @@ list<Imagen> ImagenDAO::getImgsSortedByEspacioLibre(){
 		this->archivo->leer(buffer, resultados[i].getOffset());
 		if(buffer->espacio_libre > 0){
 			string nombre = this->recuperarNombre(buffer->offset_nombre);
-			Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre,
-					buffer->prox_bit_libre,	buffer->hash_value, buffer->tamanio, nombre);
+			util::Date* lastModification = util::Date::valueOf(buffer->dia,
+								buffer->mes, buffer->anio, buffer->hora, buffer->min);
+			Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre, buffer->prox_bit_libre,
+									buffer->hash_value, buffer->tamanio, nombre,lastModification);
 			lista.push_back(img);
 		}
 	}
@@ -478,6 +540,13 @@ REG_IMG* ImagenDAO::aStruct(Imagen img, unsigned long int offset_nombre){
 	buffer->tamanio = img.getTamanio();
 	buffer->prox_bit_libre = img.getProximo_bit_libre();
 	buffer->offset_nombre = offset_nombre;
+
+	util::Date fechaUltimaModificacion = img.getFechaUltimaModificacion();
+	buffer->anio = fechaUltimaModificacion.getYear();
+	buffer->mes = fechaUltimaModificacion.getMonth();
+	buffer->dia = fechaUltimaModificacion.getDay();
+	buffer->hora = fechaUltimaModificacion.getHour();
+	buffer->min = fechaUltimaModificacion.getMinute();
 
 	return buffer;
 }

@@ -101,23 +101,29 @@ int TestTrieDAO::test2(){
 
 	//ID_DIR - ESPACIO_LIBRE - PROX_BIT_LIBRE - HASHVALUE - TAMANIO - NOMBRE
 	string uno = "La primera.jpg";
-	Imagen* img1 = new Imagen(2, 3457, 221, "RiverCampeon2008", 5679, uno);
+	util::Date* fecha1 = util::Date::valueOf(13,02,87,23,33);
+	Imagen* img1 = new Imagen(2, 3457, 221, "RiverCampeon2008", 5679, "La primera.jpg",fecha1);
 	TestImagenDAO::print(img1);
 	string dos = "Vale2.png";
-	Imagen* img2 = new Imagen(1, 210, 15, "RiverCampeon2007", 1200, dos);
-	TestImagenDAO::print(img2);
+	util::Date* fecha2 = util::Date::valueOf(22,12,29,22,0);
+	Imagen* img2 = new Imagen(1, 210, 15, "RiverCampeon2004", 1200, "Vale2.png",fecha2);
+		TestImagenDAO::print(img2);
 	string tres = "Foto Numero3.bmp";
-	Imagen* img3 = new Imagen(7, 3368, 220, "RiverCampeon2004", 3398, tres);
-	TestImagenDAO::print(img3);
+	util::Date* fecha3 = util::Date::valueOf(30,03,99,3,3);
+	Imagen* img3 = new Imagen(7, 3368, 220, "RiverCampeon2002", 3398, "Foto Numero3.bmp",fecha3);
+		TestImagenDAO::print(img3);
 	string cuatro = "Se va la cuarta.gif";
-	Imagen* img4 = new Imagen(4, 210, 351, "RiverCampeon2002", 334, cuatro);
-	TestImagenDAO::print(img4);
+	util::Date* fecha4 = util::Date::valueOf(4,1,44,1,4);
+	Imagen* img4 = new Imagen(4, 210, 351, "RiverCampeon2000", 334, "Se va la cuarta.gif",fecha4);
+		TestImagenDAO::print(img4);
 	string cinco = "Quinta-llena.jpg";
-	Imagen* img5 = new Imagen(7, 1, 0, "RiverCampeon2000", 2783, cinco);
-	TestImagenDAO::print(img5);
+	util::Date* fecha5 = util::Date::valueOf(5,5,95,5,55);
+	Imagen* img5 = new Imagen(7, 1, 0, "RiverCampeon1999", 2783, "Quinta-llena.jpg",fecha5);
+		TestImagenDAO::print(img5);
 	string seis = "Ultima66.bmp";
-	Imagen* img6 = new Imagen(4, 3368, 996, "RiverCampeon1999", 12276, seis);
-	TestImagenDAO::print(img6);
+	util::Date* fecha6 = util::Date::valueOf(16,6,66,16,6);
+	Imagen* img6 = new Imagen(4, 3368, 996, "RiverCampeon1997", 12276, "Ultima66.bmp",fecha6);
+		TestImagenDAO::print(img6);
 
 	TestImagenDAO::insertar(&iDAO,img3);
 	TestImagenDAO::insertar(&iDAO,img6);
