@@ -54,7 +54,7 @@ void Controller::removerDirectorio(std::string& path) {
 		else
 			directorioManager.removerDirectorio(path);
 	} catch (EntidadInexistenteException e) {
-		//MOSTRAS MENSAJE ADECUADO
+		std::cout<<"El directorio no existe en el sistema. "<<std::endl;
 	}
 }
 
@@ -85,11 +85,11 @@ void Controller::mostrarDirectorios() {
 }
 
 void Controller::mostrarMensajes() {
-//	list<string> mensajes = mensajeManager.getMensajes();
-//	//TODO::DARLE UN FORMATO MAS MEJOR :P
-//	for(list<string>::iterator it = directorios.begin(); it != directorios.end(); it++) {
-//		std::cout<<*it<<std::endl;
-//	}
+	list<string> mensajes = mensajeManager.getMensajes();
+	//TODO::DARLE UN FORMATO MAS MEJOR :P
+	for(list<string>::iterator it = mensajes.begin(); it != mensajes.end(); it++) {
+		std::cout<<*it<<std::endl;
+	}
 }
 
 Controller::~Controller() {

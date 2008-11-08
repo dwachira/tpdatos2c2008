@@ -14,6 +14,7 @@
 #include "../../dao/TrieDAO.h"
 #include "../directorios/DirectorioManager.h"
 #include "../compressor/CompressorBusiness.h"
+#include "../md5/md5wrapper.h"
 
 namespace business {
 
@@ -25,6 +26,7 @@ private:
 	CompressorBusiness compressor;
 	DirectorioManager& directorioManager;
 	dao::TrieDAO& trieDao;
+	md5wrapper hasheador;
 	static std::string TMP_COMPRESSED_FILE_NAME;
 public:
 	MensajeManager(dao::ManagerDAO& manager, DirectorioManager& directorioMan, dao::TrieDAO& trie) : imagenDao(manager.getImagenDAO()), particionDao(manager.getParticionDAO()),

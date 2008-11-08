@@ -5,6 +5,8 @@
  *      Author: andres
  */
 
+#define HASH_SIZE	16
+
 #ifndef IMAGENDAO_H_
 #define IMAGENDAO_H_
 
@@ -27,7 +29,7 @@ typedef struct{
 	unsigned int prox_bit_libre;
 	unsigned int tamanio;
 	unsigned int espacio_libre;
-	unsigned long int hash_value;
+	char hash_value[HASH_SIZE];
 }REG_IMG;
 
 
@@ -91,7 +93,7 @@ class ImagenDAO{
 		 */
 		bool updateEspacioLibre(unsigned int ID, unsigned int newEspacioLibre);
 		bool updateDirectorio(unsigned int ID, unsigned int newId_Dir);
-		bool updateHashValue(unsigned int ID, unsigned long int newHashValue);
+		bool updateHashValue(unsigned int ID, string newHashValue);
 		bool updateProxBitLibre(unsigned int ID, unsigned int newProxBitLibre);
 		bool updateNombre(unsigned int ID, string newNombre);
 
