@@ -66,7 +66,7 @@ void Pagina::insertar(RegPagina newReg){
 	}
 }
 
-void Pagina::eliminar(double ID, unsigned long int offset){
+bool Pagina::eliminar(double ID, unsigned long int offset){
 	bool encontrado = false;
 	int i = 0;
 	while(!encontrado && i < this->cantReg){
@@ -90,7 +90,10 @@ void Pagina::eliminar(double ID, unsigned long int offset){
 			destino++;
 		}
 		this->cantReg--;
+		return true;
 	}
+	else
+		return false;
 }
 
 void Pagina::eliminar(double ID){

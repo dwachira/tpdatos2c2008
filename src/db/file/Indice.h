@@ -91,7 +91,11 @@ class Indice{
 		 */
 		vector<RegPagina> getPaginaSiguiente();
 
-
+		/*
+		 * Se utiliza para resolver los conlictos despues de eliminar un registro cuando
+		 * queda una pagina vacia; motivo por el cual debe darse de baja.
+		 */
+		void acomodarPunteros();
 
 /**************/
 	public:
