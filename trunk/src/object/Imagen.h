@@ -10,6 +10,7 @@
 
 
 #include <string>
+#include "../util/date/Date.h"
 using namespace std;
 
 namespace object{
@@ -25,6 +26,7 @@ class Imagen{
 		string hash_value;
 		unsigned int tamanio;
 		string nombre;
+		util::Date* fechaUltimaModificacion;
 
 		static unsigned int incrementalId;
 
@@ -41,10 +43,10 @@ class Imagen{
 		Imagen(const Imagen &img);
 		//constructor con ID incluido. Cuando se lee del indice por ejemplo.
 		Imagen(unsigned int pID, unsigned int pID_Dir, unsigned int pEspacio_Libre, unsigned int pProximo_Bit_Libre,
-						string pHash_Value, unsigned int pTamanio, string pNombre);
+						string pHash_Value, unsigned int pTamanio, string pNombre, util::Date* ultimaModificacion);
 		//constructor sin ID incluido. Cuando se crea por primera vez el objeto.
 		Imagen(unsigned int pID_Dir, unsigned int pEspacio_Libre, unsigned int pProximo_Bit_Libre,
-				string pHash_Value, unsigned int pTamanio, string pNombre);
+				string pHash_Value, unsigned int pTamanio, string pNombre, util::Date* ultimaModificacion);
 		~Imagen();
 
 		static unsigned int getLastAssignedId(){return incrementalId;}
@@ -71,6 +73,10 @@ class Imagen{
 
 		string getHash_value() const {return hash_value;}
 		void setHash_value(string hash_value) {this->hash_value = hash_value;}
+
+		util::Date getFechaUltimaModificacion() const {return *fechaUltimaModificacion;}
+			    void setFechaUltimaModificacion(util::Date* ultimaModificacion)
+									{this->fechaUltimaModificacion = ultimaModificacion;}
 
 		friend bool operator== (const Imagen& left, const Imagen& right);
 };
