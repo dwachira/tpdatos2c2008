@@ -116,7 +116,7 @@ int TestDirectorioDAO::test2(){
 */
 
 	std::cout << "The Beggining..." << std::endl;
-	for(int i=0; i<1000; i++){
+	for(int i=0; i<10000; i++){
 
 		Date* date = Date::valueOf(13,3,87,13,33);
 		Directorio* dir = new Directorio("andres", date);
@@ -124,13 +124,11 @@ int TestDirectorioDAO::test2(){
 		this->insertar(dDAO,dir);
 	}
 
-	this->getById(dDAO,357);
-//	this->borrar(dDAO,3578);
-	Date* newDate = Date::valueOf(26,01,99,13,59);
-	this->update(dDAO,357,newDate);
-	this->getById(dDAO,357);
-//	this->borrar(dDAO,7385);
-//	this->getById(dDAO,7385);
+	this->getById(dDAO,3578);
+	this->borrar(dDAO,3578);
+//	Date* newDate = Date::valueOf(26,01,99,13,59);
+//	this->update(dDAO,3578,newDate);
+	this->getById(dDAO,3578);
 
 	std::cout << "- - - That's All Folks! - - -" << std::endl;
 	return 0;

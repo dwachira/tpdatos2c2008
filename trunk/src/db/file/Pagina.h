@@ -58,7 +58,7 @@ class Pagina{
 		 * dato cuyo ID es recibido por parametro.
 		 */
 		void eliminar(double ID);
-		void eliminar(double ID, unsigned long int offset);
+		bool eliminar(double ID, unsigned long int offset);
 
 		void setIDPagina(unsigned long int newIDPagina);
 		void setIDPagSig(unsigned long int newIDPagSig);
