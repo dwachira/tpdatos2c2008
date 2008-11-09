@@ -18,7 +18,7 @@
 #include "TypeData.h"
 #include "DigitsPI.h"
 
-class BlowfishCrypto: public CryptoBusiness {
+class BlowfishCrypto {
 private:
 	DWord pSubKeys[18];
 	DWord sBoxes[4][256];
