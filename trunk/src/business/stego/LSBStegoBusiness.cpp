@@ -61,19 +61,17 @@ std::string LSBStegoBusiness::getLSBMessage(BYTE *pixels,unsigned int& pos,unsig
 std::string mensaje,binario;
 unsigned int pos_pixel=0;
 unsigned int bits_por_byte= 0;
-char car;
 int byte;
 if(bits_procesados==0)
   pos_pixel= (pos/8);
   
   while((pos_pixel<imagen.getBpp()/8)&&(bits_procesados<longitud)){
       byte=(int)pixels[pos_pixel];
-      util::BitsUtils::toBase(byte,2,binario);
-	  util::BitsUtils::completeNBits(binario,8);
+    	  
 	  /*Ciclo en caso de modificar mas de un bit por byte*/
 	  while((bits_por_byte<this->enable_bpp)&&(pos<8)&&(bits_procesados<longitud)){
-          car=binario.at(pos);
-          mensaje.append(1,car);  
+          
+          mensaje.append(util::StringUtils::toString(util::BitsUtils::getHidenBit(byte,enable_bpp-bits_por_byte)));  
           bits_procesados++;
           bits_por_byte++;
           pos++;
@@ -92,8 +90,6 @@ unsigned int LSBStegoBusiness::changePixel(BYTE *pixels,std::string mensaje,unsi
 
 unsigned int LSBStegoBusiness::doLSBStego(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados){
 int new_byte;
-char* aux;
-std::string binario;
 unsigned int bits_por_byte=0;
 unsigned int pos_pixel=0;
 unsigned int bits_count=0;
@@ -104,13 +100,11 @@ if(bits_procesados==0)
   
 /*Mientras queden bytes por pixel para recorrer*/              
 while((pos_pixel<imagen.getBpp()/8)&&(bits_procesados<mensaje.size())){
-   util::BitsUtils::toBase((int)pixels[pos_pixel],2,binario);
-  /*Completo el binario para que sea mas facil el proceso*/
-   util::BitsUtils::completeNBits(binario,8);
-  /*Ciclo en caso de modificar mas de un bit por byte*/
+  
   while((bits_por_byte<this->enable_bpp)&&(pos<8)&&(bits_procesados<mensaje.size())){
       /*Guardo un bit de informacion en el LSB del byte*/       
-      binario.at(pos)=mensaje.at(bits_procesados); 
+      char bit= mensaje[bits_procesados];
+      new_byte=(BYTE)util::BitsUtils::hideInByte((int)pixels[pos_pixel],atoi(&bit),enable_bpp-bits_por_byte);
       bits_procesados++;
       bits_por_byte++;
       pos++;
@@ -122,10 +116,10 @@ while((pos_pixel<imagen.getBpp()/8)&&(bits_procesados<mensaje.size())){
        bits_count-=this->enable_bpp-bits_por_byte;
       
   }  
-  new_byte=  strtol(binario.c_str(),&aux,2);	          
+        
   /*Guardo el nuevo byte modificado*/
-  pixels[pos_pixel]   = new_byte;
-  binario="";
+  if(new_byte!=pixels[pos_pixel]) pixels[pos_pixel]   = new_byte;
+
   pos_pixel++;//paso al byte siguiente
   bits_por_byte=0;
   pos=8-this->enable_bpp;

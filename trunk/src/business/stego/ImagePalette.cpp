@@ -124,13 +124,11 @@ if(palette) {
 std::string ImagePalette::getMessageFromIndexes(Pixel& pixel,unsigned int longitud){
 /*Cantidad de bits que ya se han insertado en la imagen*/
 unsigned int bits_procesados=0;
-/*Posicion inicial del mensaje dentro del pixel*/
-unsigned int pos=pixel.getNumero_de_bit();
 BYTE pixel_index;
 unsigned int height= imagen.getHeight();
 unsigned int width=imagen.getWidth();
-std::string binario,mensaje;
-
+std::string mensaje;
+       
 	   for (unsigned int y = pixel.getPosY(); y <height; y ++){
 		  
 		  for (unsigned int x = pixel.getPosX(); x < width; x ++){
@@ -138,11 +136,7 @@ std::string binario,mensaje;
             if(bits_procesados<longitud){ 
             	   //height-y-1
              	   pixel_index=imagen.getPixelIndex(x,height-y-1);
-             	   util::BitsUtils::toBase((int)pixel_index,2,binario);
-                   /*Completo el binario para que sea mas facil el proceso*/
-                   util::BitsUtils::completeNBits(binario,8);
-                   mensaje.append(1,binario.at(pos));
-                   binario="";
+             	   mensaje.append(util::StringUtils::toString(util::BitsUtils::getHidenBit((int)pixel_index,1)));
                    bits_procesados++;
                 
            }else{//para terminar el ciclo for 
@@ -155,22 +149,6 @@ std::string binario,mensaje;
     return mensaje;
 }
 
-int ImagePalette::doLSB(int byte,char value){
-std::string binario;
-char* aux;
-	util::BitsUtils::toBase((int)byte,2,binario);
-    util::BitsUtils::completeNBits(binario,8);
-    /*Guardo un bit de informacion en el LSB del byte*/       
-    binario.at(7)=value; 
-    return strtol(binario.c_str(),&aux,2);
-}
-
-char ImagePalette::getLSB(int byte){
-std::string binario;
-     util::BitsUtils::toBase(byte,2,binario);
-     util::BitsUtils::completeNBits(binario,8);
-     return (binario.at(7)); 
-}
 
 unsigned int ImagePalette::getRGBPos(unsigned int pos){
 
@@ -194,20 +172,23 @@ if(palette) {
        while((i<palette_size)&&(bits_procesados<mensaje.size())){    
        	if(((bits_procesados==0)&&(rgb_pos==0))||  
            ((bits_procesados>0)&&(bits_procesados<mensaje.size()))){
-              palette[i].rgbRed=(BYTE)doLSB((int)palette[i].rgbRed,mensaje.at(bits_procesados));
+           	  char bit=mensaje.at(bits_procesados); 
+		      palette[i].rgbRed= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbRed,atoi(&bit),1);
               bits_procesados++;
               
    	       }
    	       
    	       if(((bits_procesados==0)&&(rgb_pos==1))||  
            ((bits_procesados>0)&&(bits_procesados<mensaje.size()))){
-              palette[i].rgbGreen=(BYTE)doLSB((int)palette[i].rgbGreen,mensaje.at(bits_procesados));
+              char bit=mensaje.at(bits_procesados); 
+		      palette[i].rgbGreen= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbGreen,atoi(&bit),1);
               bits_procesados++;
               
    	       }
    	       	if(((bits_procesados==0)&&(rgb_pos==2))||  
            ((bits_procesados>0)&&(bits_procesados<mensaje.size()))){
-              palette[i].rgbBlue=(BYTE)doLSB((int)palette[i].rgbBlue,mensaje.at(bits_procesados));
+           	  char bit=mensaje.at(bits_procesados); 
+		      palette[i].rgbBlue= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbBlue,atoi(&bit),1);
               bits_procesados++;
               
    	       }
@@ -234,18 +215,18 @@ if(palette) {
        while((i<palette_size)&&(bits_procesados<longitud)){    
        		if(((bits_procesados==0)&&(rgb_pos==0))||  
            	   ((bits_procesados>0)&&(bits_procesados<longitud))){     
-                 	mensaje.append(1,getLSB((int)palette[i].rgbRed)); 
+           	   	    mensaje.append(util::StringUtils::toString(util::BitsUtils::getHidenBit((int)palette[i].rgbRed,1)));
               		bits_procesados++;
     	    }
         	if(((bits_procesados==0)&&(rgb_pos==1))||  
            	   ((bits_procesados>0)&&(bits_procesados<longitud))){  
-       	      		mensaje.append(1,getLSB((int)palette[i].rgbGreen)); 
+       	      		mensaje.append(util::StringUtils::toString(util::BitsUtils::getHidenBit((int)palette[i].rgbGreen,1)));
               		bits_procesados++;
      	    }
          	if(((bits_procesados==0)&&(rgb_pos==2))||  
            	   ((bits_procesados>0)&&(bits_procesados<longitud))){  
-          	  		mensaje.append(1,getLSB((int)palette[i].rgbBlue));
-              		bits_procesados++;
+           	   	    mensaje.append(util::StringUtils::toString(util::BitsUtils::getHidenBit((int)palette[i].rgbBlue,1)));
+          	  		bits_procesados++;
             }i++;
        }
   }  std::cout<<mensaje<<std::endl;
@@ -257,15 +238,12 @@ unsigned int ImagePalette::doIndexesLSB(Pixel& pixel,std::string mensaje){
 
 /*Cantidad de bits que ya se han insertado en la imagen*/
 unsigned int bits_procesados=0;
-/*Posicion inicial del mensaje dentro del pixel*/
-unsigned int pos=pixel.getNumero_de_bit();
 BYTE pixel_index,new_pixel_index;
 unsigned int height=imagen.getHeight();
 unsigned int width=imagen.getWidth();
 unsigned int bits_count=0;
- /*Me posiciono desde el comienzo de la imagen*/
-std::string binario;char* aux;
-std::ofstream f("Indices.txt");
+
+ 	
 for (unsigned int y = pixel.getPosY(); y <height; y ++){
 		  
 	for (unsigned int x = pixel.getPosX(); x < width; x ++){
@@ -273,18 +251,10 @@ for (unsigned int y = pixel.getPosY(); y <height; y ++){
          if(bits_procesados<mensaje.size()){ 
          	//height-y-1
          	pixel_index=imagen.getPixelIndex(x,height-y-1);
-            f<<"Pixel_index antes"<<(int)pixel_index<<std::endl;
-		    util::BitsUtils::toBase((int)pixel_index,2,binario);
-            /*Completo el binario para que sea mas facil el proceso*/
-            util::BitsUtils::completeNBits(binario,8);
-         
-            binario.at(pos)=mensaje.at(bits_procesados); 
+            char bit=mensaje.at(bits_procesados); 
+		    new_pixel_index= (BYTE)util::BitsUtils::hideInByte((int)pixel_index,atoi(&bit),1);
             bits_procesados++;
             bits_count+=8;
-            new_pixel_index= (BYTE)strtol(binario.c_str(),&aux,2);	          
-            f<<"Pixel_index despues"<<(int)new_pixel_index<<std::endl;
-            binario="";
-                                
             imagen.setPixelIndex(x,height-y-1,&new_pixel_index);
              
          }else{ //para terminar el ciclo for 
