@@ -257,7 +257,7 @@ bool ImagenDAO::updateHashValue(unsigned int ID, string newHashValue){
 	this->archivo->cerrar();
 
 	//actualizo el campo a modificar y sobreescribo en el archivo
-	memcpy(buffer->hash_value,newHashValue.data(),HASH_SIZE);
+	memcpy(buffer->hash_value,newHashValue.data(),Imagen::hashSize);
 	this->archivo->abrir(UPDATE);
 	this->archivo->actualizar(buffer, reg.getOffset());
 	this->archivo->cerrar();
@@ -426,7 +426,7 @@ Imagen ImagenDAO::getImgById(unsigned int newID){
 
 	if(!encontrado){		//si no lo encontro, no existe en el indice
 		util::Date* fecha = util::Date::valueOf(0,0,0,0,0);
-		Imagen img(0,0,0,0,"",0,"",fecha);
+		Imagen img(0,0,0,0,0,0,"",fecha);
 		return img;
 	}
 
@@ -536,7 +536,7 @@ REG_IMG* ImagenDAO::aStruct(Imagen img, unsigned long int offset_nombre){
 	buffer->ID = img.getID();
 	buffer->ID_Dir = img.getID_Dir();
 	buffer->espacio_libre = img.getEspacio_libre();
-	memcpy(buffer->hash_value,img.getHash_value().data(),HASH_SIZE);
+	memcpy(buffer->hash_value,img.getHash_value().data(),Imagen::hashSize);
 	buffer->tamanio = img.getTamanio();
 	buffer->prox_bit_libre = img.getProximo_bit_libre();
 	buffer->offset_nombre = offset_nombre;
