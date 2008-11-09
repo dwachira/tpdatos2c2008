@@ -3,7 +3,8 @@
 
 FIBitmap::FIBitmap(){}
 
-FIBitmap::FIBitmap(std::string filename):filename(filename),format(FIF_UNKNOWN),error(true)
+FIBitmap::FIBitmap(std::string filename):filename(filename),format(FIF_UNKNOWN),error(true),
+palette_offset(0)
 {
 	getFileType();
 }
@@ -39,7 +40,8 @@ bool FIBitmap::load(int flag){
        		height=FreeImage_GetHeight(imagen);
        		width=FreeImage_GetWidth(imagen); 
        		color_type=FreeImage_GetColorType(imagen);
-       		palette_offset=getPaletteOffset();
+       		if(bpp<=8)
+       			palette_offset=getPaletteOffset();
             std::cout<<"bpp "<<bpp<<std::endl;
             error=false;
   	}else error=true;	
@@ -197,6 +199,7 @@ unsigned int i=0;
 
 bool FIBitmap::isAnimated(){
 FITAG *tag = NULL;
+
   return (FreeImage_FindFirstMetadata(FIMD_ANIMATION,imagen,&tag)!=NULL);
 	
 }
