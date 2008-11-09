@@ -8,6 +8,7 @@
 #ifndef IMAGEN_H_
 #define IMAGEN_H_
 
+#define HASH_SIZE	32
 
 #include <string>
 #include "../util/date/Date.h"
@@ -34,6 +35,8 @@ class Imagen{
 
 	public:
 
+		static const int hashSize = HASH_SIZE;
+
 		/*Este constructor es para poder comparar una nueva imagen con las ya existentes en la base de datos*/
 		Imagen(string pNombre) : nombre(pNombre) {
 			hash_value = "";
@@ -43,7 +46,7 @@ class Imagen{
 		Imagen(const Imagen &img);
 		//constructor con ID incluido. Cuando se lee del indice por ejemplo.
 		Imagen(unsigned int pID, unsigned int pID_Dir, unsigned int pEspacio_Libre, unsigned int pProximo_Bit_Libre,
-						string pHash_Value, unsigned int pTamanio, string pNombre, util::Date* ultimaModificacion);
+						char* pHash_Value, unsigned int pTamanio, string pNombre, util::Date* ultimaModificacion);
 		//constructor sin ID incluido. Cuando se crea por primera vez el objeto.
 		Imagen(unsigned int pID_Dir, unsigned int pEspacio_Libre, unsigned int pProximo_Bit_Libre,
 				string pHash_Value, unsigned int pTamanio, string pNombre, util::Date* ultimaModificacion);
