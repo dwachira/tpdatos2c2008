@@ -3,7 +3,6 @@
 
 #include "../../db/trie/Trie.h"
 #include "../../dao/manager/ManagerDAO.h"
-#include "../crypto/CryptoBusiness.h"
 #include "../crypto/blowfish/BlowfishCrypto.h"
 #include "../../config/Config.h"
 
@@ -14,13 +13,13 @@ class ManagerBusiness
 private:
 	dao::ManagerDAO * managerDAO;
 	Trie * nameFileTrie;
-	CryptoBusiness * cryptoBusiness;
+	BlowfishCrypto * blowfishCrypto;
 
 
 public:
 	ManagerBusiness();
 	virtual ~ManagerBusiness();
-	CryptoBusiness * getCryptoBusiness(){return cryptoBusiness;}
+	BlowfishCrypto * getBlowfishCrypto(){return blowfishCrypto;}
 
 };
 }
