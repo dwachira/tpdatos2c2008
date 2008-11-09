@@ -11,6 +11,7 @@
 #include "../../object/exceptions/RecursoInaccesibleException.h"
 #include "../../object/exceptions/EntidadYaExistenteException.h"
 #include "../../object/exceptions/EntidadInexistenteException.h"
+#include "../../object/exceptions/ImagenFaltanteException.h"
 
 void Controller::agregarMensaje(std::string& filename) {
 	try {
@@ -73,6 +74,8 @@ void Controller::obtenerMensaje(std::string& filename, std::string& pathDestino)
 		std::cout<<"El mensaje solicitado no se encuentra en la base de datos. Compruebe el nombre"<<std::endl;
 	}catch (RecursoInaccesibleException e) {
 		std::cout<<"No se puede escribir en el destino."<<std::endl;
+	}catch (ImagenFaltanteException e) {
+		//TODO::PREGUNTAR SI QUIERE ELIMINAR EL MENSAJE DEL SISTEMA.
 	}
 }
 
