@@ -5,8 +5,6 @@
  *      Author: andres
  */
 
-#define HASH_SIZE	16
-
 #ifndef IMAGENDAO_H_
 #define IMAGENDAO_H_
 
