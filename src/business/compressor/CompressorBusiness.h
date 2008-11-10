@@ -18,7 +18,8 @@ using namespace std;
 class CompressorBusiness {
 	
 private:
-	
+	int j;
+	unsigned long buffer;
 	map<int,int> map_code;
 	map<int,unsigned int> map_prefix;
 	map<int,unsigned char> map_append;

@@ -7,70 +7,77 @@ CompressorBusiness::CompressorBusiness(){
 }
 
 CompressorBusiness::~CompressorBusiness(){
-
+	
 }
 /*Comprime el archivo pasado por parametro creando un archivo temporal nuevo
  * con la informacion comprimida*/
 
 int CompressorBusiness::compress(FILE * input, FILE *output){
-	unsigned int next_code; //el siguiente libre en la tabla
-	unsigned int character;
-	unsigned int string_code;
-
-
-	int i;
-    next_code=256;
-    for (i=0;i<TABLA;i++)  //limpia la tabla
+	unsigned int next_code=256; //el siguiente libre en la tabla
+	unsigned int character=0;
+	unsigned int string_code=0;
+	int i=0;       
+	buffer=0L;
+	j=0;
+    for (i=0;i<TABLA;i++){  //limpia la tabla
     map_code[i]=-1;
+    }
+    
+    string_code=getc(input); 
 
-    string_code=getc(input);
-
-
+  
       while ((character=getc(input)) != (unsigned)EOF)  //obtiene el siguiente caracter (get next character)
       {
-    	i=find_code(string_code,character);// Busca en la tabla
-        if (map_code[i] != -1)            // si lo encuentra
+    	i=find_code(string_code,character);// Busca en la tabla 
+        if (map_code[i] != -1)            // si lo encuentra   
             string_code=map_code[i];
-
-        else
-        {
+        
+        else                                    
+        {                                       
           if (next_code <= MAX_CODE) //no encontro el codigo en la tabla
           {
             map_code[i]=next_code++;
             map_prefix[i]=string_code;
             map_append[i]=character;
           }
-          put_code(output,string_code);
-          string_code=character;
-        }
-      }
-
-    put_code(output,string_code);
-    put_code(output,MAX_VALUE);
-    put_code(output,0);
+          put_code(output,string_code); 
+          string_code=character;            
+        }                                   
+      }                                     
+      
+    put_code(output,string_code); 
+    put_code(output,MAX_VALUE);   
+    put_code(output,0);         
     return 0;
 }
 
 
 int CompressorBusiness::decompress(FILE *input,FILE *output){
+	buffer=0L;
+	j=0;
 	unsigned int next_code=256;
-	unsigned int new_code;
-	unsigned int old_code;
-	int character;
+	unsigned int new_code=0;
+	unsigned int old_code=0;
+	int character=0;
 	unsigned char *string;
-	unsigned char decode_stack[4000];
-	unsigned int decode_code;
+	unsigned char decode_stack[4000]; 
+	unsigned int decode_code=0;
 	int add=0; ;
 	int i;
-	old_code=get_code(input);
-	  character=old_code;
-	  putc(old_code,output);
-
-
-	  while ((new_code=get_code(input)) != (MAX_VALUE))
+	for (i=0;i<TABLA;i++){  //limpia la tabla
+	    map_code[i]=-1;
+	    map_prefix[i]=-1;
+	    map_append[i]=-1;
+	    }
+	old_code=get_code(input); 
+	character=old_code;          
+	putc(old_code,output);           
+	  
+	
+	  while ((new_code=get_code(input)) != (MAX_VALUE)) 
 	  {
-
-	//el caso especial  ABABA
+	    	    	    
+	//el caso especial 
 	    if (new_code>=next_code)
 	    {
 	      *decode_stack=character;
@@ -81,7 +88,7 @@ int CompressorBusiness::decompress(FILE *input,FILE *output){
 	    	add=0;
 	    	decode_code=new_code;
 	    }
-
+	    
 	    unsigned char *buffer=decode_stack+add;
 	    i=0;
 	     while (decode_code > 255)
@@ -91,13 +98,13 @@ int CompressorBusiness::decompress(FILE *input,FILE *output){
 	      }
 	     *buffer=decode_code;
 	     string=buffer;
-
+	
 	    character=*string;
 	    while (string >= decode_stack)
 	    	putc(*string--,output);
-
-
-
+	    	
+	   
+	
 	    if (next_code <= MAX_CODE)
 	    {
 	      map_prefix[next_code]=old_code;
@@ -110,7 +117,7 @@ int CompressorBusiness::decompress(FILE *input,FILE *output){
 }
 
 
-/*Busca el codigo en la tabla,
+/*Busca el codigo en la tabla, 
  * si lo encuentra devuelve la posicion donde se encuentra
  * si no lo encuentra devuelve la posicion de uno libre
  */
@@ -127,7 +134,7 @@ int offset;
   else offset = TABLA - index;
   while (1)
   {
-    if (map_code[index] == -1)
+    if (map_code[index] == -1)     
     	return(index);
     if (map_prefix[index] == (unsigned)prefix && map_append[index] == character)
       return(index);
@@ -137,23 +144,22 @@ int offset;
 }
 
 /* Obtiene el codigo comprimido del archivo
- * y lo devuelve de a 8 bits
+ * y lo devuelve de a 8 bits  
  */
 
 unsigned int CompressorBusiness::get_code(FILE *input)
 {
-unsigned int code;
-static int i=0;
-static unsigned long buffer=0L;
+unsigned int code=0;
 
-  while (i <= BITS_ARQUITECTURA - 8)
+
+  while (j <= 24)
   {
-    buffer |= (unsigned long) getc(input) << (56-i);
-    i += 8;
+    buffer |= (unsigned long) getc(input) << (24-j);
+    j += 8;
   }
-  code=buffer >> (BITS_ARQUITECTURA-BITS);
+  code=buffer >> (32-BITS);
   buffer <<= BITS;
-  i -= BITS;
+  j -= BITS;
   return(code);
 }
 
@@ -161,15 +167,14 @@ static unsigned long buffer=0L;
 
 void CompressorBusiness::put_code(FILE *output,unsigned int code)
 {
-static int i=0;
-static unsigned long buffer=0L;
 
-  buffer |= (unsigned long) code << (BITS_ARQUITECTURA-BITS-i);
-  i += BITS;
-  while (i >= 8)
+
+  buffer |= (unsigned long) code << (32-BITS-j);
+  j += BITS;
+  while (j >= 8)
   {
-    putc(buffer >> (BITS_ARQUITECTURA-8),output);
+    putc(buffer >> 24,output);
 	buffer <<= 8;
-    i -= 8;
+    j -= 8;
   }
 }
