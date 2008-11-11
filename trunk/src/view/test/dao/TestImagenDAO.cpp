@@ -19,22 +19,22 @@ int TestImagenDAO::test(){
 	ImagenDAO* iDAO = new ImagenDAO();
 
 	//ID_DIR - ESPACIO_LIBRE - PROX_BIT_LIBRE - HASHVALUE - TAMANIO - NOMBRE
-	util::Date* fecha1 = util::Date::valueOf(13,02,87,23,33);
+	util::Date* fecha1 = util::Date::valueOf(13,02,87,23,33,33);
 	Imagen* img1 = new Imagen(2, 3457, 221, "RiverCampeon2008", 5679, "La primera.jpg",fecha1);
 	this->print(img1);
-	util::Date* fecha2 = util::Date::valueOf(22,12,29,22,0);
+	util::Date* fecha2 = util::Date::valueOf(22,12,29,22,0,0);
 	Imagen* img2 = new Imagen(1, 210, 15, "RiverCampeon2004", 1200, "Vale2.png",fecha2);
 	this->print(img2);
-	util::Date* fecha3 = util::Date::valueOf(30,03,99,3,3);
+	util::Date* fecha3 = util::Date::valueOf(30,03,99,3,3,3);
 	Imagen* img3 = new Imagen(7, 3368, 220, "RiverCampeon2002", 3398, "Foto Numero3.bmp",fecha3);
 	this->print(img3);
-	util::Date* fecha4 = util::Date::valueOf(4,1,44,1,4);
+	util::Date* fecha4 = util::Date::valueOf(4,1,44,1,4,4);
 	Imagen* img4 = new Imagen(4, 210, 351, "RiverCampeon2000", 334, "Se va la cuarta.gif",fecha4);
 	this->print(img4);
-	util::Date* fecha5 = util::Date::valueOf(5,5,95,5,55);
+	util::Date* fecha5 = util::Date::valueOf(5,5,95,5,55,55);
 	Imagen* img5 = new Imagen(7, 1, 0, "RiverCampeon1999", 2783, "Quinta-llena.jpg",fecha5);
 	this->print(img5);
-	util::Date* fecha6 = util::Date::valueOf(16,6,66,16,6);
+	util::Date* fecha6 = util::Date::valueOf(16,6,66,16,6,6);
 	Imagen* img6 = new Imagen(4, 3368, 996, "RiverCampeon1997", 12276, "Ultima66.bmp",fecha6);
 	this->print(img6);
 
@@ -111,7 +111,7 @@ int TestImagenDAO::test(){
 	std::cout << "" << std::endl;
 	std::cout << "Voy a updatear la fecha de la Imagen 1 [1/1/1 1:1], cuyos datos son los siguientes:" << std::endl;
 	this->getById(iDAO,1);
-	util::Date* newFecha = util::Date::valueOf(1,1,1,1,1);
+	util::Date* newFecha = util::Date::valueOf(1,1,1,1,1,1);
 	this->updateFecha(iDAO,3,newFecha);
 	this->updateFecha(iDAO,1,newFecha);
 	this->getById(iDAO,1);
@@ -158,9 +158,10 @@ void TestImagenDAO::print(Imagen* img){
 	unsigned int dia = img->getFechaUltimaModificacion().getDay();
 	unsigned int hora = img->getFechaUltimaModificacion().getHour();
 	unsigned int minuto = img->getFechaUltimaModificacion().getMinute();
+	unsigned int segundo = img->getFechaUltimaModificacion().getSecond();
 
 	//se arma la clave compuesta concatenando los valores de la fecha
-	double fechaCompuesta = Date::concatFecha(anio, mes, dia, hora, minuto);
+	double fechaCompuesta = Date::concatFecha(anio, mes, dia, hora, minuto, segundo);
 
 	std::cout << "**ID=" << img->getID() <<
 				 "-ID_DIR=" << img->getID_Dir() <<
@@ -169,7 +170,7 @@ void TestImagenDAO::print(Imagen* img){
 				 "-HASH=" << img->getHash_value() <<
 				 "-TAMANIO=" << img->getTamanio() <<
 				 "-NOMBRE=" << img->getNombre() << "..." <<
-				 dia<<"/"<<mes<<"/"<<anio<<"-"<<hora<<":"<<minuto<<
+				 dia<<"/"<<mes<<"/"<<anio<<"-"<<hora<<":"<<minuto<<":"<<segundo<<
 				 "..."<< fechaCompuesta << std::endl;
 }
 

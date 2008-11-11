@@ -18,22 +18,22 @@ int TestDirectorioDAO::test(){
 
 	DirectorioDAO* dDAO = new DirectorioDAO();
 
-	Date* date1 = Date::valueOf(13,3,87,13,33);
+	Date* date1 = Date::valueOf(13,3,87,13,33,33);
 	Directorio* dir1 = new Directorio("andres/directorio1", date1);
 	this->print(dir1);
-	Date* date2 = Date::valueOf(26,1,89,0,55);
+	Date* date2 = Date::valueOf(26,1,89,0,55,55);
 	Directorio* dir2 = new Directorio("home/agus/dir2", date2);
 	this->print(dir2);
-	Date* date3 = Date::valueOf(23,8,62,23,10);
+	Date* date3 = Date::valueOf(23,8,62,23,10,10);
 	Directorio* dir3 = new Directorio("el+viejo/64/fechas", date3);
 	this->print(dir3);
-	Date* date4 = Date::valueOf(13,3,87,13,33);
+	Date* date4 = Date::valueOf(13,3,87,13,33,33);
 	Directorio* dir4 = new Directorio("los 5 unos", date4);
 	this->print(dir4);
-	Date* date5 = Date::valueOf(26,1,89,0,55);
+	Date* date5 = Date::valueOf(26,1,89,0,55,55);
 	Directorio* dir5 = new Directorio("Cambio de hora/igual que el 1ro", date5);
 	this->print(dir5);
-	Date* date6 = Date::valueOf(23,9,62,23,10);
+	Date* date6 = Date::valueOf(23,9,62,23,10,10);
 	Directorio* dir6 = new Directorio("Mismo-Horario-3ro", date6);
 	this->print(dir6);
 
@@ -67,7 +67,7 @@ int TestDirectorioDAO::test(){
 	}
 
 	std::cout << "" << std::endl;
-	Date* newFecha = Date::valueOf(27,12,92,13,33);
+	Date* newFecha = Date::valueOf(27,12,92,13,33,33);
 	this->update(dDAO,2,newFecha);
 	std::cout << "OJO. Debia dar Falso porque se quiso updatear algo eliminado" << std::endl;
 	std::cout << "" << std::endl;
@@ -118,7 +118,7 @@ int TestDirectorioDAO::test2(){
 	std::cout << "The Beggining..." << std::endl;
 	for(int i=0; i<10000; i++){
 
-		Date* date = Date::valueOf(13,3,87,13,33);
+		Date* date = Date::valueOf(13,3,87,13,33,33);
 		Directorio* dir = new Directorio("andres", date);
 		this->print(dir);
 		this->insertar(dDAO,dir);
@@ -142,12 +142,14 @@ void TestDirectorioDAO::print(Directorio* dir){
 	unsigned int dia = dir->getFechaUltimaModificacion().getDay();
 	unsigned int hora = dir->getFechaUltimaModificacion().getHour();
 	unsigned int minuto = dir->getFechaUltimaModificacion().getMinute();
+	unsigned int segundo = dir->getFechaUltimaModificacion().getSecond();
 
 	//se arma la clave compuesta concatenando los valores de la fecha
-	double fechaCompuesta = Date::concatFecha(anio, mes, dia, hora, minuto);
+	double fechaCompuesta = Date::concatFecha(anio, mes, dia, hora, minuto, segundo);
 
 	std::cout << "** info= " << dir->getID() << "--" << dir->getPath() << "--" <<
-	dia << "/" << mes << "/" << anio << " - " << hora << ":" << minuto << "--" << fechaCompuesta << std::endl;
+	dia << "/" << mes << "/" << anio << " - " << hora << ":" << minuto << ":" << segundo
+	<< "--" << fechaCompuesta << std::endl;
 }
 
 void TestDirectorioDAO::getById(DirectorioDAO* dao, unsigned int id){

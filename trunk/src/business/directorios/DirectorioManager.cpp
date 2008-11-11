@@ -156,7 +156,8 @@ void DirectorioManager::actualizarFechaDeModificacion(Directorio & directorio)
 		lstat(directorio.getPath().data(),&dirStats);
 		struct tm* timeAux = gmtime(&dirStats.st_mtim.tv_sec);
 		Date* lastModification = Date::valueOf(timeAux->tm_mday, timeAux->tm_mon + 1,
-				timeAux->tm_year + 1900, timeAux->tm_hour, timeAux->tm_min);
+				timeAux->tm_year + 1900, timeAux->tm_hour, timeAux->tm_min, timeAux->tm_sec);
+		//agregue tm_sec, no se si esta bien... (Andres, 11-11 00:08)
 		directorio.setFechaUltimaModificacion(lastModification);
 		directorioDAO.update(directorio.getID(),directorio.getFechaUltimaModificacion());
 	}

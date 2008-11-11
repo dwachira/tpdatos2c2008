@@ -34,7 +34,16 @@ bool operator< (const Date& left, const Date& right) {
 					if (left.getMinute() < right.getMinute()) {
 						return true;
 					}
-					else {
+					else if(left.getMinute() == right.getMinute()){
+						if(left.getSecond() < right.getSecond()){
+							return true;
+						}
+						else{
+							return false;
+						}
+					}
+					else
+					{
 						return false;
 					}
 				}
@@ -57,14 +66,15 @@ bool operator< (const Date& left, const Date& right) {
 
 std::ostream& operator<<(std::ostream& os, const util::Date& date) {
 	std::stringstream stringBuff;
-	stringBuff << date.getDay() << "/" << date.getMonth() << "/"
-			   << date.getYear() << " " << date.getHour() << ":" << date.getMinute();
+	stringBuff << date.getDay() << "/" << date.getMonth() << "/" << date.getYear()
+		<< " " << date.getHour() << ":" << date.getMinute() << ":" << date.getSecond();
 	os << stringBuff.str();
 	return os;
 }
 
 Date::Date(unsigned int day, unsigned int month, unsigned int year,
-		unsigned int hour, unsigned int minute) {
+		unsigned int hour, unsigned int minute, unsigned int second) {
+	this->second = second;
 	this->minute = minute;
 	this->hour = hour;
 	this->day = day;
@@ -73,18 +83,26 @@ Date::Date(unsigned int day, unsigned int month, unsigned int year,
 }
 
 Date* Date::valueOf(unsigned int day, unsigned int month, unsigned int year,
-		unsigned int hour, unsigned int minute)
+		unsigned int hour, unsigned int minute, unsigned int second)
 {
 	if ( (day < 32) && (month < 13) )
-		return new Date(day,month,year,hour,minute);
+		return new Date(day,month,year,hour,minute,second);
 	else
 		return NULL;
 }
 
 double Date::concatFecha(unsigned int anio, unsigned int mes, unsigned int dia,
-												unsigned int hora, unsigned int minutos){
+						unsigned int hora, unsigned int minutos, unsigned int segundos){
 
-	string s1, s2, s3, s4, s5;
+	string s1, s2, s3, s4, s5, s6;
+
+	if(segundos == 0)
+			s6 == "00";
+		else
+			if(segundos < 10)
+				s6 = "0" + StringUtils::toString(segundos);
+			else
+				s6 = StringUtils::toString(segundos);
 
 	if(minutos == 0)
 		s5 == "00";
@@ -120,7 +138,7 @@ double Date::concatFecha(unsigned int anio, unsigned int mes, unsigned int dia,
 		else
 			s1 = StringUtils::toString(anio);
 
-	string output = s1 + s2 + s3 + s4 + s5;
+	string output = s1 + s2 + s3 + s4 + s5 + s6;
 	double result = atof(output.c_str());
 	return result;
 }

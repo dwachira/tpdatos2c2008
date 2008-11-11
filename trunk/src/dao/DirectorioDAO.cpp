@@ -73,8 +73,8 @@ bool DirectorioDAO::insert(Directorio& dir){
 		return false;
 
 	//se arma la clave compuesta concatenando los valores de la fecha
-	double claveCompuestaFecha = Date::concatFecha(buffer->anio, buffer->mes,
-									buffer->dia, buffer->hora, buffer->min);
+	double claveCompuestaFecha = Date::concatFecha(buffer->anio, buffer->mes, buffer->dia,
+									buffer->hora, buffer->min, buffer->sec);
 
 	this->index_FechaModif->insertar(claveCompuestaFecha, offset_registro);
 
@@ -120,7 +120,7 @@ void DirectorioDAO::borrar(unsigned int id){
 
 		//se arma la clave compuesta concatenando los valores de la fecha
 		double claveCompuestaFecha = Date::concatFecha(buffer->anio, buffer->mes,
-											buffer->dia, buffer->hora, buffer->min);
+								buffer->dia, buffer->hora, buffer->min, buffer->sec);
 		this->index_FechaModif->eliminar(claveCompuestaFecha, reg.getOffset());
 
 		//elimino el nombre del directorio del archivo de regs de long variable
@@ -140,7 +140,7 @@ void DirectorioDAO::borrar(Directorio& dir){
 }
 
 bool DirectorioDAO::update(unsigned int ID, unsigned int anio, unsigned int mes,
-							unsigned int dia, unsigned int hora, unsigned int min){
+				unsigned int dia, unsigned int hora, unsigned int min, unsigned int sec){
 
 	//obtengo la pag candidata y busco el Id solicitado
 	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
@@ -176,6 +176,7 @@ bool DirectorioDAO::update(unsigned int ID, unsigned int anio, unsigned int mes,
 	unsigned int diaViejo = buffer->dia;
 	unsigned int horaViejo = buffer->hora;
 	unsigned int minViejo = buffer->min;
+	unsigned int secViejo = buffer->sec;
 
 	//actualizo los valores de la fecha de modificacion
 	buffer->anio = anio;
@@ -183,6 +184,7 @@ bool DirectorioDAO::update(unsigned int ID, unsigned int anio, unsigned int mes,
 	buffer->dia = dia;
 	buffer->hora = hora;
 	buffer->min = min;
+	buffer->sec = sec;
 
 	//y sobreescribo en el archivo
 	this->archivo->abrir(UPDATE);
@@ -192,9 +194,9 @@ bool DirectorioDAO::update(unsigned int ID, unsigned int anio, unsigned int mes,
 	//y elimino y inserto del indice pertinente
 	//se arma la clave compuesta concatenando los valores de la fecha
 	double claveCompuestaFecha = Date::concatFecha(anioViejo, mesViejo,
-			diaViejo, horaViejo, minViejo);
+			diaViejo, horaViejo, minViejo, secViejo);
 	//y se arma la clave nueva
-	double newClaveCompuestaFecha = Date::concatFecha(anio, mes, dia, hora, min);
+	double newClaveCompuestaFecha = Date::concatFecha(anio, mes, dia, hora, min, sec);
 
 	this->index_FechaModif->eliminar(claveCompuestaFecha, reg.getOffset());
 	this->index_FechaModif->insertar(newClaveCompuestaFecha, reg.getOffset());
@@ -209,8 +211,9 @@ bool DirectorioDAO::update(unsigned int ID, util::Date newFecha){
 	unsigned int dia = newFecha.getDay();
 	unsigned int hora = newFecha.getHour();
 	unsigned int min = newFecha.getMinute();
+	unsigned int sec = newFecha.getSecond();
 
-	return update(ID, anio, mes, dia, hora, min);
+	return update(ID, anio, mes, dia, hora, min, sec);
 }
 
 Directorio* DirectorioDAO::getDirById(unsigned int newID){
@@ -245,7 +248,7 @@ Directorio* DirectorioDAO::getDirById(unsigned int newID){
 	unsigned int id = buffer->ID;
 	string nombre = this->recuperarPath(buffer->offset_path);
 	Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
-			buffer->hora,buffer->min);
+												buffer->hora,buffer->min,buffer->sec);
 	Directorio* dir = new Directorio(id,nombre,lastModification);
 	return dir;
 }
@@ -262,7 +265,7 @@ list<Directorio> DirectorioDAO::getDirsSortedByFechaModif(){
 		unsigned int id = buffer->ID;
 		string nombre = this->recuperarPath(buffer->offset_path);
 		Date* lastModification = Date::valueOf(buffer->dia,buffer->mes,buffer->anio,
-				buffer->hora,buffer->min);
+												buffer->hora,buffer->min,buffer->sec);
 		Directorio* dir = new Directorio(id,nombre,lastModification);
 		lista.push_back(*dir);
 	}
@@ -318,6 +321,7 @@ REG_DIR* DirectorioDAO::aStruct(const Directorio& dir, unsigned long int offset_
 	buffer->dia = fechaUltimaModificacion.getDay();
 	buffer->hora = fechaUltimaModificacion.getHour();
 	buffer->min = fechaUltimaModificacion.getMinute();
+	buffer->sec = fechaUltimaModificacion.getSecond();
 	buffer->offset_path = offset_path;
 
 	return buffer;

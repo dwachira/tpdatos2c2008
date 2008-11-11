@@ -355,12 +355,13 @@ bool ImagenDAO::updateFecha(unsigned int ID, util::Date newFecha){
 	unsigned int dia = newFecha.getDay();
 	unsigned int hora = newFecha.getHour();
 	unsigned int min = newFecha.getMinute();
+	unsigned int sec = newFecha.getSecond();
 
-	return updateFecha(ID, anio, mes, dia, hora, min);
+	return updateFecha(ID, anio, mes, dia, hora, min, sec);
 }
 
 bool ImagenDAO::updateFecha(unsigned int ID, unsigned int anio, unsigned int mes,
-						unsigned int dia, unsigned int hora, unsigned int min){
+				unsigned int dia, unsigned int hora, unsigned int min, unsigned int sec){
 
 	//obtengo la pag candidata
 	vector<RegPagina> candidata = this->index_Prim->getPaginaCandidata((double) ID);
@@ -395,6 +396,7 @@ bool ImagenDAO::updateFecha(unsigned int ID, unsigned int anio, unsigned int mes
 	buffer->dia = dia;
 	buffer->hora = hora;
 	buffer->min = min;
+	buffer->sec = sec;
 
 	//y sobreescribo en el archivo
 	this->archivo->abrir(UPDATE);
@@ -425,7 +427,7 @@ Imagen ImagenDAO::getImgById(unsigned int newID){
 	/********************************************/
 
 	if(!encontrado){		//si no lo encontro, no existe en el indice
-		util::Date* fecha = util::Date::valueOf(0,0,0,0,0);
+		util::Date* fecha = util::Date::valueOf(0,0,0,0,0,0);
 		Imagen img(0,0,0,0,0,0,"",fecha);
 		return img;
 	}
@@ -438,10 +440,10 @@ Imagen ImagenDAO::getImgById(unsigned int newID){
 	this->archivo->cerrar();
 
 	string nombre = this->recuperarNombre(buffer->offset_nombre);
-	util::Date* lastModification = util::Date::valueOf(buffer->dia,
-						buffer->mes, buffer->anio, buffer->hora, buffer->min);
+	util::Date* lastModification = util::Date::valueOf(buffer->dia,	buffer->mes,
+							buffer->anio, buffer->hora, buffer->min, buffer->sec);
 	Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre, buffer->prox_bit_libre,
-							buffer->hash_value, buffer->tamanio, nombre,lastModification);
+							buffer->hash_value, buffer->tamanio, nombre, lastModification);
 	free(buffer);
 	return img;
 }
@@ -456,8 +458,8 @@ list<Imagen> ImagenDAO::getImgsByDirectorio(unsigned int newID_Dir){
 	for(unsigned int i=0; i<resultados.size(); i++){
 		this->archivo->leer(buffer, resultados[i].getOffset());
 		string nombre = this->recuperarNombre(buffer->offset_nombre);
-		util::Date* lastModification = util::Date::valueOf(buffer->dia,
-							buffer->mes, buffer->anio, buffer->hora, buffer->min);
+		util::Date* lastModification = util::Date::valueOf(buffer->dia, buffer->mes,
+									buffer->anio, buffer->hora, buffer->min, buffer->sec);
 		Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre, buffer->prox_bit_libre,
 								buffer->hash_value, buffer->tamanio, nombre,lastModification);
 		lista.push_back(img);
@@ -482,8 +484,8 @@ list<Imagen> ImagenDAO::getImgsSortedByEspacioLibre(){
 		this->archivo->leer(buffer, resultados[i].getOffset());
 		if(buffer->espacio_libre > 0){
 			string nombre = this->recuperarNombre(buffer->offset_nombre);
-			util::Date* lastModification = util::Date::valueOf(buffer->dia,
-								buffer->mes, buffer->anio, buffer->hora, buffer->min);
+			util::Date* lastModification = util::Date::valueOf(buffer->dia, buffer->mes,
+									buffer->anio, buffer->hora, buffer->min, buffer->sec);
 			Imagen img(buffer->ID, buffer->ID_Dir, buffer->espacio_libre, buffer->prox_bit_libre,
 									buffer->hash_value, buffer->tamanio, nombre,lastModification);
 			lista.push_back(img);
@@ -547,6 +549,7 @@ REG_IMG* ImagenDAO::aStruct(Imagen img, unsigned long int offset_nombre){
 	buffer->dia = fechaUltimaModificacion.getDay();
 	buffer->hora = fechaUltimaModificacion.getHour();
 	buffer->min = fechaUltimaModificacion.getMinute();
+	buffer->sec = fechaUltimaModificacion.getSecond();
 
 	return buffer;
 }
