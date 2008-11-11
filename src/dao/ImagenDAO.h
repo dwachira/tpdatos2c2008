@@ -33,6 +33,7 @@ typedef struct{
 	unsigned int dia;
 	unsigned int hora;
 	unsigned int min;
+	unsigned int sec;
 }REG_IMG;
 
 
@@ -102,7 +103,7 @@ class ImagenDAO{
 		bool updateNombre(unsigned int ID, string newNombre);
 		bool updateFecha(unsigned int ID, util::Date newFecha);
 		bool updateFecha(unsigned int ID, unsigned int anio, unsigned int mes,
-								unsigned int dia, unsigned int hora, unsigned int min);
+				unsigned int dia, unsigned int hora, unsigned int min, unsigned int sec);
 
 		/*
 		 * Se accede al indice primario, ordenado por ID, y se recupera el

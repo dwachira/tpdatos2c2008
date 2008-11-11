@@ -19,21 +19,23 @@ namespace util
 
 class Date {
 private:
+	unsigned int second;
 	unsigned int minute;
 	unsigned int hour;
 	unsigned int day;
 	unsigned int month;
 	unsigned int year;
 	Date(unsigned int day, unsigned int month,
-			unsigned int year, unsigned int hour, unsigned int minute);
+			unsigned int year, unsigned int hour, unsigned int minute, unsigned int second);
 public:
 	static Date* valueOf(unsigned int day, unsigned int month, unsigned int year,
-			unsigned int hour, unsigned int minute);
+			unsigned int hour, unsigned int minute, unsigned int second);
 
 	static double concatFecha(unsigned int anio, unsigned int mes, unsigned int dia,
-											unsigned int hora, unsigned int minutos);
+							unsigned int hora, unsigned int minutos, unsigned int segundos);
 
 	Date(const Date& anotherDate) {
+		this->second = anotherDate.second;
 		this->minute = anotherDate.minute;
 		this->hour = anotherDate.hour;
 		this->day = anotherDate.day;
@@ -67,6 +69,11 @@ public:
 	{
 		return minute;
 	}
+
+	unsigned int getSecond() const
+    {
+        return second;
+    }
 
     friend bool operator< (const Date& left, const Date& right);
 

@@ -28,6 +28,7 @@ typedef struct{
 	unsigned int dia;
 	unsigned int hora;
 	unsigned int min;
+	unsigned int sec;
 }REG_DIR;
 
 
@@ -87,8 +88,8 @@ class DirectorioDAO{
 		 * directorio. Los demas campos permanecen inalterables.
 		 */
 		bool update(unsigned int ID, util::Date newFecha);
-		bool update(unsigned int ID, unsigned int anio, unsigned int mes,
-						unsigned int dia, unsigned int hora, unsigned int min);
+		bool update(unsigned int ID, unsigned int anio, unsigned int mes, unsigned int dia,
+						unsigned int hora, unsigned int min, unsigned int sec);
 
 		/*
 		 * Se accede al indice primario, ordenado por ID, y se recupera el

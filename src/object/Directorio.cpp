@@ -11,7 +11,7 @@ namespace object{
 unsigned int Directorio::incrementalId = 0;		//si lo borro, no compila
 
 Directorio::Directorio(string newPath) : path(newPath) {
-	this->fechaUltimaModificacion = util::Date::valueOf(0, 0, 0, 0, 0);
+	this->fechaUltimaModificacion = util::Date::valueOf(0, 0, 0, 0, 0, 0);
 	this->ID = getNewId();
 }
 
