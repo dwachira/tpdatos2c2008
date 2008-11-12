@@ -39,10 +39,11 @@ bool FIBitmap::load(int flag){
        		pitch = FreeImage_GetPitch(imagen);   
        		height=FreeImage_GetHeight(imagen);
        		width=FreeImage_GetWidth(imagen); 
+       		std::cout<<"h: "<<height<<" w: "<<width<<std::endl;
        		color_type=FreeImage_GetColorType(imagen);
        		if(bpp<=8)
        			palette_offset=getPaletteOffset();
-            std::cout<<"bpp "<<bpp<<std::endl;
+            std::cout<<"bpp es :  "<<bpp<<std::endl;
             error=false;
   	}else error=true;	
   } else error=true;	

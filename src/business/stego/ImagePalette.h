@@ -15,7 +15,7 @@ class ImagePalette
 	
     	/*Representacion de la imagen*/
    		FIBitmap &imagen;
-    	std::vector<unsigned int> new_palette_indexes;
+   	  	std::vector<unsigned int> new_palette_indexes;
 		unsigned int getRGBPos(unsigned int pos);
 		
 	public:
@@ -25,7 +25,7 @@ class ImagePalette
 	
 		unsigned int getNewPaletteIndex(unsigned int index);
 		void sortPaletteByDistance();
-		unsigned int doIndexesLSB(Pixel& pixel,std::string mensaje);		 
+		unsigned int doIndexesLSB(Pixel& pixel,const char* mensaje);		 
 		unsigned int doPaletteLSB(unsigned int first_bit,std::string mensaje);
 		std::string getMessageFromIndexes(Pixel& pixel,unsigned int longitud);
 		std::string getMessageFromPalette(unsigned int first,unsigned int longitud);

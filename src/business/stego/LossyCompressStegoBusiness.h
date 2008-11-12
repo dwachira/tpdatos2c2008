@@ -19,7 +19,7 @@ class LossyCompressStegoBusiness: public StegoBusiness
 	
     	LossyCompressStegoBusiness();
 		LossyCompressStegoBusiness(std::string filename);
-		virtual unsigned int setMessage(unsigned long int first_pos,std::string mensaje);
+		virtual unsigned int setMessage(unsigned long int first_pos,const char* mensaje);
 		virtual std::string getMessage(unsigned long int first_pos,unsigned int longitud);
 		/*Genera espacio para poder insertar mensaje,comprime la imagen*/
 		bool generateSpace(float perc);

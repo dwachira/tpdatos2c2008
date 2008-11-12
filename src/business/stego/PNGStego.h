@@ -8,8 +8,8 @@ private:
 public:
 	PNGStego();
 	PNGStego(std::string filename);
-	virtual unsigned int changePixel(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados)	;
-	virtual std::string getMessageFromPixel(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados);
+	virtual unsigned int changePixel(BYTE *pixels,const char* mensaje)	;
+	virtual std::string getMessageFromPixel(BYTE *pixels,unsigned int longitud);
 	virtual unsigned int getFreeSpace();
 	virtual ~PNGStego();
 };

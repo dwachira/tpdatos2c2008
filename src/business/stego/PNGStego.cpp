@@ -2,38 +2,10 @@
 
 PNGStego::PNGStego(std::string filename):LSBStegoBusiness(filename)
 {
-	
+	if((imagen.getBpp()==32)&&(getTransparentPixels()!=0)) max_pos_pixel--;//para no modificar el indicador de transparencia
 }
 
-unsigned int PNGStego::changePixel(BYTE *pixels,std::string mensaje,unsigned int& pos,unsigned int& bits_procesados)	
-{
-/*Auxiliar para realizar la conversión de binario a entero*/
-char* aux;
-int byte;
-/*Para almacenar el contenido del pixel en binario*/
-std::string newbyte;
-unsigned int bits_alpha=0;
-unsigned int pos_pixel=0;
 
-     /*Canal alpha en cero--> imagen transparente*/
-     if((imagen.getBpp()==32)&&(pixels[3]==0)){std::cout<<"pixel transparente "<<std::endl;
-    	  while((bits_procesados<mensaje.size())&&(pos_pixel<3)){
-             newbyte.append(1,mensaje.at(bits_procesados));
-             bits_alpha++;
-             bits_procesados++;
-             if((bits_alpha%8)==0){//guardo el nuevo byte completo
-             	byte=strtol(newbyte.c_str(),&aux,2);
-             	newbyte.clear();
-             	pixels[pos_pixel] = byte;
-             	pos_pixel++;
-             }
-          }
-          return bits_alpha;
-     }else{//sino utilizo el metodo comun
-           return doLSBStego(pixels,mensaje,pos,bits_procesados);	
-     }
-             
-}
 unsigned int PNGStego::getFreeSpace(){
 	if((imagen.getBpp()<=8)&&(!imagen.isGrayScale())){
        if (imagen.getPaletteSize()>16){
@@ -43,9 +15,9 @@ unsigned int PNGStego::getFreeSpace(){
        else return (imagen.getPaletteSize()*3)/8;//solo se hara lsb sobre la paleta de colores
 	} 
 	unsigned int space;
-	space=((((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp()/8)*(this->enable_bpp)))/8);
+	space=((((imagen.getHeight())*(imagen.getWidth())*(max_pos_pixel)*(this->enable_bpp)))/8);
 	if(imagen.getBpp()==32)
-	  space+=  ((getTransparentPixels()*(24 - this->enable_bpp*(imagen.getBpp()/8)))/8);
+	  space+=  ((getTransparentPixels()*(24 - this->enable_bpp*(max_pos_pixel)))/8);
 	return space;
 	
 }
@@ -72,32 +44,108 @@ if(!error){
       bits -= imagen.getPitch();//siguiente linea de la imagen
 		
 	}//fin for_y
-  }
+  }std::cout<<"hay transparentes: "<<transparent<<std::endl;
   return transparent;
 }
-std::string PNGStego::getMessageFromPixel(BYTE *pixels,unsigned int& pos,unsigned int longitud,unsigned int& bits_procesados){
+
+unsigned int PNGStego::changePixel(BYTE *pixels,const char* mensaje)	
+{
+/*Auxiliar para realizar la conversión de binario a entero*/
+char* aux;
+BYTE byte_pixel;
+char bit;
+/*Para almacenar el contenido del pixel en binario*/
+std::string newbyte;
+unsigned int bits_alpha=0;
+unsigned int j=0;
+     /*Canal alpha en cero--> imagen transparente*/
+     if((imagen.getBpp()==32)&&(pixels[3]==0)){
+     	
+    	  while((bits_procesados<strlen(mensaje)*8)&&(pos_pixel<3)){
+    	  	j=0;
+    	  	//ciclo para completar un byte del pixel
+    	  	while((bits_procesados<strlen(mensaje)*8)&&(j<8)){
+    	  	    if(pos_bit_msj==8){ 
+   	 			   pos_bit_msj=0;
+   	 			   pos_byte_msj++;
+   	     	     }
+   	     	     j++;
+   	     	   /*Guardo un bit de informacion en el LSB del byte*/   
+        	   if ((mensaje[pos_byte_msj])&(1<<pos_bit_msj)) bit='1';
+        	   else bit='0';
+               newbyte.push_back(bit);
+               pos_bit_msj++;
+               bits_alpha++;
+               bits_procesados++;
+    	  	}
+              
+               if(bits_procesados==(strlen(mensaje)*8)){
+                  //saco los primeros ceros
+                  if(newbyte.at(0)=='0')
+                    newbyte=newbyte.substr(newbyte.find('1'));//si hay ceros antes
+                  //completo con ceros al final 
+                  newbyte.append(8-newbyte.size(),'0');
+                    
+               }
+               
+               byte_pixel=(BYTE)strtol(newbyte.c_str(),&aux,2);
+               newbyte.clear();
+               pixels[pos_pixel] = byte_pixel;
+               pos_pixel++;
+             }
+             //si ya guarde todos los bits-->paso al siguiente pixel libre
+             //completo lo que falta para el siguiente bit libre del prox pixel
+          if(bits_procesados==strlen(mensaje)*8){
+          	if(j<8) bits_alpha+=8-j;
+          	if(pos_pixel==2) bits_alpha+=8;//salteo el pixel transparente
+          	bits_alpha+=7;//proximo bit libre
+          }
+             
+          return bits_alpha;
+     }else{//sino utilizo el metodo comun
+           return doLSBStego(pixels,mensaje);	
+     }
+             
+}
+
+
+std::string PNGStego::getMessageFromPixel(BYTE *pixels,unsigned int longitud){
 std::string mensaje,binario;
-unsigned int byte;
-unsigned int pos_pixel=0;
-if(bits_procesados==0)
-  pos_pixel= (pos/8);
+int byte_pixel;
+unsigned int j=0;
+
 /*Canal alpha en cero--> imagen transparente*/
    if((imagen.getBpp()==32)&&(pixels[3]==0)){
+ 
      while((bits_procesados<longitud)&&(pos_pixel<3)){
-          byte=(int)pixels[pos_pixel];
-          util::BitsUtils::toBase(byte,2,binario);
-          bits_procesados+=8;
-          if(bits_procesados<longitud)
-            util::BitsUtils::completeNBits(binario,8);
-          else
-            util::BitsUtils::completeNBits(binario,bits_procesados-longitud);
-          mensaje.append(binario);
-          pos_pixel++;
-          binario.clear();
+          byte_pixel=(int)pixels[pos_pixel];
+          binario="";
+          util::BitsUtils::toBase(byte_pixel,2,binario);
+          if(bits_procesados+8<longitud)
+               util::BitsUtils::completeNBits(binario,8);
+          else  //completo con ceros al final 
+               binario.append(8-binario.size(),'0');
+         
+          j=0; 
+   
+          while((bits_procesados<longitud)&&(j<8)){     
+                
+          		if(binario.at(j)=='1') byte_msj = byte_msj | (1<<pos_bit_msj);
+                j++; 
+                bits_procesados++;
+                pos_bit_msj++;
+                if(pos_bit_msj==8){
+      	 			pos_bit_msj=0;
+      	 			mensaje.push_back(byte_msj);
+      	 			
+      	 			byte_msj = 0x0;
+      			}
+               
+          } pos_pixel++;//paso al byte siguiente
       }
       return mensaje;       	
   }else//sino utilizo el metodo comun
-       return getLSBMessage(pixels,pos,longitud,bits_procesados);
+       return getLSBMessage(pixels,longitud);
              		
 }
 
