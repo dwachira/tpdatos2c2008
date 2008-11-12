@@ -32,17 +32,7 @@ namespace util{
 		}
 
 	}
-	int BitsUtils::hideInByte(int byte,int bit,unsigned int pos){
-		int lsb=(byte&pos);
-		lsb=(lsb>>pos-1);
-		int result=byte;
-
- 		if(lsb!=bit){
- 			if(bit==1){ result++;}
- 			else result--;
- 		}return result;	
 	
-	}
 
 	int BitsUtils::getHidenBit(int byte,unsigned int pos){
 		int lsb=(byte&pos);
