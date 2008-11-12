@@ -18,7 +18,7 @@ unsigned int GIFStego::getFreeSpace(){
     return (imagen.getPaletteSize()*3)/8;	
 }
  
-unsigned int GIFStego::setMessage(unsigned long int first_pos,std::string mensaje)
+unsigned int GIFStego::setMessage(unsigned long int first_pos,char* mensaje)
 {
 unsigned int last_pos;
 if(!error){
