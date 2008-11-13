@@ -41,9 +41,9 @@ if(!error) {
 	if(imagen.getPaletteSize()>16){
 			Pixel pixel;
     		getPixel(first_bit,pixel);
-			mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
+			mensaje.append(palette.getMessageFromIndexes(pixel,longitud*8));
 	}else
-	        mensaje.append(palette.getMessageFromPalette(first_bit,longitud));
+	        mensaje.append(palette.getMessageFromPalette(first_bit,longitud*8));
 }	 	
 return mensaje;	
 }
