@@ -186,7 +186,7 @@ pos_pixel=pixel.getNumero_de_bit()/8;
 if(!error){
   	  
       if((imagen.getBpp()<=8)&&(!imagen.isGrayScale()))
-      	    if(imagen.getPaletteSize()>16) mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
+      	    if(imagen.getPaletteSize()>16) mensaje.append(palette.getMessageFromIndexes(pixel,longitud*8));
       	    else mensaje.append(palette.getMessageFromPalette(first_pos,longitud*8));
       else{
        		BYTE *bits = imagen.getBits();

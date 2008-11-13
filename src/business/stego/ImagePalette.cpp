@@ -117,6 +117,7 @@ if(palette) {
         imagen.applyColorMapping(dstcolors,imagen.getPaletteSize());
         if(imagen.hasBackgroundColor())  	
 	  	    imagen.setBackgroundColorIndex(getNewPaletteIndex(background_index));
+	  	std::cout<<"PALETA ORDENADA"<<std::endl;
    }
 }
 
@@ -155,6 +156,7 @@ unsigned int pos_bit_msj=0;
 		}//fin for_x
         
 	}//fin for_y
+	
     return mensaje;
 }
 
@@ -272,7 +274,7 @@ if(palette) {
            	   	   	bits_procesados++;
             }i++;//siguiente posicion de la paleta
        }
-  }  std::cout<<mensaje<<std::endl;
+  }  
 	return mensaje;
 }
 
@@ -291,7 +293,7 @@ for (unsigned int y = pixel.getPosY(); y <height; y ++){
 		  
 	for (unsigned int x = pixel.getPosX(); x < width; x ++){
 		    
-         if(bits_procesados<strlen(mensaje)){ 
+         if(bits_procesados<strlen(mensaje)*8){ 
          	//height-y-1
          	if(pos_bit_msj==8){ pos_bit_msj=0;pos_byte_msj++;}
          	pixel_index=imagen.getPixelIndex(x,height-y-1);
@@ -313,6 +315,7 @@ for (unsigned int y = pixel.getPosY(); y <height; y ++){
       
 		
 	}//fin for_y
+	
     /*Guardo los cambios realizados en la imagen*/
 	imagen.save();
 	return bits_count;
