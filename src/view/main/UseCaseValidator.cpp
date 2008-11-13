@@ -72,12 +72,12 @@ void UseCaseValidator::execute(Controller& controller){
 			std::cout<<"showDirectories"<<std::endl;
 			std::cout<<"changePassword <old_password> <new_password>"<<std::endl;
 			std::cout<<"quit"<<std::endl;
-			std::cout<<"login"<<std::endl;
+			//std::cout<<"login"<<std::endl;
 			std::cout<<"help"<<std::endl;
 			break;
 		}
 		default:{
-
+			std::cout<<"ingresa \"help\" o \"-h\" para ayuda."<<std::endl;
 		}
 	}
 
@@ -95,7 +95,7 @@ void UseCaseValidator::loadMap(map<string, int> &useCases){
 	useCases["showDirectories"] = 7;
 	useCases["changePassword"] = 8;
 	useCases["quit"] = 9;
-	useCases["login"] = 10;
+	//useCases["login"] = 10;
 	useCases["-h"] = 11;
 	useCases["help"] = 11;
 	return;
