@@ -75,32 +75,23 @@ unsigned int j=0;
         	   else bit='0';
                newbyte.push_back(bit);
                pos_bit_msj++;
-               bits_alpha++;
                bits_procesados++;
     	  	}
-              
+               bits_alpha+=8;
+            
                if(bits_procesados==(strlen(mensaje)*8)){
-                  //saco los primeros ceros
-                  if(newbyte.at(0)=='0')
-                    newbyte=newbyte.substr(newbyte.find('1'));//si hay ceros antes
                   //completo con ceros al final 
                   newbyte.append(8-newbyte.size(),'0');
                     
                }
-               
+               std::cout<<newbyte<<std::endl;
                byte_pixel=(BYTE)strtol(newbyte.c_str(),&aux,2);
                newbyte.clear();
                pixels[pos_pixel] = byte_pixel;
                pos_pixel++;
+               if(pos_pixel==3) bits_alpha+=8;//salteo el pixel transparente
              }
-             //si ya guarde todos los bits-->paso al siguiente pixel libre
-             //completo lo que falta para el siguiente bit libre del prox pixel
-          if(bits_procesados==strlen(mensaje)*8){
-          	if(j<8) bits_alpha+=8-j;
-          	if(pos_pixel==2) bits_alpha+=8;//salteo el pixel transparente
-          	bits_alpha+=7;//proximo bit libre
-          }
-             
+                      
           return bits_alpha;
      }else{//sino utilizo el metodo comun
            return doLSBStego(pixels,mensaje);	
@@ -116,18 +107,14 @@ unsigned int j=0;
 
 /*Canal alpha en cero--> imagen transparente*/
    if((imagen.getBpp()==32)&&(pixels[3]==0)){
- 
+  
      while((bits_procesados<longitud)&&(pos_pixel<3)){
           byte_pixel=(int)pixels[pos_pixel];
           binario="";
           util::BitsUtils::toBase(byte_pixel,2,binario);
-          if(bits_procesados+8<longitud)
-               util::BitsUtils::completeNBits(binario,8);
-          else  //completo con ceros al final 
-               binario.append(8-binario.size(),'0');
-         
+          util::BitsUtils::completeNBits(binario,8);
+                 
           j=0; 
-   
           while((bits_procesados<longitud)&&(j<8)){     
                 
           		if(binario.at(j)=='1') byte_msj = byte_msj | (1<<pos_bit_msj);
@@ -137,11 +124,11 @@ unsigned int j=0;
                 if(pos_bit_msj==8){
       	 			pos_bit_msj=0;
       	 			mensaje.push_back(byte_msj);
-      	 			
       	 			byte_msj = 0x0;
       			}
                
           } pos_pixel++;//paso al byte siguiente
+          
       }
       return mensaje;       	
   }else//sino utilizo el metodo comun
