@@ -20,7 +20,10 @@
 int main(int argc, char* argv[]){
 
 	PrimaryView mainApp;
-	mainApp.start();
+	
+	if(mainApp.loginMenu()){
+		mainApp.start();
+	}
 
 //	std::vector<TestCase*> tests;
 //	tests.push_back(new TestAgregarYRecuperarMensaje());
