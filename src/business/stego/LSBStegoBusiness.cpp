@@ -64,7 +64,7 @@ std::string mensaje;
 int byte_pixel;  
 
   while((pos_pixel<max_pos_pixel)&&(bits_procesados<longitud)){
-   
+    
       byte_pixel=(int)pixels[pos_pixel];
       if((byte_pixel&1)==1) byte_msj = byte_msj | (1<<pos_bit_msj);
       pos_bit_msj++;      
@@ -73,7 +73,6 @@ int byte_pixel;
       if(pos_bit_msj==8){
       	 pos_bit_msj=0;
       	 mensaje.push_back(byte_msj);
-      	
       	 byte_msj = 0x0;
       }
   }//while de los bytes de un pixel
@@ -116,7 +115,9 @@ while((pos_pixel<max_pos_pixel)&&(bits_procesados<strlen(mensaje)*8)){
   	pos_pixel++;//paso al byte siguiente
 
    }
-  
+  if((pos_pixel==3)&&(max_pos_pixel==(imagen.getBpp()/8 - 1)))
+     bits_count+=8;//caso de PNG:  omitir el byte transparente
+ 
   return bits_count;
   
 }
@@ -145,9 +146,14 @@ if(!error){
        	BYTE *bits = imagen.getBits();
        	/*Me posiciono desde el comienzo de la imagen*/
        	bits+=imagen.getPitch()*(imagen.getHeight()-1);
+       	bits -= imagen.getPitch()*pixel.getPosY();//Me posiciono en la linea correspondiente
+	   	
 	   	for (unsigned int y = pixel.getPosY(); y <imagen.getHeight(); y ++){
 			  /*Primer linea de pixels de la imagen*/
 			  BYTE *pixels = (BYTE*)bits;
+			  //Me posiciono en el pixel correspondiente
+		  	  if(bits_procesados==0) pixels += (imagen.getBpp()/8)*pixel.getPosX();
+			  
 		  	  for (unsigned int x = pixel.getPosX(); x < imagen.getWidth(); x ++){
 		          if(bits_procesados<strlen(mensaje)*8){ 
              	    last_pos+=changePixel(pixels,mensaje);
@@ -184,9 +190,12 @@ if(!error){
       	    else mensaje.append(palette.getMessageFromPalette(first_pos,longitud*8));
       else{
        		BYTE *bits = imagen.getBits();
-	   		bits+=imagen.getPitch()*(imagen.getHeight()-1);
+	   		bits+=imagen.getPitch()*(imagen.getHeight()-1);//primera linea
+	   		bits -= imagen.getPitch()*pixel.getPosY();//Me posiciono en la linea correspondiente
 	   		for (unsigned int y = pixel.getPosY(); y <imagen.getHeight(); y ++){
 		  		BYTE *pixels = (BYTE*)bits;
+		  		//Me posiciono en el pixel correspondiente
+		  		if(bits_procesados==0) pixels += (imagen.getBpp()/8)*pixel.getPosX(); 
 		  		for (unsigned int x = pixel.getPosX(); x < imagen.getWidth(); x ++){
 		 	   
             	  if(bits_procesados<longitud*8){ 
