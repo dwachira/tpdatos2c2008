@@ -88,7 +88,7 @@ void DirectorioManager::removerDirectorio(string& path) const
 bool DirectorioManager::directorioEnUso(string& path) const
 {
 	unsigned int dirId = trieDao.getIndice(DIRECTORIOS,path);
-
+	//TODO:: FIX. UN DIRECTORIO QUE NO ESTA EN USO PUEDE TENER IMAGENES CON PARTICIONES.
 	if (dirId != 0) {
 		Directorio* directory = directorioDAO.getDirById(dirId);
 		bool isBeingUsed = false;
@@ -133,8 +133,31 @@ void DirectorioManager::buscarImagenes(Directorio& directorio) const
 	while (iterador.hasNext()) {
 		string entryName = iterador.next();
 		Imagen imagen(entryName);
+		imagen.setFechaUltimaModificacion(new Date());
 		agregarImagenEnDirectorio(directorio,imagen);
 	}
+}
+
+Imagen* DirectorioManager::buscarImagenMovida(const Imagen& imagen) const
+{
+	list<Directorio> directorios = directorioDAO.getDirsSortedByFechaModif();
+	for(list<Directorio>::iterator it = directorios.begin(); it != directorios.end(); it++) {
+		Directorio& directorio = *it;
+		if (imagen.getFechaUltimaModificacion() < *getFechaModificacionActual(directorio)) {
+			DirectorioIteradorImagenes iterador = obtenerIteradorDeImagenes(directorio);
+			while (iterador.hasNext()) {
+				string entryName = iterador.next();
+				string hash = hasheador.getHashFromFile(entryName);
+				if (imagen.getHash_value().compare(hash) == 0) {
+					Imagen* nuevaImagen = new Imagen(imagen);
+					nuevaImagen->setNombre(entryName);
+					nuevaImagen->setID_Dir(directorio.getID());
+					return nuevaImagen;
+				}
+			}
+		}
+	}
+	return NULL;
 }
 
 std::list<string> business::DirectorioManager::getDirectorios() const
@@ -147,20 +170,25 @@ std::list<string> business::DirectorioManager::getDirectorios() const
 	return nombres;
 }
 
-void DirectorioManager::actualizarFechaDeModificacion(Directorio & directorio)
+util::Date* DirectorioManager::getFechaModificacionActual(Directorio& directorio) const
 {
 	if (EntradaSalidaManager::recursoEsAccesible(directorio.getPath())) {
 		struct stat dirStats;
 
 		//VEO LA FECHA DE ULTIMA MODIFICACION DEL DIRECTORIO Y LA COMPARO CON LA ALMACENADA
 		lstat(directorio.getPath().data(),&dirStats);
-		struct tm* timeAux = gmtime(&dirStats.st_mtim.tv_sec);
+		struct tm* timeAux = localtime(&dirStats.st_mtim.tv_sec);
 		Date* lastModification = Date::valueOf(timeAux->tm_mday, timeAux->tm_mon + 1,
 				timeAux->tm_year + 1900, timeAux->tm_hour, timeAux->tm_min, timeAux->tm_sec);
-		//agregue tm_sec, no se si esta bien... (Andres, 11-11 00:08)
-		directorio.setFechaUltimaModificacion(lastModification);
-		directorioDAO.update(directorio.getID(),directorio.getFechaUltimaModificacion());
+
+		return lastModification;
 	}
+	return NULL;
+}
+void DirectorioManager::actualizarFechaDeModificacion(Directorio & directorio) const
+{
+		directorio.setFechaUltimaModificacion(getFechaModificacionActual(directorio));
+		directorioDAO.update(directorio.getID(),directorio.getFechaUltimaModificacion());
 }
 
 DirectorioManager::~DirectorioManager() {

@@ -20,6 +20,8 @@ void Controller::agregarMensaje(std::string& filename) {
 		std::cout<<"No se puede agregar "<<filename
 			<<" verifique que esta escrito correctamente y que"
 					<< "tiene permisos de lectura sobre él."<<std::endl;
+	} catch (EntidadYaExistenteException e) {
+		std::cout<<"El mensaje ya existe en el sistema. "<<std::endl;
 	}
 }
 
