@@ -6,7 +6,7 @@
  */
 
 #include "Date.h"
-
+#include <time.h>
 
 namespace util
 {
@@ -70,6 +70,17 @@ std::ostream& operator<<(std::ostream& os, const util::Date& date) {
 		<< " " << date.getHour() << ":" << date.getMinute() << ":" << date.getSecond();
 	os << stringBuff.str();
 	return os;
+}
+
+Date::Date() {
+	time_t tiempo = time(NULL);
+	struct tm* timeAux = localtime(&tiempo);
+	this->second = timeAux->tm_sec;
+	this->day = timeAux->tm_mday;
+	this->hour = timeAux->tm_hour;
+	this->minute = timeAux->tm_min;
+	this->month = timeAux->tm_mon + 1;
+	this->year = timeAux->tm_year + 1900;
 }
 
 Date::Date(unsigned int day, unsigned int month, unsigned int year,

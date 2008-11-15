@@ -34,6 +34,8 @@ public:
 	static double concatFecha(unsigned int anio, unsigned int mes, unsigned int dia,
 							unsigned int hora, unsigned int minutos, unsigned int segundos);
 
+	Date();
+
 	Date(const Date& anotherDate) {
 		this->second = anotherDate.second;
 		this->minute = anotherDate.minute;

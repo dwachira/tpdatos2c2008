@@ -23,7 +23,6 @@ private:
 	dao::ImagenDAO& imagenDao;
 	dao::ParticionDAO& particionDao;
 	MensajeDAO& mensajeDao;
-	CompressorBusiness compressor;
 	DirectorioManager& directorioManager;
 	dao::TrieDAO& trieDao;
 	md5wrapper hasheador;

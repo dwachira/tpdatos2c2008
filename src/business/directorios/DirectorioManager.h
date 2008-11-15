@@ -14,6 +14,7 @@
 #include "DirectorioIteradorImagenes.h"
 #include "../../dao/manager/ManagerDAO.h"
 #include "../../dao/TrieDAO.h"
+#include "../md5/md5wrapper.h"
 
 namespace business {
 
@@ -24,6 +25,7 @@ private:
 	dao::ImagenDAO& imagenDAO;
 	dao::ParticionDAO& particionDAO;
 	dao::TrieDAO& trieDao;
+	md5wrapper hasheador;
 	void accederDirectorio(std::string path) const;
 public:
 	DirectorioManager(dao::ManagerDAO& manager, dao::TrieDAO& trie) : directorioDAO(manager.getDirectorioDAO()),
@@ -40,7 +42,10 @@ public:
 	bool directorioEnUso(std::string& path) const;
 
 	/*@throws DirectoryAccessException */
-	void actualizarFechaDeModificacion(Directorio& directorio);
+	util::Date* getFechaModificacionActual(Directorio& directorio) const;
+
+	/*@throws DirectoryAccessException */
+	void actualizarFechaDeModificacion(Directorio& directorio) const;
 
 	/**
 	 * Remueve el directorio y sus respectivas imagenes asociadas de la base de datos.
@@ -58,6 +63,8 @@ public:
 	std::list<string> getDirectorios() const;
 
 	void buscarImagenes(Directorio& directory) const;
+
+	Imagen* buscarImagenMovida(const Imagen& imagen) const;
 
 	virtual ~DirectorioManager();
 };
