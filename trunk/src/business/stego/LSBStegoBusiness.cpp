@@ -6,8 +6,6 @@ LSBStegoBusiness::LSBStegoBusiness(std::string filename):StegoBusiness(filename)
 error(false),enable_bpp(1),imagen(filename),palette(imagen),bits_procesados(0),
 pos_bit_msj(0),pos_byte_msj(0),pos_pixel(0),byte_msj(0x0)
 {
-	if (FreeImage_IsLittleEndian()) less_sig_bit=1;
-	else less_sig_bit=128;
 	error=imagen.load();
     if(!error) max_pos_pixel=imagen.getBpp()/8;
    
@@ -69,7 +67,7 @@ int byte_pixel;
     
       byte_pixel=(int)pixels[pos_pixel];
     
-      if((byte_pixel&less_sig_bit)==1) byte_msj = byte_msj | (1<<pos_bit_msj);
+      if(util::BitsUtils::getHidenBit(byte_pixel)) byte_msj = byte_msj | (1<<pos_bit_msj);
       pos_bit_msj++;      
       bits_procesados++;
       pos_pixel++;//paso al byte siguiente
@@ -89,8 +87,7 @@ unsigned long int LSBStegoBusiness::changePixel(BYTE *pixels,const char* mensaje
 
 unsigned long int LSBStegoBusiness::doLSBStego(BYTE *pixels,const char* mensaje,unsigned long int size){
 unsigned int bits_count=0;
-int bit,lsb;
-int new_byte;
+int bit;
 
 /*Mientras queden bytes por pixel para recorrer*/              
 while((pos_pixel<max_pos_pixel)&&(bits_procesados<size*8)){
@@ -102,18 +99,13 @@ while((pos_pixel<max_pos_pixel)&&(bits_procesados<size*8)){
      /*Guardo un bit de informacion en el LSB del byte*/   
      bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ;
 
-     lsb= (((int)pixels[pos_pixel])&less_sig_bit);
-
      pos_bit_msj++;
      bits_procesados++;
      bits_count+=8;
      
     /*Guardo el nuevo byte modificado*/
-    if(lsb!=bit){
-  		if(bit==1) new_byte=(int)pixels[pos_pixel]+1;
-  		else new_byte=(int)pixels[pos_pixel]-1;
-  		pixels[pos_pixel]=(BYTE)new_byte;
-  	}
+  	pixels[pos_pixel]=(BYTE)util::BitsUtils::hideInByte((int)pixels[pos_pixel],bit);
+
     
   	pos_pixel++;//paso al byte siguiente
 

@@ -12,6 +12,7 @@ class GIFStego: public LSBStegoBusiness
 		virtual unsigned long int setMessage(unsigned long int first_bit,const char* mensaje,unsigned long int size);
 		virtual std::string getMessage(unsigned long int first_bit,unsigned long int longitud);
 		virtual unsigned long int getFreeSpace();
+		virtual unsigned int getFirstFreeBit();
 		virtual ~GIFStego();
 		
 };

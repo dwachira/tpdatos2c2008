@@ -199,9 +199,27 @@ unsigned int i=0;
 }
 
 bool FIBitmap::isAnimated(){
-FITAG *tag = NULL;
+std::ifstream imageFile;
+int byte_int;
+char byte;
+bool animated=false;
 
-  return (FreeImage_FindFirstMetadata(FIMD_ANIMATION,imagen,&tag)!=NULL);
+imageFile.open(filename.c_str(), std::fstream::binary);
+  if(imageFile.is_open()){ 
+  	 imageFile.seekg(12 + palette_size*3 +1);//pos 
+  	 imageFile.get(byte); 
+	 byte_int=(int)byte;
+		 
+	 if(byte_int==33){
+	 	 imageFile.get(byte); 
+	     byte_int=(int)byte;
+	     if(byte_int==-1) animated=true;
+	    
+	 }
+	 if(animated) std::cout<<"animado "<<std::endl;
+     imageFile.close();
+  }	
+  return animated;
 	
 }
 
