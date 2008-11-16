@@ -7,8 +7,8 @@
 
 class LSBStegoBusiness: public StegoBusiness
 {
-	protected:
-
+	protected:  
+    
     	bool error;
     	/*Cantidad de bits por pixel a utilizar para esteganografia*/
     	unsigned int enable_bpp;
@@ -16,24 +16,25 @@ class LSBStegoBusiness: public StegoBusiness
     	FIBitmap imagen;
     	ImagePalette palette;
         /*Cantidad de bits que se van leyendo de la imagen o colocando en la imagen*/
-        unsigned int bits_procesados;
+        unsigned long int bits_procesados;      
         unsigned int pos_bit_msj,pos_byte_msj,pos_pixel,max_pos_pixel;
         unsigned char byte_msj;
-  		virtual unsigned int changePixel(BYTE *pixels,const char* mensaje, long int size);
-    	virtual std::string getMessageFromPixel(BYTE *pixels,unsigned int longitud);
-    	std::string getLSBMessage(BYTE *pixels,unsigned int longitud);
-    	unsigned int doLSBStego(BYTE *pixels,const char* mensaje, long int size);
+        int less_sig_bit;
+  		virtual unsigned long int changePixel(BYTE *pixels,const char* mensaje,unsigned long int size);
+    	virtual std::string getMessageFromPixel(BYTE *pixels,unsigned long int longitud);
+    	std::string getLSBMessage(BYTE *pixels,unsigned long int longitud);
+    	unsigned long int doLSBStego(BYTE *pixels,const char* mensaje,unsigned long int size);
     	void getPixel(unsigned long int first_bit,Pixel& pixel);
-
+    
 	public:
-
+	  
 		LSBStegoBusiness(std::string filename);
-
-		virtual unsigned int setMessage(unsigned long int first_pos,const char* mensaje, long int size);
-		virtual std::string getMessage(unsigned long int first_pos,unsigned int longitud);
-		virtual unsigned int getFreeSpace()=0;
+	
+		virtual unsigned long int setMessage(unsigned long int first_pos,const char* mensaje,unsigned long int size);
+		virtual std::string getMessage(unsigned long int first_pos,unsigned long int longitud);
+		virtual unsigned long int getFreeSpace()=0;
 		virtual unsigned int getFirstFreeBit();
-
+	
 		virtual ~LSBStegoBusiness();
 };
 
