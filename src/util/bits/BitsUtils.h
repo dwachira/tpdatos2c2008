@@ -7,14 +7,14 @@ namespace util
 {
 class BitsUtils
 {
+	
 	public:
 	       BitsUtils();
 	       virtual ~BitsUtils();
 	       static void toBase(int num,int base,std::string&  binary);
            static void completeNBits(std::string& binary,unsigned int n);
-           static int hideInByte(int byte,int bit,unsigned int pos){
-					int lsb=(byte&pos);
-					lsb=(lsb>>pos-1);
+           static int hideInByte(int byte,int bit){
+					int lsb=(byte&1);
 					int result=byte;
 
  					if(lsb!=bit){
@@ -23,7 +23,10 @@ class BitsUtils
  					}return result;	
 	
 			}
-           static int getHidenBit(int byte,unsigned int pos);
+           static int getHidenBit(int byte){
+           	   return (byte&1);	
+           	
+           }
 };
 }
 #endif /*BITSUTILS_H_*/
