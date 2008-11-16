@@ -139,8 +139,8 @@ unsigned int pos_bit_msj=0;
             if(bits_procesados<longitud*8){ 
             	   //height-y-1
              	pixel_index=imagen.getPixelIndex(x,height-y-1);
-    
-             	if((((int)pixel_index)&1)==1) byte_msj = byte_msj | (1<<pos_bit_msj);
+
+             	if(util::BitsUtils::getHidenBit((int)pixel_index)) byte_msj = byte_msj | (1<<pos_bit_msj);
       			pos_bit_msj++;      
       			bits_procesados++;
       		    if(pos_bit_msj==8){
@@ -180,39 +180,46 @@ unsigned int i=first_palette_pos;
 unsigned int rgb_pos=getRGBPos(first_pos);//determina en que color empiezo
 unsigned int pos_bit_msj=0;
 unsigned int pos_byte_msj=0;
+int bit;
 
 if(palette) {
        unsigned int palette_size=imagen.getPaletteSize();
        while((i<palette_size)&&(bits_procesados<size*8)){    
        	if(((bits_procesados==0)&&(rgb_pos==0))||  
            ((bits_procesados>0)&&(bits_procesados<size*8))){
-           	  /*Guardo un bit de informacion en el LSB del byte*/    
-       		  if ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))
-		          palette[i].rgbRed= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbRed,1);
-		      else palette[i].rgbRed= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbRed,0);
+           	
+           	 if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
+           	  /*Guardo un bit de informacion en el LSB del byte*/ 
+           	   bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ;   
+           	   
+       		   palette[i].rgbRed= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbRed,bit);
+		     
               bits_procesados++;
               pos_bit_msj++;
-              if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
+              
    	       }
    	       
    	       if(((bits_procesados==0)&&(rgb_pos==1))||  
            ((bits_procesados>0)&&(bits_procesados<size*8))){
-              if ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))
-		          palette[i].rgbGreen= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbGreen,1);
-		      else palette[i].rgbGreen= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbGreen,0);
+           	  if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
+           	
+              bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ; 
+		      palette[i].rgbGreen= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbGreen,bit);
+		    
               bits_procesados++;
               pos_bit_msj++;
-              if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
+              
               
    	       }
    	       	if(((bits_procesados==0)&&(rgb_pos==2))||  
            ((bits_procesados>0)&&(bits_procesados<size*8))){
-           	  if ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))
-		          palette[i].rgbBlue= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbBlue,1);
-		      else palette[i].rgbBlue= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbBlue,0);
+           	 if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
+           	  
+           	  bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ; 
+		      palette[i].rgbBlue= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbBlue,bit);
               bits_procesados++;
               pos_bit_msj++;
-              if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
+              
               
    	       }
           if(bits_procesados<size*8) i++;
@@ -238,9 +245,10 @@ std::cout<<"rgb_pos "<<rgb_pos<<std::endl;
 if(palette) {
        unsigned int palette_size=imagen.getPaletteSize();
        while((i<palette_size)&&(bits_procesados<longitud*8)){    
+       	
        		if(((bits_procesados==0)&&(rgb_pos==0))||  
            	   ((bits_procesados>0)&&(bits_procesados<longitud*8))){     
-           	   	if((((int)palette[i].rgbRed)&1)==1) byte_msj = byte_msj | (1<<pos_bit_msj);
+           	   	if(util::BitsUtils::getHidenBit((int)palette[i].rgbRed)) byte_msj = byte_msj | (1<<pos_bit_msj);
       				pos_bit_msj++;      
       				bits_procesados++;
       				if(pos_bit_msj==8){
@@ -248,11 +256,11 @@ if(palette) {
       	 				mensaje.push_back(byte_msj);
       	 				byte_msj = 0x0;
       				}
-           	   	   	bits_procesados++;
+           	   	   	
     	    }
         	if(((bits_procesados==0)&&(rgb_pos==1))||  
            	   ((bits_procesados>0)&&(bits_procesados<longitud*8))){  
-       	      	 if((((int)palette[i].rgbGreen)&1)==1) byte_msj = byte_msj | (1<<pos_bit_msj);
+       	      	   	if(util::BitsUtils::getHidenBit((int)palette[i].rgbGreen)) byte_msj = byte_msj | (1<<pos_bit_msj); byte_msj = byte_msj | (1<<pos_bit_msj);
       				pos_bit_msj++;      
       				bits_procesados++;
       				if(pos_bit_msj==8){
@@ -260,11 +268,11 @@ if(palette) {
       	 				mensaje.push_back(byte_msj);
       	 				byte_msj = 0x0;
       				}
-           	   	   	bits_procesados++;
+           	   	  
      	    }
          	if(((bits_procesados==0)&&(rgb_pos==2))||  
            	   ((bits_procesados>0)&&(bits_procesados<longitud*8))){  
-           	   	 if((((int)palette[i].rgbBlue)&1)==1) byte_msj = byte_msj | (1<<pos_bit_msj);
+           	   	   	if(util::BitsUtils::getHidenBit((int)palette[i].rgbBlue)) byte_msj = byte_msj | (1<<pos_bit_msj); byte_msj = byte_msj | (1<<pos_bit_msj);
       				pos_bit_msj++;      
       				bits_procesados++;
       				if(pos_bit_msj==8){
@@ -272,7 +280,7 @@ if(palette) {
       	 				mensaje.push_back(byte_msj);
       	 				byte_msj = 0x0;
       				}
-           	   	   	bits_procesados++;
+           	   	   
             }i++;//siguiente posicion de la paleta
        }
   }  
@@ -289,6 +297,7 @@ unsigned int width=imagen.getWidth();
 unsigned int bits_count=0;
 unsigned int pos_bit_msj=0;
 unsigned int pos_byte_msj=0;
+int bit;
  	
 for (unsigned int y = pixel.getPosY(); y <height; y ++){
 		  
@@ -299,10 +308,9 @@ for (unsigned int y = pixel.getPosY(); y <height; y ++){
          	if(pos_bit_msj==8){ pos_bit_msj=0;pos_byte_msj++;}
          	pixel_index=imagen.getPixelIndex(x,height-y-1);
             
-       		/*Guardo un bit de informacion en el LSB del byte*/    
-       		if ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))
-		    	new_pixel_index= (BYTE)util::BitsUtils::hideInByte((int)pixel_index,1);
-		    else new_pixel_index= (BYTE)util::BitsUtils::hideInByte((int)pixel_index,0);
+       		/*Guardo un bit de informacion en el LSB del byte*/  
+       		bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ;  
+       		new_pixel_index= (BYTE)util::BitsUtils::hideInByte((int)pixel_index,bit);
 		  
             pos_bit_msj++;
             bits_procesados++;
