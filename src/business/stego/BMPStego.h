@@ -7,7 +7,7 @@ class BMPStego:public LSBStegoBusiness
 public:
 	BMPStego();
 	BMPStego(std::string filename);
-	virtual unsigned int getFreeSpace();
+	virtual unsigned long int getFreeSpace();
 	virtual ~BMPStego();
 };
 

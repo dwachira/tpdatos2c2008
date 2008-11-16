@@ -13,11 +13,11 @@ bool FIBitmap::getFileType(){
 // check the file signature and deduce its format
 // (the second argument is currently not used by FreeImage)
 format = FreeImage_GetFileType(filename.c_str(), 0);
-	if(format == FIF_UNKNOWN) {
+	//if(format == FIF_UNKNOWN) {
   		 // no signature ?
   		 // try to guess the file format from the file extension
-  		 format = FreeImage_GetFIFFromFilename(filename.c_str());
-	}
+  		// format = FreeImage_GetFIFFromFilename(filename.c_str());
+	//}
 	// check that the plugin has reading capabilities ...
 	if((format != FIF_UNKNOWN) && FreeImage_FIFSupportsReading(format))
    		return true;
