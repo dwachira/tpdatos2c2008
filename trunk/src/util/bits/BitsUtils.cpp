@@ -3,7 +3,9 @@
 
 namespace util{
 
-	BitsUtils::BitsUtils(){}
+	BitsUtils::BitsUtils(){
+	
+	}
 
 	BitsUtils:: ~BitsUtils(){}
 
@@ -34,11 +36,6 @@ namespace util{
 	}
 	
 
-	int BitsUtils::getHidenBit(int byte,unsigned int pos){
-		int lsb=(byte&pos);
-		return (lsb>>pos-1);
-
-	}
 }
 
 
