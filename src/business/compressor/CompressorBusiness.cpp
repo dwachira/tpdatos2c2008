@@ -13,135 +13,121 @@ CompressorBusiness::~CompressorBusiness(){
  * con la informacion comprimida*/
 
 int CompressorBusiness::compress(FILE * input, FILE *output){
-	unsigned int next_code=256; //el siguiente libre en la tabla
-	unsigned int character=0;
-	unsigned int string_code=0;
-	int i=0;
+	map<string,int> map_string;
+	unsigned int next_code=256;
+	unsigned int character;
+	string new_char;
+	string append_string;
+
+
 	buffer=0L;
 	j=0;
-    for (i=0;i<TABLA;i++){  //limpia la tabla
-    map_code[i]=-1;
-    }
+	unsigned int code=0;
 
-    string_code=getc(input);
+    append_string.append("");
 
-
-      while ((character=getc(input)) != (unsigned)EOF)  //obtiene el siguiente caracter (get next character)
-      {
-    	i=find_code(string_code,character);// Busca en la tabla
-        if (map_code[i] != -1)            // si lo encuentra
-            string_code=map_code[i];
-
-        else
-        {
-          if (next_code <= MAX_CODE) //no encontro el codigo en la tabla
+    while ((character=getc(input)) != (unsigned) EOF)  //obtiene el siguiente caracter (get next character)
           {
-            map_code[i]=next_code++;
-            map_prefix[i]=string_code;
-            map_append[i]=character;
-          }
-          put_code(output,string_code);
-          string_code=character;
-        }
-      }
+        	  new_char=(char)character;
+        	  append_string.append(new_char);
+        	  map<string,int>::iterator it = map_string.find(append_string);
+        		  		if(it != map_string.end())	   //lo encuentra en la tabla
+        				  			code=it->second;
+        	         	else{ //no esta en tabla
+							if (append_string.size() == 1)
+        		  				code = character;
+							else{
+								if (next_code < TABLA){
+									pair<string, int> item(append_string, next_code);
+									map_string.insert(item);
+									next_code++;
+								}
 
-    put_code(output,string_code);
-    put_code(output,MAX_VALUE);
-    put_code(output,0);
-    return 0;
+	        		  			put_code(code,output);
+	        		  		}
+							append_string=new_char;
+        		  			code=character;
+        		  		}
+        	  }
+
+        put_code(code,output);
+        put_code(MAX_VALUE,output);
+        put_code(0,output);
+        return 0;
 }
+
+
 
 
 int CompressorBusiness::decompress(FILE *input,FILE *output){
+	map<int,string> map_decompress;
+	unsigned int next_code=256;
+	string old_code;
 	buffer=0L;
 	j=0;
-	unsigned int next_code=256;
-	unsigned int new_code=0;
-	unsigned int old_code=0;
-	int character=0;
-	unsigned char *string;
-	unsigned char decode_stack[4000];
-	unsigned int decode_code=0;
-	int add=0; ;
-	int i;
-	for (i=0;i<TABLA;i++){  //limpia la tabla
-	    map_code[i]=-1;
-	    map_prefix[i]=-1;
-	    map_append[i]=-1;
-	    }
-	old_code=get_code(input);
-	character=old_code;
-	putc(old_code,output);
+	unsigned int character;
+	string text;
+	unsigned int code;
+	unsigned int i;
+	unsigned int old_character;
 
 
-	  while ((new_code=get_code(input)) != (MAX_VALUE))
-	  {
+	character=get_code(input);
+	old_code=(char)character;
+	putc(character,output);
+	old_character=character;
+	while ((character=get_code(input)) != (unsigned) MAX_VALUE){
+		if (character< 256){
+			putc(character,output);
+			text=(char)character;
+			old_code.append(text);
 
-	//el caso especial
-	    if (new_code>=next_code)
-	    {
-	      *decode_stack=character;
-	      add=1;
-	      decode_code=old_code;
-	    }
-	    else{
-	    	add=0;
-	    	decode_code=new_code;
-	    }
+		}
+		else {
+			map<int,string>::iterator it = map_decompress.find(character);
+			if(it != map_decompress.end()){
+				text=it->second;
+				old_code.append(text.substr(0,1));
+				i=0;
+				while (i< text.size()){
+					code=(unsigned int)(text[i]);
+					putc(code,output);
+					i++;
+				}
 
-	    unsigned char *buffer=decode_stack+add;
-	    i=0;
-	     while (decode_code > 255)
-	     {
-	       *buffer++ = map_append[decode_code];
-	       decode_code=map_prefix[decode_code];
-	      }
-	     *buffer=decode_code;
-	     string=buffer;
+			}else{//caso especial
+				if (old_character > 256){
+				map<int,string>::iterator it = map_decompress.find(old_character);
+				old_code= it->second;
+				text=old_code;
+				text.append(old_code.substr(0,1));
+				old_code=text;
 
-	    character=*string;
-	    while (string >= decode_stack)
-	    	putc(*string--,output);
+			}else{ old_code=(char)old_character;
+			old_code.append(old_code);
+			}
+			i=0;
+			while (i< old_code.size()){
+				code=(unsigned int)(old_code[i]);
+				putc(code,output);
+				i++;
+				}
+			}
 
+		}
+		if (next_code < TABLA){
+			map_decompress[next_code]=old_code;
+			next_code++;
 
-
-	    if (next_code <= MAX_CODE)
-	    {
-	      map_prefix[next_code]=old_code;
-	      map_append[next_code]=character;
-	      next_code++;
-	    }
-	    old_code=new_code;
-	  }
-	  return 0;
+		}
+		old_code=text;
+		old_character=character;
+	}
+	 return 0;
 }
 
 
-/*Busca el codigo en la tabla,
- * si lo encuentra devuelve la posicion donde se encuentra
- * si no lo encuentra devuelve la posicion de uno libre
- */
 
-
-int CompressorBusiness::find_code(int prefix,unsigned int character)
-{
-int index;
-int offset;
-
-  index = (character << SHIFT) ^ prefix;
-
-  if (index == 0) offset = 1;
-  else offset = TABLA - index;
-  while (1)
-  {
-    if (map_code[index] == -1)
-    	return(index);
-    if (map_prefix[index] == (unsigned)prefix && map_append[index] == character)
-      return(index);
-    index -= offset;
-    if (index < 0) index += TABLA;
-  }
-}
 
 /* Obtiene el codigo comprimido del archivo
  * y lo devuelve de a 8 bits
@@ -150,8 +136,6 @@ int offset;
 unsigned int CompressorBusiness::get_code(FILE *input)
 {
 unsigned int code=0;
-
-
   while (j <= BITS_ARQUITECTURA-8)
   {
     buffer |= (unsigned long) getc(input) << (BITS_ARQUITECTURA-8-j);
@@ -163,12 +147,10 @@ unsigned int code=0;
   return(code);
 }
 
-/* Va almacenando de a 8 bits el codigo comprimido en el archivo temporal */
+/* Va almacenando de a 8 bits el codigo comprimido en el archivo comprimido */
 
-void CompressorBusiness::put_code(FILE *output,unsigned int code)
+void CompressorBusiness::put_code(unsigned int code,FILE *output)
 {
-
-
   buffer |= (unsigned long) code << (BITS_ARQUITECTURA-BITS-j);
   j += BITS;
   while (j >= 8)

@@ -6,28 +6,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <map>
+#include <string>
+#include <iostream>
 
 #define BITS 12                   /* Cantidad de bits para la tabla*/
-#define SHIFT (BITS-8)    
-#define MAX_VALUE (1 << BITS) - 1 
-#define MAX_CODE MAX_VALUE - 1    
-#define TABLA 5021
+#define SHIFT (BITS-8)
+#define MAX_VALUE (1 << BITS) - 1
+#define MAX_CODE MAX_VALUE - 1
+#define TABLA 4094
 
 
 using namespace std;
 class CompressorBusiness {
-	
+
 private:
 	int j;
 	unsigned long buffer;
-	map<int,int> map_code;
-	map<int,unsigned int> map_prefix;
-	map<int,unsigned char> map_append;
+
+
 	int find_code(int prefijo,unsigned int character);
-	void put_code(FILE *output,unsigned int code);
+	void put_code(unsigned int code,FILE *output);
 	unsigned int get_code(FILE *input);
-	
-	
+
+
 public:
 	CompressorBusiness();
 	virtual ~CompressorBusiness();
