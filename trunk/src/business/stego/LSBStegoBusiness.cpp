@@ -127,7 +127,7 @@ unsigned long int LSBStegoBusiness::setMessage(unsigned long int first_pos,const
 
 Pixel pixel;
 unsigned int last_pos=0;
-getPixel(first_pos,pixel);int i=0;
+getPixel(first_pos,pixel);
 /*Posicion inicial del mensaje dentro del pixel*/
 pos_pixel=pixel.getNumero_de_bit()/8;
 if(!error){
@@ -137,6 +137,7 @@ if(!error){
            else last_pos=palette.doPaletteLSB(first_pos,mensaje,size);    
        }
        else{//se puede trabajar con los pixeles
+       
        	bit_in_pixel=pixel.getNumero_de_bit();
        	BYTE *bits = imagen.getBits();
        	/*Me posiciono desde el comienzo de la imagen*/
@@ -144,29 +145,32 @@ if(!error){
        	
        	bits -= imagen.getPitch()*pixel.getPosY();//Me posiciono en la linea correspondiente
 	   	
+	   	unsigned int valor_x= pixel.getPosX();
+	   	
 	   	for (unsigned int y = pixel.getPosY(); y <imagen.getHeight(); y ++){
 			  /*Primer linea de pixels de la imagen*/
 			  BYTE *pixels = (BYTE*)bits;
 			  //Me posiciono en el pixel correspondiente
 		  	  if(bits_procesados==0) pixels += (imagen.getBpp()/8)*pixel.getPosX();
 			  
-		  	  for (unsigned int x = pixel.getPosX(); x < imagen.getWidth(); x ++){
+		  	  for (unsigned int x = valor_x; x < imagen.getWidth(); x ++){
+		  	  	
 		          if(bits_procesados<size*8){ 
              	    last_pos+=changePixel(pixels,mensaje,size);
              	    pos_pixel=0;//para reiniciar el ciclo	
              	   	pixels += (imagen.getBpp()/8);//siguiente pixel
-             	    i++;
+             	    
                }else{ //para terminar el ciclo for 
-               	     std::cout<<x<<","<<y<<std::endl;
-               	     
-             		  x=imagen.getWidth();
+               	      x=imagen.getWidth();
             		  y=imagen.getHeight();
                }
 		      }//fin for_x
+		      valor_x=0;
               bits -= imagen.getPitch();//siguiente linea de la imagen
 		
 	     }//fin for_y
-     }std::cout<<"procese pixels: "<<i<<std::endl;
+	     
+     }
 	/*Guardo los cambios realizados en la imagen*/
 	imagen.save();
   }
@@ -192,25 +196,28 @@ if(!error){
 	   		bits+=imagen.getPitch()*(imagen.getHeight()-1);//primera linea
 	   		
 	   		bits -= imagen.getPitch()*pixel.getPosY();//Me posiciono en la linea correspondiente
-	   		
+	   	
+	   	    unsigned int valor_x= pixel.getPosX();
+	   	    
 	   		for (unsigned int y = pixel.getPosY(); y <imagen.getHeight(); y ++){
 		  		BYTE *pixels = (BYTE*)bits;
 		  		//Me posiciono en el pixel correspondiente
 		  		if(bits_procesados==0) pixels += (imagen.getBpp()/8)*pixel.getPosX();
 		  		 
-		  		for (unsigned int x = pixel.getPosX(); x < imagen.getWidth(); x ++){
+		  		for (unsigned int x = valor_x; x < imagen.getWidth(); x ++){
 		 	   
             	  if(bits_procesados<longitud*8){ 
             	   	mensaje.append(getMessageFromPixel(pixels,longitud));
             	   	pos_pixel=0;//para reiniciar el ciclo	
                    	pixels += (imagen.getBpp()/8); 
-                   
+                    
            		  }else{//para terminar el ciclo for 
-           		  	   std::cout<<x<<","<<y<<std::endl;
+           		  	   
             	  		x=imagen.getWidth();
             	  		y=imagen.getHeight();
                   }
 		        }//fin for_x
+		        valor_x=0;
                 bits -= imagen.getPitch();//proxima linea de la imagen
 	         }//fin for_y
 	 
