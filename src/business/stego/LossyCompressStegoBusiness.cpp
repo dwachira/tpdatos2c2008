@@ -33,7 +33,7 @@ bool error=imagen.load();
 	   /* Guardo la imagen cambiandole el nivel de compresion para generar
 	    * espacio al final de la misma
 	    */
-	   imagen.save(getQuality()-2);
+	   imagen.save(getQuality()*PERC);
 	  
 	   /*Reabro la imagen y me posiciono al final para completar el espacio 
 	    * que le falta*/
