@@ -131,10 +131,11 @@ unsigned int width=imagen.getWidth();
 std::string mensaje;
 unsigned byte_msj=0x0;
 unsigned int pos_bit_msj=0;
+unsigned int valor_x= pixel.getPosX();
 
 	   for (unsigned int y = pixel.getPosY(); y <height; y ++){
 		  
-		  for (unsigned int x = pixel.getPosX(); x < width; x ++){
+		  for (unsigned int x = valor_x; x < width; x ++){
 		 	   
             if(bits_procesados<longitud*8){ 
             	   //height-y-1
@@ -155,7 +156,7 @@ unsigned int pos_bit_msj=0;
             	  y=height;
            }
 		}//fin for_x
-        
+        valor_x=0;
 	}//fin for_y
 	
     return mensaje;
@@ -298,10 +299,12 @@ unsigned int bits_count=0;
 unsigned int pos_bit_msj=0;
 unsigned int pos_byte_msj=0;
 int bit;
+
+unsigned int valor_x= pixel.getPosX();
  	
 for (unsigned int y = pixel.getPosY(); y <height; y ++){
 		  
-	for (unsigned int x = pixel.getPosX(); x < width; x ++){
+	for (unsigned int x = valor_x; x < width; x ++){
 		    
          if(bits_procesados<size*8){ 
          	//height-y-1
@@ -322,7 +325,7 @@ for (unsigned int y = pixel.getPosY(); y <height; y ++){
             	  y=height;
           }
 		}//fin for_x
-      
+      valor_x=0;
 		
 	}//fin for_y
 	

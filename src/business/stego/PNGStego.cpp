@@ -2,7 +2,7 @@
 
 PNGStego::PNGStego(std::string filename):LSBStegoBusiness(filename)
 {
-	if((imagen.getBpp()==32)&&(getTransparentPixels()!=0)) max_pos_pixel--;//para no modificar el indicador de transparencia
+	if(imagen.getBpp()==32) max_pos_pixel--;//para no modificar el indicador de transparencia
 }
 
 
@@ -17,7 +17,7 @@ unsigned long int PNGStego::getFreeSpace(){
 	unsigned long int space;
 	space=((((imagen.getHeight())*(imagen.getWidth())*(max_pos_pixel)*(this->enable_bpp)))/8);
 	if(imagen.getBpp()==32)
-	  space+=  ((getTransparentPixels()*(24 - this->enable_bpp*(max_pos_pixel)))/8);
+	  space+=  ((getTransparentPixels()*this->enable_bpp*max_pos_pixel*7)/8);
 	return space;
 	
 }
@@ -80,7 +80,9 @@ unsigned int j=0;
      if((imagen.getBpp()==32)&&(pixels[3]==0)){
      	
      	 /*Un byte puede estar formado por distintos mensajes*/
-     	 if((bits_procesados==0)&&((bit_in_pixel-8*pos_pixel)!=0)){
+     	 if(bits_procesados==0){
+     	 	bits_alpha++;//para pasar al proximo libre
+     	 	if((bit_in_pixel-8*pos_pixel)!=0){
      	 	 std::cout<<"byte compartido"<<std::endl;
      	 	 /*Tomo el byte actual y lo relleno*/
      	 	  byte_pixel=(int)pixels[pos_pixel];
@@ -89,7 +91,7 @@ unsigned int j=0;
               util::BitsUtils::completeNBits(binario,8);
               j=bit_in_pixel-8*pos_pixel;
               newbyte.append(binario.substr(0,j));
-     	 	 
+     	 	}
      	 	 
      	 }
      	  /*Recorro los 3 bytes del pixel,sin modificar el byte alpha*/
@@ -115,7 +117,7 @@ unsigned int j=0;
                if(bits_procesados==(size*8)){
                   //completo con ceros al final 
                   newbyte.append(8-newbyte.size(),'0');
-                  bits_alpha++;//para pasar al proximo libre
+                  
                }
                //std::cout<<newbyte<<std::endl;
                byte_pixel=(BYTE)strtol(newbyte.c_str(),&aux,2);
