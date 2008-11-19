@@ -10,15 +10,13 @@ using namespace std;
 class UseCaseValidator
 {
 private:
-	string action;
-	string firstParameter;
-	string secondParameter;
-
+	Controller controller;
+	bool login;
 	void loadMap(map<string, int> &useCases);
 
 public:
-	UseCaseValidator(string action, string firstParameter,string secondParameter);
-	void execute(Controller& controller);
+	UseCaseValidator();
+	void execute(string action, string firstParameter,string secondParameter);
 	virtual ~UseCaseValidator();
 };
 
