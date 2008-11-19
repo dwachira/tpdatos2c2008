@@ -112,7 +112,7 @@ while((pos_pixel<max_pos_pixel)&&(bits_procesados<size*8)){
    }
   if((pos_pixel==3)&&(max_pos_pixel==(imagen.getBpp()/8 - 1)))
      bits_count+=8;//caso de PNG:  omitir el byte transparente
-  
+ 
   return bits_count;
   
 }
@@ -127,7 +127,7 @@ unsigned long int LSBStegoBusiness::setMessage(unsigned long int first_pos,const
 
 Pixel pixel;
 unsigned int last_pos=0;
-getPixel(first_pos,pixel);
+getPixel(first_pos,pixel);int i=0;
 /*Posicion inicial del mensaje dentro del pixel*/
 pos_pixel=pixel.getNumero_de_bit()/8;
 if(!error){
@@ -137,7 +137,7 @@ if(!error){
            else last_pos=palette.doPaletteLSB(first_pos,mensaje,size);    
        }
        else{//se puede trabajar con los pixeles
-       	
+       	bit_in_pixel=pixel.getNumero_de_bit();
        	BYTE *bits = imagen.getBits();
        	/*Me posiciono desde el comienzo de la imagen*/
        	bits+=imagen.getPitch()*(imagen.getHeight()-1);
@@ -155,8 +155,9 @@ if(!error){
              	    last_pos+=changePixel(pixels,mensaje,size);
              	    pos_pixel=0;//para reiniciar el ciclo	
              	   	pixels += (imagen.getBpp()/8);//siguiente pixel
-             	 
+             	    i++;
                }else{ //para terminar el ciclo for 
+               	     std::cout<<x<<","<<y<<std::endl;
                	     
              		  x=imagen.getWidth();
             		  y=imagen.getHeight();
@@ -165,7 +166,7 @@ if(!error){
               bits -= imagen.getPitch();//siguiente linea de la imagen
 		
 	     }//fin for_y
-     }
+     }std::cout<<"procese pixels: "<<i<<std::endl;
 	/*Guardo los cambios realizados en la imagen*/
 	imagen.save();
   }
@@ -186,6 +187,7 @@ if(!error){
       	    if(imagen.getPaletteSize()>16) mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
       	    else mensaje.append(palette.getMessageFromPalette(first_pos,longitud));
       else{
+      	    bit_in_pixel=pixel.getNumero_de_bit();
        		BYTE *bits = imagen.getBits();
 	   		bits+=imagen.getPitch()*(imagen.getHeight()-1);//primera linea
 	   		
@@ -204,7 +206,7 @@ if(!error){
                    	pixels += (imagen.getBpp()/8); 
                    
            		  }else{//para terminar el ciclo for 
-           		  	   
+           		  	   std::cout<<x<<","<<y<<std::endl;
             	  		x=imagen.getWidth();
             	  		y=imagen.getHeight();
                   }

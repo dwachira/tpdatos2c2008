@@ -6,6 +6,7 @@ class JPGStego: public LossyCompressStegoBusiness
 {
 public:
 	JPGStego(std::string filename);
+	virtual unsigned int getQuality();
 	virtual ~JPGStego();
 };
 
