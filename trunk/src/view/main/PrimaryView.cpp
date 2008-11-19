@@ -35,6 +35,7 @@ PrimaryView::PrimaryView() {
 
 void PrimaryView::start() {
 	string command = "";
+	UseCaseValidator aUseCaseValidator;
 	char buffer[MAX_LINE];
 	while (command.compare("quit") != 0) {
 		cin.getline(buffer, MAX_LINE);
@@ -45,9 +46,7 @@ void PrimaryView::start() {
 		string firstParameter = command.substr(posFirstSpace+1, posSecondSpace
 				-posFirstSpace-1);
 		string secondParameter = command.substr(posSecondSpace+1);
-		UseCaseValidator aUseCaseValidator(action, firstParameter,
-				secondParameter);
-		aUseCaseValidator.execute(controller);
+		aUseCaseValidator.execute(action, firstParameter,secondParameter);
 
 	}
 }
