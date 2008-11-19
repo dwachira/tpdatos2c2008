@@ -6,6 +6,8 @@
 #include <iostream>
 #include <fstream>
 
+#define PERC 0.8
+
 class LossyCompressStegoBusiness: public StegoBusiness
 {
 	private:
