@@ -17,7 +17,7 @@ class LSBStegoBusiness: public StegoBusiness
     	ImagePalette palette;
         /*Cantidad de bits que se van leyendo de la imagen o colocando en la imagen*/
         unsigned long int bits_procesados;      
-        unsigned int pos_bit_msj,pos_byte_msj,pos_pixel,max_pos_pixel;
+        unsigned int pos_bit_msj,pos_byte_msj,pos_pixel,max_pos_pixel,bit_in_pixel;
         unsigned char byte_msj;
   		virtual unsigned long int changePixel(BYTE *pixels,const char* mensaje,unsigned long int size);
     	virtual std::string getMessageFromPixel(BYTE *pixels,unsigned long int longitud);

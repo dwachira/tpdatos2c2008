@@ -21,6 +21,24 @@ unsigned long int PNGStego::getFreeSpace(){
 	return space;
 	
 }
+
+
+unsigned int PNGStego::getFirstFreeBit(){
+	//solo se aplicara lsb a la paleta si esta posee un tamaño inferior a 16 colores
+	//y no es en escala de grises
+	if((imagen.getBpp()<=8)&&(!imagen.isGrayScale())&&(imagen.getPaletteSize()<=16)) return 0;
+	if((imagen.getBpp()==32)&&(isFirstPixelTransparent())) return 0;
+	return (8-this->enable_bpp);
+}
+bool PNGStego::isFirstPixelTransparent(){
+	
+	 BYTE *bits = imagen.getBits();
+     /*Me posiciono desde el comienzo de la imagen*/
+     BYTE *pixels = (BYTE*)bits;
+	 return(pixels[3]==0);
+	
+}
+
 /**
  * Calcula la cantidad total de pixels transparentes
  */
@@ -61,8 +79,22 @@ unsigned int j=0;
      /*Canal alpha en cero--> imagen transparente*/
      if((imagen.getBpp()==32)&&(pixels[3]==0)){
      	
+     	 /*Un byte puede estar formado por distintos mensajes*/
+     	 if((bits_procesados==0)&&((bit_in_pixel-8*pos_pixel)!=0)){
+     	 	 std::cout<<"byte compartido"<<std::endl;
+     	 	 /*Tomo el byte actual y lo relleno*/
+     	 	  byte_pixel=(int)pixels[pos_pixel];
+              std::string binario;
+              util::BitsUtils::toBase(byte_pixel,2,binario);
+              util::BitsUtils::completeNBits(binario,8);
+              j=bit_in_pixel-8*pos_pixel;
+              newbyte.append(binario.substr(0,j));
+     	 	 
+     	 	 
+     	 }
+     	  /*Recorro los 3 bytes del pixel,sin modificar el byte alpha*/
     	  while((bits_procesados<size*8)&&(pos_pixel<3)){
-    	  	j=0;
+    	  	
     	  	//ciclo para completar un byte del pixel
     	  	while((bits_procesados<size*8)&&(j<8)){
     	  	    if(pos_bit_msj==8){ 
@@ -76,20 +108,22 @@ unsigned int j=0;
                newbyte.push_back(bit);
                pos_bit_msj++;
                bits_procesados++;
+               bits_alpha++;
     	  	}
-               bits_alpha+=8;
-            
+               j=0;
+               /*Ultimo byte que se modifica*/
                if(bits_procesados==(size*8)){
                   //completo con ceros al final 
                   newbyte.append(8-newbyte.size(),'0');
-                    
+                  bits_alpha++;//para pasar al proximo libre
                }
-               std::cout<<newbyte<<std::endl;
+               //std::cout<<newbyte<<std::endl;
                byte_pixel=(BYTE)strtol(newbyte.c_str(),&aux,2);
                newbyte.clear();
                pixels[pos_pixel] = byte_pixel;
-               pos_pixel++;
-               if(pos_pixel==3) bits_alpha+=8;//salteo el pixel transparente
+               if(bits_procesados<(size*8))
+                  pos_pixel++;
+               if((pos_pixel==3)&&(bits_procesados<(size*8))) bits_alpha+=8;//salteo el pixel transparente
              }
                       
           return bits_alpha;
@@ -107,15 +141,19 @@ unsigned int j=0;
 
 /*Canal alpha en cero--> imagen transparente*/
    if((imagen.getBpp()==32)&&(pixels[3]==0)){
-  
-     while((bits_procesados<longitud)&&(pos_pixel<3)){
+     /*Un byte puede estar formado por distintos mensajes*/
+     if((bits_procesados==0)&&((bit_in_pixel-8*pos_pixel)!=0)){
+        std::cout<<"byte compartido"<<std::endl;
+        j=bit_in_pixel-8*pos_pixel;
+    
+     }
+     while((bits_procesados<longitud*8)&&(pos_pixel<3)){
           byte_pixel=(int)pixels[pos_pixel];
           binario="";
           util::BitsUtils::toBase(byte_pixel,2,binario);
           util::BitsUtils::completeNBits(binario,8);
-                 
-          j=0; 
-          while((bits_procesados<longitud)&&(j<8)){     
+         
+          while((bits_procesados<longitud*8)&&(j<8)){     
                 
           		if(binario.at(j)=='1') byte_msj = byte_msj | (1<<pos_bit_msj);
                 j++; 
@@ -128,6 +166,7 @@ unsigned int j=0;
       			}
                
           } pos_pixel++;//paso al byte siguiente
+             j=0; 
           
       }
       return mensaje;       	

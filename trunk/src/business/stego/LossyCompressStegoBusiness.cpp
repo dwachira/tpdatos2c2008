@@ -5,7 +5,7 @@ free_space(0){
 }
 
 unsigned long int LossyCompressStegoBusiness::getFreeSpace(){
-  generateSpace(PERC);
+  generateSpace();
   return this->free_space;	
 }
 
@@ -15,7 +15,7 @@ unsigned int LossyCompressStegoBusiness::getFirstFreeBit(){
 /**
  * Comprime mas la imagen y la rellena con ceros para que no cambie su tamanio
  */
-bool LossyCompressStegoBusiness::generateSpace(float perc)
+bool LossyCompressStegoBusiness::generateSpace()
 {
 /*Cargo la imagen */
 FIBitmap imagen(this->filename);
@@ -33,8 +33,7 @@ bool error=imagen.load();
 	   /* Guardo la imagen cambiandole el nivel de compresion para generar
 	    * espacio al final de la misma
 	    */
-	   //VER QUE NUMERO SE LE PASA AL ULT PARAMETRO 
-	   imagen.save(perc);
+	   imagen.save(getQuality()-2);
 	  
 	   /*Reabro la imagen y me posiciono al final para completar el espacio 
 	    * que le falta*/
@@ -67,7 +66,7 @@ imageFile.open(filename.c_str(), std::fstream::in |std::fstream::out| std::fstre
 	     imageFile.close();
 	     
      }	
-     return strlen(mensaje)+first_pos+1;
+     return size*8 + first_pos+1;
 }
 
 std::string LossyCompressStegoBusiness::getMessage(unsigned long int first_pos,unsigned long int longitud){
