@@ -54,7 +54,7 @@ void UseCaseValidator::execute(string action, string firstParameter,
 			break;
 		}
 		case 8: {
-			controller.changePassword(firstParameter,secondParameter);
+			controller.changePassword(firstParameter);
 			break;
 		}
 		case 9: {
@@ -67,7 +67,8 @@ void UseCaseValidator::execute(string action, string firstParameter,
 			break;
 		}
 		case 11: {
-			std::cout<<"Comandos posibles: "<<std::endl;
+			std::cout<<"Los comandos posibles son: "<<std::endl;
+			std::cout<<"\nComandos posibles: "<<std::endl;
 			std::cout<<"addDirectory <directorio>"<<std::endl;
 			std::cout<<"removeDirectory <directorio>"<<std::endl;
 			std::cout<<"addFile <nombre_archivo>"<<std::endl;
@@ -75,8 +76,7 @@ void UseCaseValidator::execute(string action, string firstParameter,
 			std::cout<<"getFile <nombre_archivo> <ruta_destino>"<<std::endl;
 			std::cout<<"showFiles"<<std::endl;
 			std::cout<<"showDirectories"<<std::endl;
-			std::cout<<"changePassword <old_password> <new_password>"
-					<<std::endl;
+			std::cout<<"changePassword <old_password> <new_password>"<<std::endl;
 			std::cout<<"quit"<<std::endl;
 			std::cout<<"login"<<std::endl;
 			std::cout<<"help"<<std::endl;

@@ -14,6 +14,7 @@ void PrimaryView::start() {
 	UseCaseValidator aUseCaseValidator(controller);
 	char buffer[MAX_LINE];
 	while (command.compare("quit") != 0) {
+		cout << "Stegno> ";
 		cin.getline(buffer, MAX_LINE);
 		command.assign(buffer);
 		int posFirstSpace = command.find_first_of(" ");

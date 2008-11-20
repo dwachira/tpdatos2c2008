@@ -97,6 +97,10 @@ bool Controller::login(string& password){
 		this->trieDao->loadTrie(IMAGENES);
 		this->directorioManager = new DirectorioManager(*this->managerDao,*this->trieDao);
 		this->mensajeManager = new MensajeManager(*this->managerDao,*this->directorioManager,*this->trieDao,password);
+		std::cout<<"Acaba de ingresar al sístema."<<std::endl;
+	}
+	else{
+		std::cout<<"Contraseña invalida."<<std::endl;
 	}
 	return loggedIn;
 }
