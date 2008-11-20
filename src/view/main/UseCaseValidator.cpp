@@ -22,7 +22,7 @@ void UseCaseValidator::execute(string action, string firstParameter,
 	else
 		call = it->second;
 
-	if (login == true || call == 10) {
+	if (login == true || call == 10 || call == 9) {
 
 		switch (call) {
 		case 1: {
