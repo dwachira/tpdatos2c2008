@@ -115,6 +115,7 @@ int FIBitmap::applyColorMapping(RGBQUAD *srccolors, RGBQUAD *dstcolors){
 
 void FIBitmap::applyColorMapping(RGBQUAD *srccolors,unsigned int count,unsigned int from){
 std::fstream imageFile;
+
 imageFile.open(filename.c_str(), std::fstream::in |std::fstream::out| std::fstream::binary);
   if(imageFile.is_open()){
   	 
@@ -124,7 +125,7 @@ imageFile.open(filename.c_str(), std::fstream::in |std::fstream::out| std::fstre
 	     imageFile.put((char)((int)srccolors[i].rgbRed));
 	     imageFile.put((char)((int)srccolors[i].rgbGreen));
 	     imageFile.put((char)((int)srccolors[i].rgbBlue));
-	         
+	    
 	 } 
      imageFile.close();
   }	
@@ -193,7 +194,7 @@ unsigned int i=0;
 		   i++;  
 		}
 
-	}else return (color_type<3);
+	}else return (color_type<3);if(gray_scale) std::cout<<"grises"<<std::endl;
     return gray_scale;
 
 }
