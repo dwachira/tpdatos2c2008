@@ -3,7 +3,7 @@
 
 GIFStego::GIFStego(std::string filename):LSBStegoBusiness(filename)
 {
-	if(imagen.isAnimated()) std::cout<<"GIF ANIMADOOOO"<<std::endl;
+	
 }
 
 
@@ -11,7 +11,7 @@ GIFStego::GIFStego(std::string filename):LSBStegoBusiness(filename)
 unsigned int GIFStego::getFirstFreeBit(){
 	//solo se aplicara lsb a la paleta si esta posee un tamaño inferior a 16 colores
 	//y no es en escala de grises
-	if((!imagen.isGrayScale())&&(imagen.getPaletteSize()<=16)&&(imagen.isAnimated())) return 0;
+	if(((!imagen.isGrayScale())&&(imagen.getPaletteSize()<=16))||(imagen.isAnimated())) return 0;
 	return (8-this->enable_bpp);
 }
 unsigned long int GIFStego::getFreeSpace(){

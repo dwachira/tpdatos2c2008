@@ -115,8 +115,10 @@ if(palette) {
         imagen.save(); 
         /*Guardo los cambios en la paleta de colores*/
         imagen.applyColorMapping(dstcolors,imagen.getPaletteSize());
-        if(imagen.hasBackgroundColor())  	
+        if(imagen.hasBackgroundColor()){  	
 	  	    imagen.setBackgroundColorIndex(getNewPaletteIndex(background_index));
+	  	    std::cout<<"imagen con background color"<<std::endl;   
+        }
 	  	std::cout<<"PALETA ORDENADA"<<std::endl;
    }
 }
@@ -192,7 +194,7 @@ if(palette) {
            	 if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
            	  /*Guardo un bit de informacion en el LSB del byte*/ 
            	   bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ;   
-           	   
+           	
        		   palette[i].rgbRed= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbRed,bit);
 		     
               bits_procesados++;
@@ -203,7 +205,7 @@ if(palette) {
    	       if(((bits_procesados==0)&&(rgb_pos==1))||  
            ((bits_procesados>0)&&(bits_procesados<size*8))){
            	  if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
-           	
+           	  
               bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ; 
 		      palette[i].rgbGreen= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbGreen,bit);
 		    
@@ -215,7 +217,7 @@ if(palette) {
    	       	if(((bits_procesados==0)&&(rgb_pos==2))||  
            ((bits_procesados>0)&&(bits_procesados<size*8))){
            	 if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
-           	  
+           	 
            	  bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ; 
 		      palette[i].rgbBlue= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbBlue,bit);
               bits_procesados++;
@@ -242,14 +244,18 @@ unsigned int i=first_palette_pos;
 unsigned int rgb_pos=getRGBPos(first);//determina en que color empiezo
 unsigned byte_msj=0x0;
 unsigned int pos_bit_msj=0;
+
 std::cout<<"rgb_pos "<<rgb_pos<<std::endl;
 if(palette) {
        unsigned int palette_size=imagen.getPaletteSize();
        while((i<palette_size)&&(bits_procesados<longitud*8)){    
        	
        		if(((bits_procesados==0)&&(rgb_pos==0))||  
-           	   ((bits_procesados>0)&&(bits_procesados<longitud*8))){     
-           	   	if(util::BitsUtils::getHidenBit((int)palette[i].rgbRed)) byte_msj = byte_msj | (1<<pos_bit_msj);
+           	   ((bits_procesados>0)&&(bits_procesados<longitud*8))){    
+           	   	 
+           	   	if(util::BitsUtils::getHidenBit((int)palette[i].rgbRed)) 
+           	   	    byte_msj = byte_msj | (1<<pos_bit_msj);
+           	   	    
       				pos_bit_msj++;      
       				bits_procesados++;
       				if(pos_bit_msj==8){
@@ -261,7 +267,9 @@ if(palette) {
     	    }
         	if(((bits_procesados==0)&&(rgb_pos==1))||  
            	   ((bits_procesados>0)&&(bits_procesados<longitud*8))){  
-       	      	   	if(util::BitsUtils::getHidenBit((int)palette[i].rgbGreen)) byte_msj = byte_msj | (1<<pos_bit_msj); byte_msj = byte_msj | (1<<pos_bit_msj);
+           	   	
+       	      	   	if(util::BitsUtils::getHidenBit((int)palette[i].rgbGreen)) 
+       	      	   	   byte_msj = byte_msj | (1<<pos_bit_msj); 
       				pos_bit_msj++;      
       				bits_procesados++;
       				if(pos_bit_msj==8){
@@ -273,7 +281,9 @@ if(palette) {
      	    }
          	if(((bits_procesados==0)&&(rgb_pos==2))||  
            	   ((bits_procesados>0)&&(bits_procesados<longitud*8))){  
-           	   	   	if(util::BitsUtils::getHidenBit((int)palette[i].rgbBlue)) byte_msj = byte_msj | (1<<pos_bit_msj); byte_msj = byte_msj | (1<<pos_bit_msj);
+           	   	
+           	   	   	if(util::BitsUtils::getHidenBit((int)palette[i].rgbBlue)) 
+           	   	   	   byte_msj = byte_msj | (1<<pos_bit_msj); 
       				pos_bit_msj++;      
       				bits_procesados++;
       				if(pos_bit_msj==8){
@@ -283,6 +293,7 @@ if(palette) {
       				}
            	   	   
             }i++;//siguiente posicion de la paleta
+            
        }
   }  
 	return mensaje;
