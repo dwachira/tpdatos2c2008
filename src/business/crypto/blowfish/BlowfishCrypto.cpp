@@ -1,4 +1,5 @@
 #include "BlowfishCrypto.h"
+#include <string.h>
 
 BlowfishCrypto::BlowfishCrypto() {
 
@@ -57,19 +58,22 @@ void BlowfishCrypto::inicializar(string password){
 
 
 
-string BlowfishCrypto::encrypt(string data){
+string BlowfishCrypto::encrypt(char* data, unsigned int size){
 	string resultado;
-	resultado.reserve(data.length());
-	unsigned int len = data.length();
-	string subData;
-
-	for (unsigned int i = 0; i < len; i += 8){
-		if (i + 8 >= data.length()){
-			subData = data.substr(i,len - i);
+	resultado.reserve(size);
+	char* subData;
+	int subDataSize = 0;
+	for (unsigned int i = 0; i < size; i += 8){
+		if (i + 8 >= size){
+			subDataSize = size-i;
+			subData = new char[subDataSize];
+			memcpy(subData,data+i,subDataSize);
 		}else{
-			subData = data.substr(i,8);
+			subDataSize = 8;
+			subData = new char[subDataSize];
+			memcpy(subData,data+i,subDataSize);
 		}
-		QWord dataQWord(subData);
+		QWord dataQWord(subData,subDataSize);
 		dataQWord = encrypt(dataQWord);
 		resultado += qWordToString(dataQWord);
 	}

@@ -6,7 +6,8 @@
  */
 
 #include "AuthTest.h"
-
+#include "../../../business/md5/md5wrapper.h"
+using namespace business;
 AuthTest::AuthTest() {
 	// TODO Auto-generated constructor stub
 
@@ -21,12 +22,15 @@ AuthTest::~AuthTest() {
 
 int AuthTest::test() {
 
-	AuthBusiness auth("/home/maxi/workspace/Stegno/system/");
-	std::cout << "Se ingresara una contraseña incorrecta 'admin'"  << std::endl;
+	md5wrapper hasheador;
+	std::string hash = hasheador.getHashFromString("admin");
+
+	AuthBusiness auth(__BASE_DIR__"/");
+	std::cout << "Se ingresara una contraseña incorrecta 'upalala'"  << std::endl;
 	if (!auth.login("upalala")){
-		std::cout << "Contraseña incorrecta 'admin'"  << std::endl;
+		std::cout << "Contraseña incorrecta 'upalala'"  << std::endl;
 	}else{
-		std::cout << "FALLO valido una contraseña incorrecta 'admin'"  << std::endl;
+		std::cout << "FALLO valido una contraseña incorrecta 'upalala'"  << std::endl;
 	}
 	std::cout << "Se ingresara una contraseña correcta"  << std::endl;
 	if (auth.login("admin")){

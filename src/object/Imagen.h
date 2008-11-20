@@ -12,6 +12,8 @@
 
 #include <string>
 #include "../util/date/Date.h"
+#include "../util/string/StringUtils.h"
+using namespace util;
 using namespace std;
 
 namespace object{
@@ -80,6 +82,10 @@ class Imagen{
 		util::Date getFechaUltimaModificacion() const {return *fechaUltimaModificacion;}
 			    void setFechaUltimaModificacion(util::Date* ultimaModificacion)
 									{this->fechaUltimaModificacion = ultimaModificacion;}
+
+		bool isJpg() const {
+			return (util::StringUtils::uppercase(nombre.substr(nombre.size() - 3)).compare("JPG") == 0);
+		}
 
 		friend bool operator== (const Imagen& left, const Imagen& right);
 };

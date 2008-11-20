@@ -10,12 +10,12 @@ using namespace std;
 class UseCaseValidator
 {
 private:
-	Controller controller;
+	Controller& controller;
 	bool login;
 	void loadMap(map<string, int> &useCases);
 
 public:
-	UseCaseValidator();
+	UseCaseValidator(Controller& aController);
 	void execute(string action, string firstParameter,string secondParameter);
 	virtual ~UseCaseValidator();
 };

@@ -5,7 +5,7 @@
 
 using namespace business;
 
-UseCaseValidator::UseCaseValidator() {
+UseCaseValidator::UseCaseValidator(Controller& aController) : controller(aController) {
 	login = false;
 }
 
@@ -71,6 +71,7 @@ void UseCaseValidator::execute(string action, string firstParameter,
 			std::cout<<"addDirectory <directorio>"<<std::endl;
 			std::cout<<"removeDirectory <directorio>"<<std::endl;
 			std::cout<<"addFile <nombre_archivo>"<<std::endl;
+			std::cout<<"removeFile <nombre_archivo>"<<std::endl;
 			std::cout<<"getFile <nombre_archivo> <ruta_destino>"<<std::endl;
 			std::cout<<"showFiles"<<std::endl;
 			std::cout<<"showDirectories"<<std::endl;

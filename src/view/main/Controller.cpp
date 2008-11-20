@@ -15,7 +15,7 @@
 
 void Controller::agregarMensaje(std::string& filename) {
 	try {
-		mensajeManager.agregarMensaje(filename);
+		mensajeManager->agregarMensaje(filename);
 	} catch (RecursoInaccesibleException e) {
 		std::cout<<"No se puede agregar "<<filename
 		<<" verifique que esta escrito correctamente y que"
@@ -27,7 +27,7 @@ void Controller::agregarMensaje(std::string& filename) {
 
 void Controller::agregarDirectorio(std::string& path) {
 	try {
-		directorioManager.agregarDirectorio(path);
+		directorioManager->agregarDirectorio(path);
 	} catch (RecursoInaccesibleException e) {
 		std::cout<<"No se puede acceder al directorio."
 		"Compruebe que lo haya escrito bien y que, ademas, tenga"
@@ -38,22 +38,11 @@ void Controller::agregarDirectorio(std::string& path) {
 	}
 }
 
-bool Controller::directorioEnUso(std::string& path) {
-	try {
-		if (directorioManager.directorioEnUso(path)) {
-			
-		}
-	} catch (EntidadInexistenteException e) {
-		//MOSTRAS MENSAJE ADECUADO
-	}
-	return true;
-}
-
 void Controller::removerDirectorio(std::string& path) {
 	try {
-		if (directorioManager.directorioEnUso(path)) {
+		if (directorioManager->directorioEnUso(path)) {
 			if(this->confirmar(REMOVERDIRECTORIO)){
-				directorioManager.removerDirectorio(path);
+				directorioManager->removerDirectorio(path);
 			}
 		}
 	} catch (EntidadInexistenteException e) {
@@ -63,7 +52,7 @@ void Controller::removerDirectorio(std::string& path) {
 
 void Controller::removerMensaje(std::string& filename) {
 	try {
-		mensajeManager.quitarMensaje(filename);
+		mensajeManager->quitarMensaje(filename);
 	} catch (EntidadInexistenteException e) {
 		std::cout<<"El mensaje no existe."<<std::endl;
 	}
@@ -71,7 +60,7 @@ void Controller::removerMensaje(std::string& filename) {
 
 void Controller::obtenerMensaje(std::string& filename, std::string& pathDestino) {
 	try {
-		mensajeManager.obtenerMensaje(filename,pathDestino);
+		mensajeManager->obtenerMensaje(filename,pathDestino);
 	} catch (EntidadInexistenteException e) {
 		std::cout<<"El mensaje solicitado no se encuentra en la base de datos. Compruebe el nombre"<<std::endl;
 	} catch (RecursoInaccesibleException e) {
@@ -84,8 +73,7 @@ void Controller::obtenerMensaje(std::string& filename, std::string& pathDestino)
 }
 
 void Controller::mostrarDirectorios() {
-	list<string> directorios = directorioManager.getDirectorios();
-	//TODO::DARLE UN FORMATO MAS MEJOR :P
+	list<string> directorios = directorioManager->getDirectorios();
 	for (list<string>::iterator it = directorios.begin(); it
 			!= directorios.end(); it++) {
 		std::cout<<*it<<std::endl;
@@ -93,16 +81,30 @@ void Controller::mostrarDirectorios() {
 }
 
 void Controller::mostrarMensajes() {
-	list<string> mensajes = mensajeManager.getMensajes();
-	//TODO::DARLE UN FORMATO MAS MEJOR :P
+	list<string> mensajes = mensajeManager->getMensajes();
 	for (list<string>::iterator it = mensajes.begin(); it != mensajes.end(); it++) {
 		std::cout<<*it<<std::endl;
 	}
 }
 
 bool Controller::login(string& password){
-	//TODO::PONER EL LOGIN
-	return true;
+	loggedIn = authBusiness->login(password);
+	if (loggedIn) {
+		this->managerDao = new dao::ManagerDAO();
+		this->trieDao = new dao::TrieDAO(*this->managerDao);
+		this->trieDao->loadTrie(DIRECTORIOS);
+		this->trieDao->loadTrie(MENSAJES);
+		this->trieDao->loadTrie(IMAGENES);
+		this->directorioManager = new DirectorioManager(*this->managerDao,*this->trieDao);
+		this->mensajeManager = new MensajeManager(*this->managerDao,*this->directorioManager,*this->trieDao,password);
+	}
+	return loggedIn;
+}
+
+void Controller::changePassword(std::string& oldPassword, std::string& newPassword) {
+	if (!authBusiness->changePass(oldPassword,newPassword))
+		std::cout<<"El password ingresado como oldPassword no coincide con el almacenado."<<std::endl;
+
 }
 
 bool Controller::confirmar(string pregunta) {
@@ -127,5 +129,12 @@ bool Controller::confirmar(string pregunta) {
 }
 
 Controller::~Controller() {
-	// TODO Auto-generated destructor stub
+	if (loggedIn) {
+		authBusiness->logout();
+		delete mensajeManager;
+		delete directorioManager;
+		delete trieDao;
+		delete managerDao;
+	}
+	delete authBusiness;
 }

@@ -30,7 +30,7 @@ public:
 	BlowfishCrypto();
 	virtual ~BlowfishCrypto();
 	void inicializar(string password);
-	string encrypt(string data);
+	string encrypt(char* data, unsigned int size);
 	string desencrypt(string data);
 	QWord encrypt(QWord data);
 	QWord desencrypt(QWord data);

@@ -83,7 +83,7 @@ struct QWord{
 
 	}
 
-	QWord(unsigned char * s, int len){
+	QWord(char * s, int len){
 			xl = (unsigned long)0;
 			xr = (unsigned long)0;
 			if (len < 1)
