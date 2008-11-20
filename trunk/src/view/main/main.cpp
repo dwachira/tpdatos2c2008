@@ -16,6 +16,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include "../test/auth/AuthTest.h"
 
 int main(int argc, char* argv[]){
 
@@ -28,7 +29,7 @@ int main(int argc, char* argv[]){
 //	std::vector<TestCase*> tests;
 //	tests.push_back(new TestAgregarYRecuperarMensaje());
 //	tests.push_back(new TestAddDirectory());
-//	tests.push_back(new TestDirectorioDAO());
+//	tests.push_back(new AuthTest());
 //	tests.push_back(new TestCompressor());
 
 //	for (unsigned int i = 0; i < tests.size() ; i++)

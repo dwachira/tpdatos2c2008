@@ -5,6 +5,7 @@
  *      Author: gsenno
  */
 
+
 #ifndef MENSAJEMANAGER_H_
 #define MENSAJEMANAGER_H_
 
@@ -26,11 +27,14 @@ private:
 	DirectorioManager& directorioManager;
 	dao::TrieDAO& trieDao;
 	md5wrapper hasheador;
+	string userPass;
 	static std::string TMP_COMPRESSED_FILE_NAME;
+	static char* testbuff;
+
 public:
-	MensajeManager(dao::ManagerDAO& manager, DirectorioManager& directorioMan, dao::TrieDAO& trie) : imagenDao(manager.getImagenDAO()), particionDao(manager.getParticionDAO()),
+	MensajeManager(dao::ManagerDAO& manager, DirectorioManager& directorioMan, dao::TrieDAO& trie, std::string pass) : imagenDao(manager.getImagenDAO()), particionDao(manager.getParticionDAO()),
 											mensajeDao(manager.getMensajeDAO()),
-											directorioManager(directorioMan), trieDao(trie) {}
+											directorioManager(directorioMan), trieDao(trie), userPass(pass){}
 	/*@throw EspacioInsuficienteException, RecursoInaccesibleException*/
 	void agregarMensaje(std::string filename);
 	void quitarMensaje(std::string& filename);

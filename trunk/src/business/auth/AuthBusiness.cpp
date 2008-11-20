@@ -6,8 +6,11 @@
  */
 
 #include "AuthBusiness.h"
+#include <string.h>
 
-AuthBusiness::AuthBusiness(string systemPath) {
+namespace business {
+
+AuthBusiness::AuthBusiness(const string& systemPath) {
 	this->systemPath = systemPath;
 
 
@@ -18,7 +21,7 @@ AuthBusiness::~AuthBusiness() {
 }
 
 /** Retornar true, si se puedo logear el usuario*/
-bool AuthBusiness::login(string pass){
+bool AuthBusiness::login(const string& pass){
 	//Checkear si es el pass es el correcto
 	if (!checkPass(pass)){
 		return false;
@@ -35,7 +38,7 @@ bool AuthBusiness::login(string pass){
 }
 
 /** Retornar true. si se pudo cambiar el pass*/
-bool  AuthBusiness::changePass(string oldPass,string newPass){
+bool  AuthBusiness::changePass(const string& oldPass, const string& newPass){
 	//Checkear si es el pass es el correcto
 	if (!checkPass(oldPass)){
 			return false;
@@ -44,6 +47,7 @@ bool  AuthBusiness::changePass(string oldPass,string newPass){
 	//Guardar el nuevo pass en disco
 	string archivoHash = "";
 	archivoHash.append(this->systemPath);
+	archivoHash.append("/");
 	archivoHash.append(FILE_PASS_HASH);
 	//Eliminar el archivo de hash
 	remove (archivoHash.c_str());
@@ -70,12 +74,13 @@ bool  AuthBusiness::logout(){
 	executeFunctionInPath(this->systemPath,crypto,encryptFile);
 	delete crypto;
 	//Eliminar los archivos desencriptados
-	deleteInPath(this->systemPath);
+	string deletePath = systemPath +"/";
+	deleteInPath(deletePath);
 	return true;
 }
 
 
-void AuthBusiness::executeFunctionInPath(string path,BlowfishCrypto * crypto, void (* Funcion)(BlowfishCrypto * crypto,string,string)){
+void AuthBusiness::executeFunctionInPath(string& path,BlowfishCrypto * crypto, void (* Funcion)(BlowfishCrypto * crypto,string,string)){
 	string archivo="";
 
 	struct dirent **resultados = NULL;
@@ -105,7 +110,7 @@ void AuthBusiness::executeFunctionInPath(string path,BlowfishCrypto * crypto, vo
 }
 
 
-void AuthBusiness::deleteInPath(string pathDelete){
+void AuthBusiness::deleteInPath(string& pathDelete){
 	string archivo="";
 
 	struct dirent **resultados = NULL;
@@ -119,7 +124,7 @@ void AuthBusiness::deleteInPath(string pathDelete){
 		if (filename.compare(FILE_PASS_HASH) && filename.compare("..")  && filename.compare(".") && filename.compare("encrypt") && filename.compare(".svn")){
 			archivo.append(pathDelete);
 			archivo.append(filename);
-			remove (archivo.c_str());
+			remove(archivo.c_str());
 		}
 		archivo="";
 	}
@@ -138,6 +143,7 @@ void AuthBusiness::deleteInPath(string pathDelete){
 void AuthBusiness::encryptFile(BlowfishCrypto * crypto,string path,string file){
 	string archivoIn="";
 	archivoIn.append(path);
+	archivoIn.append("/");
 	archivoIn.append(file);
 
 	string archivoOut="";
@@ -145,7 +151,7 @@ void AuthBusiness::encryptFile(BlowfishCrypto * crypto,string path,string file){
 	archivoOut.append(PATH_ENCRYPT);
 	archivoOut.append(file);
 	FILE *fe, *fs;
-	unsigned char buffer[8];
+	char buffer[8];
 	int bytesLeidos;
 
 	fe = fopen(archivoIn.c_str(), "rb");
@@ -176,7 +182,7 @@ void AuthBusiness::desencryptFile(BlowfishCrypto * crypto,string path,string fil
 	archivoOut.append("../");
 	archivoOut.append(file);
 	FILE *fe, *fs;
-	unsigned char buffer[8];
+	char buffer[8];
 	int bytesLeidos;
 
 	fe = fopen(archivoIn.c_str(), "rb");
@@ -196,12 +202,14 @@ void AuthBusiness::desencryptFile(BlowfishCrypto * crypto,string path,string fil
 }
 
 
-bool AuthBusiness::checkPass(string pass){
+bool AuthBusiness::checkPass(const string& pass){
 	string archivoHash = "";
 	archivoHash.append(this->systemPath);
+	archivoHash.append("/");
 	archivoHash.append(FILE_PASS_HASH);
 	FILE *fe;
-	unsigned char buffer[32];
+	unsigned char buffer[33];
+	memset(buffer,'\0',33);
 	//Abrir el arhivo de hash y leer el hash del pass
 	fe = fopen(archivoHash.c_str(), "rb");
 	fread(buffer, 1, 32, fe);
@@ -218,5 +226,5 @@ bool AuthBusiness::checkPass(string pass){
 	}
 	return true;
 }
-
+}
 

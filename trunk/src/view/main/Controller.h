@@ -16,29 +16,30 @@
 #include "../../business/mensajes/MensajeManager.h"
 #include <string>
 #include "../../dao/manager/ManagerDAO.h"
+#include "../../business/auth/AuthBusiness.h"
+#include "../../dao/TrieDAO.h"
+using namespace business;
 using namespace dao;
 
 class Controller {
 private:
-	dao::ManagerDAO managerDao;
-	dao::TrieDAO trieDao;
-	business::DirectorioManager directorioManager;
-	business::MensajeManager mensajeManager;
-	
+	ManagerDAO* managerDao;
+	TrieDAO* trieDao;
+	DirectorioManager* directorioManager;
+	MensajeManager* mensajeManager;
+	AuthBusiness* authBusiness;
+	bool loggedIn;
 	bool confirmar(string pregunta);
-	
+
 public:
-	Controller() : trieDao(managerDao), directorioManager(managerDao,trieDao), mensajeManager(managerDao,directorioManager,trieDao) {
-		trieDao.loadTrie(DIRECTORIOS);
-		trieDao.loadTrie(MENSAJES);
-		trieDao.loadTrie(IMAGENES);
+
+	Controller() : loggedIn(false) {
+		authBusiness = new AuthBusiness(__BASE_DIR__);
 	}
 
 	void agregarMensaje(std::string& filename);
 
 	void agregarDirectorio(std::string& path);
-
-	bool directorioEnUso(std::string& path);
 
 	void removerDirectorio(std::string& path);
 
@@ -49,8 +50,10 @@ public:
 	void mostrarDirectorios();
 
 	void mostrarMensajes();
-	
+
 	bool login(std::string& password);
+
+	void changePassword(std::string& oldPassword, std::string& newPassword);
 
 	virtual ~Controller();
 };

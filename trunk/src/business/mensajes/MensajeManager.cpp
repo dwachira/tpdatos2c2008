@@ -23,6 +23,7 @@
 #include "../../object/exceptions/EntidadInexistenteException.h"
 #include "../../object/exceptions/ImagenFaltanteException.h"
 #include "../../object/exceptions/EntidadYaExistenteException.h"
+#include "../crypto/blowfish/BlowfishCrypto.h"
 using namespace std;
 using namespace dao;
 
@@ -40,26 +41,25 @@ string transformMensajeToString(Mensaje& mensaje) {
 
 void MensajeManager::agregarMensaje(std::string filename)
 {
-
 	if (trieDao.getIndice(MENSAJES,filename) != 0) {
 		throw EntidadYaExistenteException();
 	}
 
 	/** Comprimo el mensaje **/
-//	FILE* file = fopen(filename.c_str(),"rb");
-//	if (file == NULL) {
-//		throw RecursoInaccesibleException();
-//	}
-//	FILE* tmpfile = fopen(TMP_COMPRESSED_FILE_NAME.c_str(),"wb");
-//
-//	CompressorBusiness compressor;
-//	compressor.compress(file,tmpfile);
-//	fclose(tmpfile);
-//	fclose(file);
+	FILE* file = fopen(filename.c_str(),"rb");
+	if (file == NULL) {
+		throw RecursoInaccesibleException();
+	}
+	FILE* tmpfile = fopen(TMP_COMPRESSED_FILE_NAME.c_str(),"wb");
+
+	CompressorBusiness compressor;
+	compressor.compress(file,tmpfile);
+	fclose(tmpfile);
+	fclose(file);
 	/***************************/
 
 	/**Busco imagenes**/
-	ifstream filestrm(filename.c_str());
+	ifstream filestrm(TMP_COMPRESSED_FILE_NAME.c_str());
 	filestrm.seekg (0, ios::end);
 	unsigned int tamanioMensaje = filestrm.tellg();
 	filestrm.seekg (0, ios::beg);
@@ -139,6 +139,18 @@ void MensajeManager::agregarMensaje(std::string filename)
 			char* buffer = new char[streamsize];
 			memset(buffer,'\0',streamsize);
 			filestrm.read(buffer,streamsize);
+
+			//Si la imagen es Jpeg, encriptamos el msg para mas seguridad.
+			if (imagen.isJpg()) {
+				BlowfishCrypto crypto;
+				crypto.inicializar(userPass);
+				string encrypted = crypto.encrypt(buffer,streamsize);
+				delete buffer;
+				streamsize = encrypted.size();
+				buffer = new char[streamsize];
+				memset(buffer,'\0',streamsize);
+				memcpy(buffer,encrypted.data(),streamsize);
+			}
 
 			int bytesLeft = streamsize;
 
@@ -250,7 +262,7 @@ void MensajeManager::obtenerMensaje(std::string filename, std::string destino)
 			throw RecursoInaccesibleException();
 		}
 
-		fstream fromImage(destino.c_str(), fstream::binary | fstream::out);
+		fstream fromImage(TMP_COMPRESSED_FILE_NAME.c_str(), fstream::binary | fstream::out);
 
 		Mensaje mensaje = mensajeDao.getMsjById(mensajeId);
 
@@ -280,20 +292,27 @@ void MensajeManager::obtenerMensaje(std::string filename, std::string destino)
 				throw ImagenFaltanteException();
 			}
 
-			const string& chunk = stego->getMessage(particion.getBit_inicio(),particion.getLongitud());
-			int size = chunk.size();
-			fromImage.write(chunk.c_str(),size);
+			string chunk = stego->getMessage(particion.getBit_inicio(),particion.getLongitud());
+
+			//Si es jpg, hay que desencriptar.
+			if (imagen.isJpg()) {
+				BlowfishCrypto crypto;
+				crypto.inicializar(userPass);
+				chunk = crypto.desencrypt(chunk);
+			}
+
+			fromImage.write(chunk.c_str(),chunk.size());
 			delete stego;
 		}
 		fromImage.close();
-//
-//		FILE* tmp_file = fopen(TMP_COMPRESSED_FILE_NAME.c_str(),"rb");
-//
-//		CompressorBusiness compressor;
-//		compressor.decompress(tmp_file,salida);
-//		fclose(tmp_file);
-//		remove(TMP_COMPRESSED_FILE_NAME.c_str());
-//		fclose(salida);
+
+		FILE* tmp_file = fopen(TMP_COMPRESSED_FILE_NAME.c_str(),"rb");
+
+		CompressorBusiness compressor;
+		compressor.decompress(tmp_file,salida);
+		fclose(tmp_file);
+		remove(TMP_COMPRESSED_FILE_NAME.c_str());
+		fclose(salida);
 	}
 }
 
