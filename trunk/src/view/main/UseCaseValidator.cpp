@@ -54,7 +54,7 @@ void UseCaseValidator::execute(string action, string firstParameter,
 			break;
 		}
 		case 8: {
-			controller.changePassword(firstParameter);
+			controller.changePassword(firstParameter, secondParameter);
 			break;
 		}
 		case 9: {
