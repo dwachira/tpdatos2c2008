@@ -16,6 +16,7 @@ class ImagePalette
     	/*Representacion de la imagen*/
    		FIBitmap &imagen;
    	  	std::vector<unsigned int> new_palette_indexes;
+   	  	unsigned int background_index;
 		unsigned int getRGBPos(unsigned int pos);
 		
 	public:
