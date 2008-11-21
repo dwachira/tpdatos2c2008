@@ -39,10 +39,10 @@ if(palette) {
         	 else  distancias[i][j]=0;
            }
        }
-      std::ofstream file("paleta.txt");
+
      /*Calculo la distancias entre los colores de la paleta*/
      for (unsigned int i = 0; i < palette_size; i++) {
-        	file<<(int)palette[i].rgbRed<<"-"<<(int)palette[i].rgbGreen<<"-"<<(int)palette[i].rgbBlue<<std::endl;    
+    
         for (unsigned int j = i+1; j < palette_size; j++) {
              red=pow(((int)palette[i].rgbRed-(int)palette[j].rgbRed),2);
              green=pow(((int)palette[i].rgbGreen-(int)palette[j].rgbGreen),2);
@@ -55,8 +55,7 @@ if(palette) {
               }
            }
         }
-           file.close();
-           
+                     
       
      /*Color ordenado por menor distancia*/
      new_palette_indexes.push_back(color_i);
@@ -91,11 +90,7 @@ if(palette) {
         new_palette_indexes.push_back(color_primero);
         new_palette_indexes.push_back(color_segundo);
       }
-      std::ofstream f("paleta_ordenada.txt");
-      for (unsigned int i=0;i<new_palette_indexes.size();i++)      	 
-          f<<(int)palette[new_palette_indexes.at(i)].rgbRed<<"-"<<(int)palette[new_palette_indexes.at(i)].rgbGreen<<"-"<<(int)palette[new_palette_indexes.at(i)].rgbBlue<<std::endl;
-     
-      f.close();
+      
    }
 }
 
@@ -257,7 +252,7 @@ if(palette) {
           if(bits_procesados<size*8) i++;
        }
        /*Actualizo la paleta de colores para que los cambios se apliquen a la imagen*/
-       std::cout<<"voy a actualizar desde "<<first_palette_pos<<" hasta "<<i<<std::endl;
+      
        imagen.applyColorMapping(palette,i+1,first_palette_pos);
        
   }  
@@ -274,7 +269,7 @@ unsigned int rgb_pos=getRGBPos(first);//determina en que color empiezo
 unsigned byte_msj=0x0;
 unsigned int pos_bit_msj=0;
 
-std::cout<<"rgb_pos "<<rgb_pos<<std::endl;
+
 if(palette) {
        unsigned int palette_size=imagen.getPaletteSize();
        while((i<palette_size)&&(bits_procesados<longitud*8)){    
