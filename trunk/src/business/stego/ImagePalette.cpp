@@ -26,11 +26,12 @@ double min_primero,min_segundo;
 unsigned int k;
 unsigned int color_i,color_j;
 unsigned long int red,green,blue;
-
+RGBQUAD background;
 /*Reordeno la paleta de colores */
 RGBQUAD *palette = imagen.getPalette();
 if(palette) {
-	 
+	   if(imagen.hasBackgroundColor())	  	
+	  	 background=imagen.getBackgroundColor();
 	       	   
        unsigned int palette_size=imagen.getPaletteSize();
        for (unsigned int i = 0; i < palette_size; i++){
@@ -39,10 +40,12 @@ if(palette) {
         	 else  distancias[i][j]=0;
            }
        }
-
+      
      /*Calculo la distancias entre los colores de la paleta*/
      for (unsigned int i = 0; i < palette_size; i++) {
-    
+     	if((palette[i].rgbRed==background.rgbRed)&&(palette[i].rgbGreen==background.rgbGreen)&&(palette[i].rgbBlue==background.rgbBlue))
+     	    background_index=i;
+        	    
         for (unsigned int j = i+1; j < palette_size; j++) {
              red=pow(((int)palette[i].rgbRed-(int)palette[j].rgbRed),2);
              green=pow(((int)palette[i].rgbGreen-(int)palette[j].rgbGreen),2);
@@ -55,7 +58,7 @@ if(palette) {
               }
            }
         }
-                     
+                   
       
      /*Color ordenado por menor distancia*/
      new_palette_indexes.push_back(color_i);
@@ -90,7 +93,8 @@ if(palette) {
         new_palette_indexes.push_back(color_primero);
         new_palette_indexes.push_back(color_segundo);
       }
-      
+  
+     
    }
 }
 
@@ -107,6 +111,16 @@ unsigned int pos_byte_msj=0;
 int bit;
 
 sortPaletteByDistance(); 
+if (imagen.isTransparent()){
+        	int transparent_index;
+        	transparent_index=imagen.getTransparentIndex();
+        	
+   			imagen.setTransparentIndex(getNewPaletteIndex(transparent_index));
+}	
+if(imagen.hasBackgroundColor()){  	
+	  	    imagen.setBackgroundColorIndex(getNewPaletteIndex(background_index));
+	  	      
+}
 
 unsigned int valor_x= pixel.getPosX();
  	
