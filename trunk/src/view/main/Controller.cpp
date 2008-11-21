@@ -45,6 +45,9 @@ void Controller::removerDirectorio(std::string& path) {
 				directorioManager->removerDirectorio(path);
 			}
 		}
+		else {
+			directorioManager->removerDirectorio(path);
+		}
 	} catch (EntidadInexistenteException e) {
 		std::cout<<"El directorio no existe en el sistema. "<<std::endl;
 	}
