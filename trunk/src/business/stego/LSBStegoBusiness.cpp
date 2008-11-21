@@ -133,7 +133,9 @@ pos_pixel=pixel.getNumero_de_bit()/8;
 if(!error){
         
        if((imagen.getBpp()<=8)&&(!imagen.isGrayScale())){
-           if(imagen.getPaletteSize()>16) last_pos+=palette.doIndexesLSB(pixel,mensaje,size);
+           if(imagen.getPaletteSize()>16)
+           	 last_pos+=palette.doIndexesLSB(pixel,mensaje,size);
+          
            else last_pos=palette.doPaletteLSB(first_pos,mensaje,size);    
        }
        else{//se puede trabajar con los pixeles
@@ -188,7 +190,9 @@ pos_pixel=pixel.getNumero_de_bit()/8;
 if(!error){
   	  
       if((imagen.getBpp()<=8)&&(!imagen.isGrayScale()))
-      	    if(imagen.getPaletteSize()>16) mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
+      	    if(imagen.getPaletteSize()>16) 
+      	      mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
+      	   
       	    else mensaje.append(palette.getMessageFromPalette(first_pos,longitud));
       else{
       	    bit_in_pixel=pixel.getNumero_de_bit();
