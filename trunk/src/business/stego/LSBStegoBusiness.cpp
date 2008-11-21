@@ -18,7 +18,9 @@ unsigned int LSBStegoBusiness::getFirstFreeBit(){
 	if((imagen.getBpp()<=8)&&(!imagen.isGrayScale())&&(imagen.getPaletteSize()<=16)) return 0;
 	return (8-this->enable_bpp);
 }
-
+/**
+ * A partir de un numero de bit se obtiene el pixel correspondiente
+ */
 void LSBStegoBusiness::getPixel(unsigned long int first_bit,Pixel& pixel){
 unsigned int y=0;
 unsigned int x=0;
@@ -28,7 +30,7 @@ unsigned int bit=0;
 unsigned int bpp;
 if(imagen.getBpp()<8) bpp=1;
 else bpp=imagen.getBpp()/8;
-std::cout<<" bpp: "<<bpp<<std::endl;
+
   if(first_bit> (bpp*8-1)){//no estoy en caso inicial
   	
 	  while(( y <imagen.getHeight())&&(bits_count<first_bit)){
@@ -51,8 +53,7 @@ std::cout<<" bpp: "<<bpp<<std::endl;
     pixel.setPosX(x);
     pixel.setPosY(y);
     pixel.setNumero_de_bit(bit);
-    std::cout<<"x: "<<x<<" y: "<<y<<" bit: "<<bit<<std::endl;
-	
+  	
 }
 
 std::string LSBStegoBusiness::getMessageFromPixel(BYTE *pixels,unsigned long int longitud){
@@ -66,7 +67,7 @@ int byte_pixel;
   while((pos_pixel<max_pos_pixel)&&(bits_procesados<longitud*8)){
     
       byte_pixel=(int)pixels[pos_pixel];
-    
+      /*Tomo el bit escondido dentro del lsb del byte*/
       if(util::BitsUtils::getHidenBit(byte_pixel)) byte_msj = byte_msj | (1<<pos_bit_msj);
       pos_bit_msj++;      
       bits_procesados++;
@@ -105,7 +106,6 @@ while((pos_pixel<max_pos_pixel)&&(bits_procesados<size*8)){
      
     /*Guardo el nuevo byte modificado*/
   	pixels[pos_pixel]=(BYTE)util::BitsUtils::hideInByte((int)pixels[pos_pixel],bit);
-
     
   	pos_pixel++;//paso al byte siguiente
 
@@ -131,11 +131,11 @@ getPixel(first_pos,pixel);
 /*Posicion inicial del mensaje dentro del pixel*/
 pos_pixel=pixel.getNumero_de_bit()/8;
 if(!error){
-        
+       /*Aplico lsb sobre la paleta si esta posee una cantidad de colores inferior a 16
+        * y un bpp menor o igual a 8, caso contrario uso los indices*/
        if((imagen.getBpp()<=8)&&(!imagen.isGrayScale())){
            if(imagen.getPaletteSize()>16)
            	 last_pos+=palette.doIndexesLSB(pixel,mensaje,size);
-          
            else last_pos=palette.doPaletteLSB(first_pos,mensaje,size);    
        }
        else{//se puede trabajar con los pixeles
@@ -192,7 +192,6 @@ if(!error){
       if((imagen.getBpp()<=8)&&(!imagen.isGrayScale()))
       	    if(imagen.getPaletteSize()>16) 
       	      mensaje.append(palette.getMessageFromIndexes(pixel,longitud));
-      	   
       	    else mensaje.append(palette.getMessageFromPalette(first_pos,longitud));
       else{
       	    bit_in_pixel=pixel.getNumero_de_bit();

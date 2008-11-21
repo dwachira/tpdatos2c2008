@@ -13,11 +13,6 @@ bool FIBitmap::getFileType(){
 // check the file signature and deduce its format
 // (the second argument is currently not used by FreeImage)
 format = FreeImage_GetFileType(filename.c_str(), 0);
-	//if(format == FIF_UNKNOWN) {
-  		 // no signature ?
-  		 // try to guess the file format from the file extension
-  		// format = FreeImage_GetFIFFromFilename(filename.c_str());
-	//}
 	// check that the plugin has reading capabilities ...
 	if((format != FIF_UNKNOWN) && FreeImage_FIFSupportsReading(format))
    		return true;
@@ -194,7 +189,7 @@ unsigned int i=0;
 		   i++;  
 		}
 
-	}else return (color_type<3);if(gray_scale) std::cout<<"grises"<<std::endl;
+	}else return (color_type<3);
     return gray_scale;
 
 }
@@ -217,7 +212,7 @@ imageFile.open(filename.c_str(), std::fstream::binary);
 	     if(byte_int==-1) animated=true;
 	    
 	 }
-	 if(animated) std::cout<<"animado "<<std::endl;
+	 
      imageFile.close();
   }	
   return animated;
