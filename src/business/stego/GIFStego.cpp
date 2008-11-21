@@ -17,13 +17,9 @@ unsigned int GIFStego::getFirstFreeBit(){
 unsigned long int GIFStego::getFreeSpace(){
 	
        		
- if((imagen.getPaletteSize()>16)&&(!imagen.isAnimated())) {
- 	 //solo ordeno la paleta si se trata de una imagen que no es escala de grises
- 	 //y que no es animada
- 	 if(!imagen.isGrayScale())
- 	 	palette.sortPaletteByDistance();  //dejo todo preparado para realizar luego el lsb
+ if((imagen.getPaletteSize()>16)&&(!imagen.isAnimated())) 	 
      return ( ((imagen.getHeight())*(imagen.getWidth()))/8 );	
- }
+ 
     return (imagen.getPaletteSize()*3)/8;	
 }
  
@@ -35,7 +31,7 @@ if(!error){
   	  if ((imagen.getPaletteSize()>16)&&(!imagen.isAnimated())){//set del mensaje sobre los indices
   	  	   Pixel pixel;
            getPixel(first_pos,pixel);
-  	  	   last_pos=palette.doIndexesLSB(pixel,mensaje,size)+first_pos;
+     	   last_pos=palette.doIndexesLSB(pixel,mensaje,size)+first_pos;
   	  }
   	  else last_pos= palette.doPaletteLSB(first_pos,mensaje,size);
 	  

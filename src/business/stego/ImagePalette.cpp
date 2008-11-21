@@ -21,20 +21,17 @@ unsigned int ImagePalette::getNewPaletteIndex(unsigned int index){
 void ImagePalette::sortPaletteByDistance(){
 
 double distancias[256][256];
-int min=MAX_DISTANCE;
+double min=MAX_DISTANCE;
+double min_primero,min_segundo;
 unsigned int k;
 unsigned int color_i,color_j;
 unsigned long int red,green,blue;
-unsigned int background_index;
-RGBQUAD background;
+
 /*Reordeno la paleta de colores */
 RGBQUAD *palette = imagen.getPalette();
 if(palette) {
 	 
-	   //int background_index;
-	   if(imagen.hasBackgroundColor())	  	
-	  	 background=imagen.getBackgroundColor();
-      	   
+	       	   
        unsigned int palette_size=imagen.getPaletteSize();
        for (unsigned int i = 0; i < palette_size; i++){
          for (unsigned int j = 0; j < palette_size; j++) {
@@ -45,9 +42,7 @@ if(palette) {
       std::ofstream file("paleta.txt");
      /*Calculo la distancias entre los colores de la paleta*/
      for (unsigned int i = 0; i < palette_size; i++) {
-     	if((palette[i].rgbRed==background.rgbRed)&&(palette[i].rgbGreen==background.rgbGreen)&&(palette[i].rgbBlue==background.rgbBlue))
-     	    background_index=i;
-     	file<<(int)palette[i].rgbRed<<"-"<<(int)palette[i].rgbGreen<<"-"<<(int)palette[i].rgbBlue<<std::endl;    
+        	file<<(int)palette[i].rgbRed<<"-"<<(int)palette[i].rgbGreen<<"-"<<(int)palette[i].rgbBlue<<std::endl;    
         for (unsigned int j = i+1; j < palette_size; j++) {
              red=pow(((int)palette[i].rgbRed-(int)palette[j].rgbRed),2);
              green=pow(((int)palette[i].rgbGreen-(int)palette[j].rgbGreen),2);
@@ -61,66 +56,97 @@ if(palette) {
            }
         }
            file.close();
+           
+      
      /*Color ordenado por menor distancia*/
      new_palette_indexes.push_back(color_i);
      new_palette_indexes.push_back(color_j);
      
+     unsigned int color_primero,color_segundo,color_k;
      /*Reordeno la paleta de colores en funcion de las distancias*/
-      while(new_palette_indexes.size()<palette_size){
-        min=MAX_DISTANCE; color_i=0;k=color_j;
-        /*Busco el siguiente color menor*/
+      while(new_palette_indexes.size()<palette_size){//mientras me queden colores x analizar
+        min_primero=MAX_DISTANCE*2; color_i=0;k=color_j;
+        /* Busco el siguiente color menor, de manera tal que la distancia de este color al siguiente
+         * y del siguiente al siguiente sea minima--> 
+         * minimizar (distancia(k,color_j)+distancia(k,color_j+1))*/
         while(color_i<palette_size){
            
-           if((distancias[k][color_i]<min)&&(std::find(new_palette_indexes.begin(),new_palette_indexes.end(),color_i)==new_palette_indexes.end())){
-           	  min=distancias[k][color_i];
-           	  color_j=color_i;
+           if((distancias[k][color_i]<min_primero)&&(std::find(new_palette_indexes.begin(),new_palette_indexes.end(),color_i)==new_palette_indexes.end())){
+           	  min_primero=distancias[k][color_i];
+           	  color_primero=color_i;
+           	  color_k=0;
+           	  min_segundo=MAX_DISTANCE*2;
+           	  /*Busco el siguiente menor con respecto al actual: k*/
+           	  while(color_k<palette_size){
+           	  	if((color_k!=color_i)&&(min_primero+distancias[color_i][color_k]<min_segundo)&&(std::find(new_palette_indexes.begin(),new_palette_indexes.end(),color_k)==new_palette_indexes.end())){
+           	  		min_segundo=min_primero+distancias[color_i][color_k];
+           	        color_segundo=color_k;
+           	  	}
+           	  	color_k++;
+           	  }
+           	  
            }
            color_i++;  
         }
-        new_palette_indexes.push_back(color_j);
+        new_palette_indexes.push_back(color_primero);
+        new_palette_indexes.push_back(color_segundo);
       }
-      
-        /*Ordeno la paleta de colores*/
-        RGBQUAD dstcolors[256];
-        std::vector<unsigned int>::iterator it;unsigned int i=0;
-        
-        for(it=new_palette_indexes.begin();it!=new_palette_indexes.end();it++){
-            
-            dstcolors[i].rgbRed=palette[*it].rgbRed;
-            dstcolors[i].rgbGreen=palette[*it].rgbGreen;
-            dstcolors[i].rgbBlue=palette[*it].rgbBlue;
-           
-            i++;
-            
-        }
-      
-        imagen.applyColorMapping(palette,dstcolors);
-        
-        /*Ordeno los indices*/
-        BYTE srcindices[256];BYTE dstindices[256];
-		for(unsigned int j=0;j<palette_size;j++){
-			srcindices[j]=(BYTE)j;
-		    dstindices[j]=(BYTE)getNewPaletteIndex(j);
-		}
-		std::cout<<"pixels modif "<<imagen.applyPaletteIndexMapping(srcindices,dstindices)<<std::endl;
-      
-        if (imagen.isTransparent()){
-        	int transparent_index;
-        	transparent_index=imagen.getTransparentIndex();
-        	std::cout<<"indice_transparente"<<transparent_index<<std::endl;
-   			imagen.setTransparentIndex(getNewPaletteIndex(transparent_index));
-		}	
-	    
-        /*Guardo los cambios en los indices*/
-        imagen.save(); 
-        /*Guardo los cambios en la paleta de colores*/
-        imagen.applyColorMapping(dstcolors,imagen.getPaletteSize());
-        if(imagen.hasBackgroundColor()){  	
-	  	    imagen.setBackgroundColorIndex(getNewPaletteIndex(background_index));
-	  	    std::cout<<"imagen con background color"<<std::endl;   
-        }
-	  	std::cout<<"PALETA ORDENADA"<<std::endl;
+      std::ofstream f("paleta_ordenada.txt");
+      for (unsigned int i=0;i<new_palette_indexes.size();i++)      	 
+          f<<(int)palette[new_palette_indexes.at(i)].rgbRed<<"-"<<(int)palette[new_palette_indexes.at(i)].rgbGreen<<"-"<<(int)palette[new_palette_indexes.at(i)].rgbBlue<<std::endl;
+     
+      f.close();
    }
+}
+
+unsigned int ImagePalette::doIndexesLSB(Pixel& pixel,const char* mensaje,unsigned long int size){
+
+/*Cantidad de bits que ya se han insertado en la imagen*/
+unsigned int bits_procesados=0;
+BYTE pixel_index,new_pixel_index;
+unsigned int height=imagen.getHeight();
+unsigned int width=imagen.getWidth();
+unsigned int bits_count=0;
+unsigned int pos_bit_msj=0;
+unsigned int pos_byte_msj=0;
+int bit;
+
+sortPaletteByDistance(); 
+
+unsigned int valor_x= pixel.getPosX();
+ 	
+for (unsigned int y = pixel.getPosY(); y <height; y ++){
+		  
+	for (unsigned int x = valor_x; x < width; x ++){
+		    
+         if(bits_procesados<size*8){ 
+         	//height-y-1
+         	if(pos_bit_msj==8){ pos_bit_msj=0;pos_byte_msj++;}
+         	pixel_index=imagen.getPixelIndex(x,height-y-1);
+         	/*Busco el indice en la paleta ordenada*/
+            pixel_index=(BYTE)getNewPaletteIndex(pixel_index);
+       		/*Guardo un bit de informacion en el LSB del byte*/  
+       		bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ;  
+       		new_pixel_index= (BYTE)util::BitsUtils::hideInByte((int)pixel_index,bit);
+		    /*Busco el indice en la paleta original*/
+		    new_pixel_index=(BYTE)new_palette_indexes.at(new_pixel_index);
+            pos_bit_msj++;
+            bits_procesados++;
+            bits_count+=8;
+            imagen.setPixelIndex(x,height-y-1,&new_pixel_index);
+             
+         }else{ //para terminar el ciclo for 
+            	  x=width;
+            	  y=height;
+          }
+		}//fin for_x
+      valor_x=0;
+		
+	}//fin for_y
+	
+    /*Guardo los cambios realizados en la imagen*/
+	imagen.save();
+	return bits_count;
 }
 
 
@@ -135,6 +161,8 @@ unsigned byte_msj=0x0;
 unsigned int pos_bit_msj=0;
 unsigned int valor_x= pixel.getPosX();
 
+sortPaletteByDistance(); 
+
 	   for (unsigned int y = pixel.getPosY(); y <height; y ++){
 		  
 		  for (unsigned int x = valor_x; x < width; x ++){
@@ -142,7 +170,8 @@ unsigned int valor_x= pixel.getPosX();
             if(bits_procesados<longitud*8){ 
             	   //height-y-1
              	pixel_index=imagen.getPixelIndex(x,height-y-1);
-
+                /*Busco el indice en la paleta ordenada*/
+                pixel_index=(BYTE)getNewPaletteIndex(pixel_index);
              	if(util::BitsUtils::getHidenBit((int)pixel_index)) byte_msj = byte_msj | (1<<pos_bit_msj);
       			pos_bit_msj++;      
       			bits_procesados++;
@@ -299,51 +328,6 @@ if(palette) {
 	return mensaje;
 }
 
-unsigned int ImagePalette::doIndexesLSB(Pixel& pixel,const char* mensaje,unsigned long int size){
-
-/*Cantidad de bits que ya se han insertado en la imagen*/
-unsigned int bits_procesados=0;
-BYTE pixel_index,new_pixel_index;
-unsigned int height=imagen.getHeight();
-unsigned int width=imagen.getWidth();
-unsigned int bits_count=0;
-unsigned int pos_bit_msj=0;
-unsigned int pos_byte_msj=0;
-int bit;
-
-unsigned int valor_x= pixel.getPosX();
- 	
-for (unsigned int y = pixel.getPosY(); y <height; y ++){
-		  
-	for (unsigned int x = valor_x; x < width; x ++){
-		    
-         if(bits_procesados<size*8){ 
-         	//height-y-1
-         	if(pos_bit_msj==8){ pos_bit_msj=0;pos_byte_msj++;}
-         	pixel_index=imagen.getPixelIndex(x,height-y-1);
-            
-       		/*Guardo un bit de informacion en el LSB del byte*/  
-       		bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ;  
-       		new_pixel_index= (BYTE)util::BitsUtils::hideInByte((int)pixel_index,bit);
-		  
-            pos_bit_msj++;
-            bits_procesados++;
-            bits_count+=8;
-            imagen.setPixelIndex(x,height-y-1,&new_pixel_index);
-             
-         }else{ //para terminar el ciclo for 
-            	  x=width;
-            	  y=height;
-          }
-		}//fin for_x
-      valor_x=0;
-		
-	}//fin for_y
-	
-    /*Guardo los cambios realizados en la imagen*/
-	imagen.save();
-	return bits_count;
-}
 
 
 
