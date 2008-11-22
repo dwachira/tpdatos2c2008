@@ -27,7 +27,7 @@
 <option id="gnu.cpp.compiler.option.preprocessor.def.113655619" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="&quot;__BASE_DIR__=&quot;\&quot;${workspace_loc}/Stegno/system\&quot;&quot;&quot;"/>
 <listOptionValue builtIn="false" value="&quot;__TEST_DIR__=&quot;\&quot;${workspace_loc}/Stegno/test_data\&quot;&quot;&quot;"/>
-<listOptionValue builtIn="false" value="BITS_ARQUITECTURA=64"/>
+<listOptionValue builtIn="false" value="BITS_ARQUITECTURA=32"/>
 </option>
 <option id="gnu.cpp.compiler.option.include.paths.1185022977" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1769727610" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
