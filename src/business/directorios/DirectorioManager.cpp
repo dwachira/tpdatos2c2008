@@ -88,16 +88,23 @@ void DirectorioManager::removerDirectorio(string& path) const
 bool DirectorioManager::directorioEnUso(string& path) const
 {
 	unsigned int dirId = trieDao.getIndice(DIRECTORIOS,path);
-	//TODO:: FIX. UN DIRECTORIO QUE NO ESTA EN USO PUEDE TENER IMAGENES CON PARTICIONES.
 	if (dirId != 0) {
 		Directorio* directory = directorioDAO.getDirById(dirId);
 		bool isBeingUsed = false;
 		list<Imagen> imagenes = imagenDAO.getImgsByDirectorio(directory->getID());
 		list<Imagen>::iterator it = imagenes.begin();
 		while ( (it != imagenes.end()) && (!isBeingUsed) ) {
-			const list<Particion>& particiones = particionDAO.getPartsByImg((*it).getID());
-			if (particiones.size() > 0)
-				isBeingUsed = true;
+			list<Particion> particiones = particionDAO.getPartsByImg((*it).getID());
+			if (particiones.size() > 0) {
+				for(list<Particion>::iterator it2 = particiones.begin(); it2 != particiones.end(); it2++) {
+					const Particion& particion = *it2;
+					if (!particion.isLibre()) {
+						isBeingUsed = true;
+						break;
+					}
+				}
+
+			}
 			it++;
 		}
 		delete directory;

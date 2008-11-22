@@ -50,7 +50,7 @@ class Particion{
 		unsigned int getLongitud() {return longitud;}
 		void setLongitud(unsigned int longitud) {this->longitud = longitud;}
 
-		bool isLibre() {return libre;}
+		bool isLibre() const {return libre;}
 		void liberar() {this->libre = false;}
 		void ocupar() {this->libre = true;}
 

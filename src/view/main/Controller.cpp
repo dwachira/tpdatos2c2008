@@ -12,6 +12,7 @@
 #include "../../object/exceptions/EntidadYaExistenteException.h"
 #include "../../object/exceptions/EntidadInexistenteException.h"
 #include "../../object/exceptions/ImagenFaltanteException.h"
+#include "../../object/exceptions/EspacioInsuficienteException.h"
 
 void Controller::agregarMensaje(std::string& filename) {
 	try {
@@ -22,6 +23,8 @@ void Controller::agregarMensaje(std::string& filename) {
 		<< "tiene permisos de lectura sobre él."<<std::endl;
 	} catch (EntidadYaExistenteException e) {
 		std::cout<<"El mensaje ya existe en el sistema. "<<std::endl;
+	} catch (EspacioInsuficienteException e) {
+		std::cout<<"No hay espacio suficiente para alojar el texto. Agregue mas imagenes."<<std::endl;
 	}
 }
 
@@ -118,7 +121,7 @@ bool Controller::confirmar(string pregunta) {
 	char buffer[MAX_LINE];
 	string opcion = "";
 	string valido = "";
-	while (valido.compare("s") == 0 || valido.compare("n") == 0) {
+	while (valido.compare("s") != 0 && valido.compare("n") != 0) {
 		std::cout<< pregunta;
 		cin.getline(buffer, MAX_LINE);
 		opcion.assign(buffer);
