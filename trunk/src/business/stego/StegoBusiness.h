@@ -2,10 +2,14 @@
 #define STEGOBUSINESS_H_
 #include <string>
 
-
-#include "Pixel.h"
 #include "FIBitmap.h"
 
+/**
+ * StegoBusiness.h
+ * Definicion de los metodos necesarios para llevar a cabo la esteganografia
+ * Los metodos declarados son definidos por las clases hijas en funcion de las 
+ * caracteristicas propias de cada tipo de imagen
+ */
 class StegoBusiness
 {
 private:

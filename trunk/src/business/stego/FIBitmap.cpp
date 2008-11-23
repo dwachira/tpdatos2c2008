@@ -34,11 +34,10 @@ bool FIBitmap::load(int flag){
        		pitch = FreeImage_GetPitch(imagen);   
        		height=FreeImage_GetHeight(imagen);
        		width=FreeImage_GetWidth(imagen); 
-       		std::cout<<"h: "<<height<<" w: "<<width<<std::endl;
        		color_type=FreeImage_GetColorType(imagen);
        		if(bpp<=8)
        			palette_offset=getPaletteOffset();
-            std::cout<<"bpp es :  "<<bpp<<std::endl;
+            
             error=false;
   	}else error=true;	
   } else error=true;	
@@ -160,7 +159,7 @@ imageFile.open(filename.c_str(), std::fstream::binary);
 	 char* aux;
 	 unsigned int size=strtol((binario.substr(5)).c_str(),&aux,2);
 	 palette_size= pow(2,size+1);//2^(size+1)
-	 std::cout<<"palette_size: "<<palette_size<<std::endl;
+	 
      imageFile.close();
   }	
   return offset;

@@ -4,7 +4,12 @@
 #include "StegoBusiness.h"
 #include "ImagePalette.h"
 
-
+/**
+ * LSBStegoBusiness.h
+ * Esteganografia definida para las imagenes que no pierden informacion al comprimir y/o 
+ * para aquellas que directamente no utilizan compresion
+ * Se modifica el bit menos significativo para almacenar informacion
+ */
 class LSBStegoBusiness: public StegoBusiness
 {
 	protected:  
@@ -14,6 +19,7 @@ class LSBStegoBusiness: public StegoBusiness
     	unsigned int enable_bpp;
     	/*Representacion de la imagen*/
     	FIBitmap imagen;
+    	/*Paleta de colores para imagenes gif e imagenes con bpp<=8*/
     	ImagePalette palette;
         /*Cantidad de bits que se van leyendo de la imagen o colocando en la imagen*/
         unsigned long int bits_procesados;      

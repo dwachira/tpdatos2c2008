@@ -12,7 +12,7 @@ unsigned long int BMPStego::getFreeSpace(){
    else return (imagen.getPaletteSize()*3)/8;//lsb sobre la paleta
  } 
 	   
-   return( ((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp()/8)*(this->enable_bpp))/8 );	
+ return( ((imagen.getHeight())*(imagen.getWidth())*(imagen.getBpp()/8)*(this->enable_bpp))/8 );	
 	
 }
 BMPStego::~BMPStego()

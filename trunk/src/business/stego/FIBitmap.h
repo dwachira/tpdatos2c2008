@@ -8,6 +8,11 @@
 #include <fstream>
 #include <math.h>
 
+/**
+ * FIBItmpa.h
+ * Encapsulamiento de los metodos de FreeImage y de todas las operaciones
+ * que requieran del acceso a la imagen
+ */
 class FIBitmap
 {
 	private:
