@@ -196,7 +196,7 @@ void MensajeManager::agregarMensaje(std::string filename)
 
 }
 
-void MensajeManager::quitarMensajesEnDirectorio(std::string dirpath) {
+void MensajeManager::quitarMensajesEnDirectorio(std::string& dirpath) {
 	unsigned int dirId = trieDao.getIndice(DIRECTORIOS,dirpath);
 
 	if (dirId != 0) {

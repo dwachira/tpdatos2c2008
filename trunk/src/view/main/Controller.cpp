@@ -45,6 +45,7 @@ void Controller::removerDirectorio(std::string& path) {
 	try {
 		if (directorioManager->directorioEnUso(path)) {
 			if(this->confirmar(REMOVERDIRECTORIO)){
+				mensajeManager->quitarMensajesEnDirectorio(path);
 				directorioManager->removerDirectorio(path);
 			}
 		}
