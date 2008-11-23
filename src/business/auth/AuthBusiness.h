@@ -10,6 +10,7 @@
 
 #define PATH_ENCRYPT "/encrypt/"
 #define FILE_PASS_HASH "passHash.hsh"
+#define EXTRA_CHARACTERS_TO_INCREASE_SECURITY "abuif"
 
 #include "../../config/Config.h"
 #include <dirent.h>

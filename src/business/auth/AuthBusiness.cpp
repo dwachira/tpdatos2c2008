@@ -55,7 +55,7 @@ bool  AuthBusiness::changePass(const string& oldPass, const string& newPass){
 	//Abrir el arhivo de hash y leer el hash del pass
 	fs = fopen(archivoHash.c_str(), "wb");
 	md5wrapper md5;
-	std::string passUser = md5.getHashFromString(newPass);
+	std::string passUser = md5.getHashFromString(newPass+EXTRA_CHARACTERS_TO_INCREASE_SECURITY);
 	fwrite(passUser.c_str(), 1, 32, fs);
 	fclose(fs);
 	return true;
@@ -219,7 +219,7 @@ bool AuthBusiness::checkPass(const string& pass){
 	string passSystem(ss.str());
 	// Hashear el pass del usuario
 	md5wrapper md5;
-	std::string passUser = md5.getHashFromString(pass);
+	std::string passUser = md5.getHashFromString(pass+EXTRA_CHARACTERS_TO_INCREASE_SECURITY);
 	//Comparar el pass del usuario con el del sistema, si da 0 es por que SON IGUALES
 	if (passSystem.compare(passUser)){
 		return false;
