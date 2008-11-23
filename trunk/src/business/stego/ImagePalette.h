@@ -27,7 +27,7 @@ class ImagePalette
 		ImagePalette();
 		ImagePalette(FIBitmap &imagen);
 	
-		unsigned int getNewPaletteIndex(unsigned int index);
+		unsigned int getNewPaletteIndex(unsigned int index)const;
 		void sortPaletteByDistance();
 		unsigned int doIndexesLSB(Pixel& pixel,const char* mensaje,unsigned long int size);		 
 		unsigned int doPaletteLSB(unsigned int first_bit,const char* mensaje,unsigned long int size);

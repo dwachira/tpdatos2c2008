@@ -4,7 +4,7 @@ JPGStego::JPGStego(std::string filename):LossyCompressStegoBusiness(filename)
 {
 	
 }
-unsigned int JPGStego::getQuality(){
+unsigned int JPGStego::getQuality()const{
 unsigned int quality=0;
 long value,sum;
 register long j,i;

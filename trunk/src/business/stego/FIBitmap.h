@@ -4,12 +4,11 @@
 #include "FreeImage.h"
 #include "../../util/bits/BitsUtils.h"
 
-#include <string>
 #include <fstream>
 #include <math.h>
 
 /**
- * FIBItmpa.h
+ * FIBitmap.h
  * Encapsulamiento de los metodos de FreeImage y de todas las operaciones
  * que requieran del acceso a la imagen
  */
@@ -31,35 +30,34 @@ class FIBitmap
 	
 		FIBitmap();
 		FIBitmap(std::string filename);
-		std::string getFilename(){ return filename;}
-		unsigned int getBpp(){ return bpp;};
-		unsigned int getPitch(){ return pitch;};
-		unsigned int getHeight(){ return height;};
-		unsigned int getWidth(){ return width;};
-		unsigned int getColorType(){ return color_type;};
-		unsigned int getPaletteSize(){ return palette_size;};
-		int getFileFormat(){ return format;};
+		std::string getFilename()const{ return filename;}
+		unsigned int getBpp()const{ return bpp;};
+		unsigned int getPitch()const{ return pitch;};
+		unsigned int getHeight()const{ return height;};
+		unsigned int getWidth()const{ return width;};
+		unsigned int getColorType()const{ return color_type;};
+		unsigned int getPaletteSize()const{ return palette_size;};
+		int getFileFormat()const{ return format;};
 		bool getFileType();
-		RGBQUAD* getPalette();
+		RGBQUAD* getPalette()const;
 		BYTE* getBits();
-		BYTE getPixelIndex(unsigned int x,unsigned int y);
+		BYTE getPixelIndex(unsigned int x,unsigned int y)const;
 		void setPixelIndex(unsigned int x,unsigned int y,BYTE* new_pixel_index);
-		RGBQUAD getBackgroundColor(); 
+		RGBQUAD getBackgroundColor()const; 
 		void setBackgroundColor(RGBQUAD background);    	 
-		bool hasBackgroundColor();
+		bool hasBackgroundColor()const;
     	BYTE* getTransparencyTable();
-		int getTransparencyCount();
-		bool isTransparent();
-		int getTransparentIndex();	
+		int getTransparencyCount()const;
+		bool isTransparent()const;
+		int getTransparentIndex()const;	
 		void setTransparentIndex(int index);
 		void setBackgroundColorIndex(int new_index);
 		int applyPaletteIndexMapping(BYTE*srcindices, BYTE *dstindices);
 		int applyColorMapping(RGBQUAD *srccolors, RGBQUAD *dstcolors);
 		void applyColorMapping(RGBQUAD *srccolors,unsigned int count,unsigned int from=0);
 		int getPaletteOffset();
-		bool isGrayScale();
-		bool isAnimated();
-		BITMAPINFO* getInfo();
+		bool isGrayScale()const;
+		bool isAnimated()const;
 	
 		bool load(int flag=0);
 		void save(int perc=0);
