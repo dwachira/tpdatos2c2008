@@ -26,17 +26,23 @@ Indice::Indice(const char* nombreFisico, bool esIndiceSecundario){
 	if(this->cantPaginas == 0)
 		this->primeraPagina = 0;
 	else{
+		Pagina pAux;
 		this->archivo->abrir(READ);				//la cant de paginas es != 0, por lo
 		this->archivo->seek_beg();				//que se que va a haber leido bien
-		Pagina pAux;
-		unsigned long int id = this->archivo->leerProximo(&pAux);
-		this->archivo->cerrar();
-		this->primeraPagina = id;					//como no se si la primer pagina
-		this->cargarPagina(this->primeraPagina);	//tiene ID=1, cargo esa y despues
-		while(this->pActual->tieneAnterior())		//mientras tenga alguna antes, la
-			this->cargarPagina(this->pActual->getIDPagAnt());	//cargo, hasta llegar
-	}												//a la primera del archivo paginado
+		unsigned long int id = 0;
+		while(id == 0)
+			id = this->archivo->leerProximo(&pAux);
 
+		while(pAux.tieneAnterior()){		//mientras tenga alguna antes, la
+			unsigned long int ant = pAux.getIDPagAnt();
+			this->archivo->leer(&pAux,ant);	//cargo, hasta llegar
+		}
+		this->archivo->cerrar();
+		this->primeraPagina = pAux.getIDPagina(); //a la primera del archivo paginado
+		this->pActual = new Pagina();
+		//y copio la pagina levantada a la pagina actual.
+		*(this->pActual) = pAux;
+	}
 }
 
 Indice::~Indice(){
@@ -458,7 +464,6 @@ void Indice::cargarPagina(unsigned long int ID_pagina){
 		this->pActual = new Pagina();
 	//y copio la pagina levantada a la pagina actual.
 	*(this->pActual) = pAux;
-
 }
 
 bool Indice::contieneDato(double clave){
@@ -759,6 +764,7 @@ void Indice::acomodarPunteros(){
 		this->archivo->abrir(DELETE);
 		this->archivo->borrar(this->pActual->getIDPagina());
 		this->archivo->cerrar();
+		this->cantPaginas--;	//22/11/08
 		this->cargarPagina(pSigAux.getIDPagina());
 	}
 	if(hayAnt && !haySig){
@@ -772,6 +778,7 @@ void Indice::acomodarPunteros(){
 		this->archivo->abrir(DELETE);
 		this->archivo->borrar(this->pActual->getIDPagina());
 		this->archivo->cerrar();
+		this->cantPaginas--;	//22/11/08
 		this->cargarPagina(pAntAux.getIDPagina());
 	}
 	if(!hayAnt && haySig){
@@ -785,6 +792,7 @@ void Indice::acomodarPunteros(){
 		this->archivo->abrir(DELETE);
 		this->archivo->borrar(this->pActual->getIDPagina());
 		this->archivo->cerrar();
+		this->cantPaginas--;	//22/11/08
 		this->primeraPagina = pSigAux.getIDPagina();
 		this->cargarPagina(pSigAux.getIDPagina());
 	}
