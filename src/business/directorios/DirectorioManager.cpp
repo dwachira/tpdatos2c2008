@@ -49,7 +49,7 @@ void DirectorioManager::agregarDirectorio(const std::string& path)
 	if (trieDao.getIndice(DIRECTORIOS,path) == 0) {
 		if (EntradaSalidaManager::recursoEsAccesible(path)) {
 			Directorio unDirectorio(path);
-			actualizarFechaDeModificacion(unDirectorio);
+			unDirectorio.setFechaUltimaModificacion(getFechaModificacionActual(unDirectorio));
 			directorioDAO.insert(unDirectorio);
 			trieDao.insertCadena(DIRECTORIOS,path,unDirectorio.getID());
 			buscarImagenes(unDirectorio);
