@@ -28,6 +28,7 @@
 <listOptionValue builtIn="false" value="&quot;__BASE_DIR__=&quot;\&quot;${workspace_loc}/Stegno/system\&quot;&quot;&quot;"/>
 <listOptionValue builtIn="false" value="&quot;__TEST_DIR__=&quot;\&quot;${workspace_loc}/Stegno/test_data\&quot;&quot;&quot;"/>
 <listOptionValue builtIn="false" value="BITS_ARQUITECTURA=32"/>
+<listOptionValue builtIn="false" value="STEGO_BASICO=1"/>
 </option>
 <option id="gnu.cpp.compiler.option.include.paths.1185022977" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths"/>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1769727610" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -35,7 +36,10 @@
 <tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.825330777" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
 <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.237549628" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 <option id="gnu.c.compiler.exe.debug.option.debugging.level.75251983" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-<option id="gnu.c.compiler.option.include.paths.1347686811" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath"/>
+<option id="gnu.c.compiler.option.include.paths.1347686811" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths"/>
+<option id="gnu.c.compiler.option.preprocessor.def.symbols.1261959675" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="STEGO_BASICO=1"/>
+</option>
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1759335622" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.2101874073" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
@@ -506,6 +510,7 @@
 <option id="gnu.cpp.compiler.option.preprocessor.def.453798146" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="&quot;__BASE_DIR__=&quot;\&quot;${workspace_loc}/Stego/system\&quot;&quot;"/>
 <listOptionValue builtIn="false" value="&quot;__TEST_DIR__=&quot;\&quot;${workspace_loc}/Stegno/test_data\&quot;&quot;&quot;"/>
+<listOptionValue builtIn="false" value="STEGO_BASICO=1"/>
 </option>
 <option id="gnu.cpp.compiler.option.include.paths.1025685949" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="&quot;${workspace_loc:/Stegno/lib}&quot;"/>
@@ -518,6 +523,9 @@
 <option id="gnu.c.compiler.exe.release.option.debugging.level.315456196" name="Debug Level" superClass="gnu.c.compiler.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 <option id="gnu.c.compiler.option.include.paths.1375713281" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="&quot;${workspace_loc:/Stegno/lib}&quot;"/>
+</option>
+<option id="gnu.c.compiler.option.preprocessor.def.symbols.1839103271" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="STEGO_BASICO=1"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.719132568" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 </tool>
