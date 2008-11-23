@@ -2,6 +2,10 @@
 #define JPGSTEGO_H_
 #include "LossyCompressStegoBusiness.h"
 
+/**
+ * JPGStego.h
+ * Representacion de las imagenes JPEG, redefine el metodo getQUality
+ */
 class JPGStego: public LossyCompressStegoBusiness
 {
 public:

@@ -3,11 +3,16 @@
 
 #include "StegoBusiness.h"
 
-#include <iostream>
 #include <fstream>
 
-#define PERC 0.8
+#define PERC 0.95 //porcentaje utilizado para definir el nivel de compresion
 
+/**
+ * LossyCompressStegoBusiness.h
+ * Esteganografia para aquellas imagenes que presentan compresion con perdida de datos
+ * para ello se comprime mas la imagen y se aprovecha el espacio disponible al final del
+ * archivo
+ */
 class LossyCompressStegoBusiness: public StegoBusiness
 {
 	private:

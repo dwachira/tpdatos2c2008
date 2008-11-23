@@ -1,24 +1,18 @@
 #include "Pixel.h"
 
-Pixel::Pixel() {
-	this->posX = 0;
-	this->posY = 0;
-	this->numero_de_bit = 0;
-}
-
 Pixel::Pixel(unsigned long int x,unsigned long int y,unsigned int bit):
 posX(x),posY(y),numero_de_bit(bit){
-
+	
 }
 unsigned long int Pixel::getPosX(){
- return this->posX;
+ return this->posX;	
 }
 
 unsigned long int Pixel::getPosY(){
- return this->posY;
+ return this->posY;	
 }
 unsigned long int Pixel::getNumero_de_bit(){
- return this->numero_de_bit;
+ return this->numero_de_bit;	
 }
 
 void Pixel::setPosX(unsigned long int x){

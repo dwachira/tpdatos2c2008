@@ -3,12 +3,16 @@
 
 #define MAX_DISTANCE 445
 
-#include <iostream>
 #include "Pixel.h"
 #include "FIBitmap.h"
 
 #include <vector>
 
+/**
+ * ImagePalette.h
+ * Tratamiento de la paleta de colores para imagenes gif e imagenes con bpp<= 8
+ * Permite modificar los indices, ordenar la paleta de colores por proximidad
+ */
 class ImagePalette
 {
 	private:
@@ -16,7 +20,6 @@ class ImagePalette
     	/*Representacion de la imagen*/
    		FIBitmap &imagen;
    	  	std::vector<unsigned int> new_palette_indexes;
-   	  	unsigned int background_index;
 		unsigned int getRGBPos(unsigned int pos);
 		
 	public:

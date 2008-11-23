@@ -6,12 +6,15 @@
 #include "BMPStego.h"
 #include "GIFStego.h"
 
-
+/**
+ * StegoFactory.h
+ * Fabrica de objetos _Stego  
+ */
 class StegoFactory
 {
 public:
 	StegoFactory();
-	static StegoBusiness* newInstance(const std::string filename);
+	static StegoBusiness* newInstance(std::string filename);
 	virtual ~StegoFactory();
 };
 

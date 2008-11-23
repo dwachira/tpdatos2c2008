@@ -2,7 +2,11 @@
 #define GIFSTEGO_H_
 #include "LSBStegoBusiness.h"
 
-
+/**
+ * GIFStego.h
+ * Redefine los metodos de LSBStego para poder realizar las operaciones considerando
+ * la paleta de colores y los indices 
+ */
 class GIFStego: public LSBStegoBusiness
 {
 	public:

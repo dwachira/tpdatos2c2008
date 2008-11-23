@@ -26,13 +26,11 @@ double min_primero,min_segundo;
 unsigned int k;
 unsigned int color_i,color_j;
 unsigned long int red,green,blue;
-RGBQUAD background;
-/*Reordeno la paleta de colores */
+
 RGBQUAD *palette = imagen.getPalette();
 if(palette) {
-	   if(imagen.hasBackgroundColor())	  	
-	  	 background=imagen.getBackgroundColor();
-	       	   
+	   	       	   
+	   /*Inicializo la matriz de distancias entre colores*/
        unsigned int palette_size=imagen.getPaletteSize();
        for (unsigned int i = 0; i < palette_size; i++){
          for (unsigned int j = 0; j < palette_size; j++) {
@@ -40,12 +38,11 @@ if(palette) {
         	 else  distancias[i][j]=0;
            }
        }
-      
+     
      /*Calculo la distancias entre los colores de la paleta*/
      for (unsigned int i = 0; i < palette_size; i++) {
-     	if((palette[i].rgbRed==background.rgbRed)&&(palette[i].rgbGreen==background.rgbGreen)&&(palette[i].rgbBlue==background.rgbBlue))
-     	    background_index=i;
-        	    
+     	
+        /*Calculo las distancias del color i a los colores j*/
         for (unsigned int j = i+1; j < palette_size; j++) {
              red=pow(((int)palette[i].rgbRed-(int)palette[j].rgbRed),2);
              green=pow(((int)palette[i].rgbGreen-(int)palette[j].rgbGreen),2);
@@ -58,7 +55,7 @@ if(palette) {
               }
            }
         }
-                   
+           
       
      /*Color ordenado por menor distancia*/
      new_palette_indexes.push_back(color_i);
@@ -73,7 +70,7 @@ if(palette) {
          * minimizar (distancia(k,color_j)+distancia(k,color_j+1))*/
         while(color_i<palette_size){
            
-           if((distancias[k][color_i]<min_primero)&&(std::find(new_palette_indexes.begin(),new_palette_indexes.end(),color_i)==new_palette_indexes.end())){
+           if((k!=color_i)&&(distancias[k][color_i]<min_primero)&&(std::find(new_palette_indexes.begin(),new_palette_indexes.end(),color_i)==new_palette_indexes.end())){
            	  min_primero=distancias[k][color_i];
            	  color_primero=color_i;
            	  color_k=0;
@@ -93,8 +90,7 @@ if(palette) {
         new_palette_indexes.push_back(color_primero);
         new_palette_indexes.push_back(color_segundo);
       }
-  
-     
+      
    }
 }
 
@@ -111,16 +107,6 @@ unsigned int pos_byte_msj=0;
 int bit;
 
 sortPaletteByDistance(); 
-if (imagen.isTransparent()){
-        	int transparent_index;
-        	transparent_index=imagen.getTransparentIndex();
-        	
-   			imagen.setTransparentIndex(getNewPaletteIndex(transparent_index));
-}	
-if(imagen.hasBackgroundColor()){  	
-	  	    imagen.setBackgroundColorIndex(getNewPaletteIndex(background_index));
-	  	      
-}
 
 unsigned int valor_x= pixel.getPosX();
  	
@@ -129,7 +115,6 @@ for (unsigned int y = pixel.getPosY(); y <height; y ++){
 	for (unsigned int x = valor_x; x < width; x ++){
 		    
          if(bits_procesados<size*8){ 
-         	//height-y-1
          	if(pos_bit_msj==8){ pos_bit_msj=0;pos_byte_msj++;}
          	pixel_index=imagen.getPixelIndex(x,height-y-1);
          	/*Busco el indice en la paleta ordenada*/
@@ -177,19 +162,17 @@ sortPaletteByDistance();
 		  for (unsigned int x = valor_x; x < width; x ++){
 		 	   
             if(bits_procesados<longitud*8){ 
-            	   //height-y-1
              	pixel_index=imagen.getPixelIndex(x,height-y-1);
                 /*Busco el indice en la paleta ordenada*/
                 pixel_index=(BYTE)getNewPaletteIndex(pixel_index);
              	if(util::BitsUtils::getHidenBit((int)pixel_index)) byte_msj = byte_msj | (1<<pos_bit_msj);
       			pos_bit_msj++;      
       			bits_procesados++;
-      		    if(pos_bit_msj==8){
+      		    if(pos_bit_msj==8){//guardo un byte del msj
       	 			pos_bit_msj=0;
       	 			mensaje.push_back(byte_msj);
       	 			byte_msj = 0x0;
       			}
-               
                 
            }else{//para terminar el ciclo for 
             	  x=width;
@@ -229,21 +212,19 @@ if(palette) {
        	if(((bits_procesados==0)&&(rgb_pos==0))||  
            ((bits_procesados>0)&&(bits_procesados<size*8))){
            	
-           	 if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
+           if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}//paso al siguiente byte del msj
            	  /*Guardo un bit de informacion en el LSB del byte*/ 
            	   bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ;   
-           	
        		   palette[i].rgbRed= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbRed,bit);
 		     
-              bits_procesados++;
-              pos_bit_msj++;
+               bits_procesados++;
+               pos_bit_msj++;
               
    	       }
    	       
    	       if(((bits_procesados==0)&&(rgb_pos==1))||  
            ((bits_procesados>0)&&(bits_procesados<size*8))){
            	  if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
-           	  
               bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ; 
 		      palette[i].rgbGreen= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbGreen,bit);
 		    
@@ -252,12 +233,12 @@ if(palette) {
               
               
    	       }
-   	       	if(((bits_procesados==0)&&(rgb_pos==2))||  
+   	       if(((bits_procesados==0)&&(rgb_pos==2))||  
            ((bits_procesados>0)&&(bits_procesados<size*8))){
            	 if(pos_bit_msj==8){pos_bit_msj=0;pos_byte_msj++;}
-           	 
            	  bit= ((mensaje[pos_byte_msj])&(1<<pos_bit_msj))? 1:0 ; 
 		      palette[i].rgbBlue= (BYTE)util::BitsUtils::hideInByte((int)palette[i].rgbBlue,bit);
+              
               bits_procesados++;
               pos_bit_msj++;
               
@@ -266,7 +247,6 @@ if(palette) {
           if(bits_procesados<size*8) i++;
        }
        /*Actualizo la paleta de colores para que los cambios se apliquen a la imagen*/
-      
        imagen.applyColorMapping(palette,i+1,first_palette_pos);
        
   }  
@@ -282,7 +262,6 @@ unsigned int i=first_palette_pos;
 unsigned int rgb_pos=getRGBPos(first);//determina en que color empiezo
 unsigned byte_msj=0x0;
 unsigned int pos_bit_msj=0;
-
 
 if(palette) {
        unsigned int palette_size=imagen.getPaletteSize();

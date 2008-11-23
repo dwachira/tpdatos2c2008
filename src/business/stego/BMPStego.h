@@ -2,6 +2,10 @@
 #define BMPSTEGO_H_
 #include "LSBStegoBusiness.h"
 
+/**
+ * BMPStego.h
+ * Redefine el metodo getFreeSpace para adaptarlo a las imagenes BMP
+ */
 class BMPStego:public LSBStegoBusiness
 {
 public:
