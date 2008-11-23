@@ -15,9 +15,9 @@ private:
 public:
 	Pixel(unsigned long int x,unsigned long int y,unsigned int bit);
 	Pixel(){};
-	unsigned long int getPosX();
-	unsigned long int getPosY();
-	unsigned long int getNumero_de_bit();
+	unsigned long int getPosX()const;
+	unsigned long int getPosY()const;
+	unsigned long int getNumero_de_bit()const;
 	void setPosX(unsigned long int x);
 	void setPosY(unsigned long int y);
 	void setNumero_de_bit(unsigned long int bit);

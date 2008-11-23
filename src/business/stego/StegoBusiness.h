@@ -1,6 +1,5 @@
 #ifndef STEGOBUSINESS_H_
 #define STEGOBUSINESS_H_
-#include <string>
 
 #include "FIBitmap.h"
 

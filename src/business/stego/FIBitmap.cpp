@@ -49,14 +49,14 @@ void FIBitmap::save(int perc){
    FreeImage_Save(this->format,imagen,this->filename.c_str(),perc);	
 }
 
-RGBQUAD* FIBitmap::getPalette(){
+RGBQUAD* FIBitmap::getPalette()const{
 	return FreeImage_GetPalette(imagen);
 }
 
 BYTE* FIBitmap::getBits(){
 	return (BYTE*)FreeImage_GetBits(imagen);
 }
-BYTE FIBitmap::getPixelIndex(unsigned int x,unsigned int y){
+BYTE FIBitmap::getPixelIndex(unsigned int x,unsigned int y)const{
 BYTE pixel_index;
 FreeImage_GetPixelIndex(imagen,x,y,&pixel_index);
 return pixel_index;
@@ -66,7 +66,7 @@ void FIBitmap::setPixelIndex(unsigned int x,unsigned int y,BYTE* new_pixel_index
      FreeImage_SetPixelIndex(imagen,x,y,new_pixel_index);
 }
 
-RGBQUAD FIBitmap::getBackgroundColor(){
+RGBQUAD FIBitmap::getBackgroundColor()const{
 RGBQUAD background;	
 FreeImage_GetBackgroundColor(imagen,&background);
 return background;
@@ -76,7 +76,7 @@ void FIBitmap::setBackgroundColor(RGBQUAD background){
   FreeImage_SetBackgroundColor(imagen,&background);
 }  
   
-bool FIBitmap::hasBackgroundColor(){       	 
+bool FIBitmap::hasBackgroundColor()const{       	 
    return FreeImage_HasBackgroundColor(imagen);
 } 
 
@@ -85,14 +85,14 @@ BYTE* paleta_transparente=FreeImage_GetTransparencyTable(imagen);
 return paleta_transparente;
 }
 
-int FIBitmap::getTransparencyCount(){
+int FIBitmap::getTransparencyCount()const{
    	return FreeImage_GetTransparencyCount(imagen);
 }
-bool FIBitmap::isTransparent(){
+bool FIBitmap::isTransparent()const{
 	return FreeImage_IsTransparent(imagen);
 }
 
-int FIBitmap::getTransparentIndex(){
+int FIBitmap::getTransparentIndex()const{
     return FreeImage_GetTransparentIndex(imagen);
 }
 
@@ -177,7 +177,7 @@ imageFile.open(filename.c_str(), std::fstream::in |std::fstream::out| std::fstre
   }
 }
 
-bool FIBitmap::isGrayScale(){
+bool FIBitmap::isGrayScale()const{
 bool gray_scale=true;
 unsigned int i=0;
 
@@ -193,7 +193,7 @@ unsigned int i=0;
 
 }
 
-bool FIBitmap::isAnimated(){
+bool FIBitmap::isAnimated()const{
 std::ifstream imageFile;
 int byte_int;
 char byte;
@@ -218,9 +218,6 @@ imageFile.open(filename.c_str(), std::fstream::binary);
 	
 }
 
-BITMAPINFO* FIBitmap::getInfo(){
- return FreeImage_GetInfo(imagen);
-}
 
 FIBitmap::~FIBitmap(){
 	if(!error) FreeImage_Unload(imagen);

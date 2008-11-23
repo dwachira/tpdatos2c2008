@@ -3,7 +3,6 @@
 
 #include "StegoBusiness.h"
 
-#include <fstream>
 
 #define PERC 0.95 //porcentaje utilizado para definir el nivel de compresion
 
@@ -28,7 +27,7 @@ class LossyCompressStegoBusiness: public StegoBusiness
 		virtual std::string getMessage(unsigned long int first_pos,unsigned long int longitud);
 		/*Genera espacio para poder insertar mensaje,comprime la imagen*/
 		bool generateSpace();
-		virtual unsigned int getQuality()=0;
+		virtual unsigned int getQuality()const=0;
 		virtual unsigned long int getFreeSpace();
 		virtual unsigned int getFirstFreeBit();
 		virtual ~LossyCompressStegoBusiness();

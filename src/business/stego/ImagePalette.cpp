@@ -1,11 +1,10 @@
 #include "ImagePalette.h"
-#include <fstream>
 
 
 ImagePalette::ImagePalette(FIBitmap &imagen):imagen(imagen){
 	
 }
-unsigned int ImagePalette::getNewPaletteIndex(unsigned int index){
+unsigned int ImagePalette::getNewPaletteIndex(unsigned int index)const{
  bool found=false;unsigned int i=0;
 
  while((!found)&&(i<new_palette_indexes.size())){
