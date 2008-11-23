@@ -19,9 +19,9 @@ int TestDirectorioDAO::test(){
 	DirectorioDAO* dDAO = new DirectorioDAO();
 
 	Date* date1 = Date::valueOf(13,3,87,13,33,33);
-	Directorio* dir1 = new Directorio("andres/directorio1", date1);
+	Directorio* dir1 = new Directorio(1, "andres/directorio1", date1);
 	this->print(dir1);
-	Date* date2 = Date::valueOf(26,1,89,0,55,55);
+/*	Date* date2 = Date::valueOf(26,1,89,0,55,55);
 	Directorio* dir2 = new Directorio("home/agus/dir2", date2);
 	this->print(dir2);
 	Date* date3 = Date::valueOf(23,8,62,23,10,10);
@@ -38,8 +38,8 @@ int TestDirectorioDAO::test(){
 	this->print(dir6);
 
 	this->insertar(dDAO,dir5);
-	this->insertar(dDAO,dir1);
-	this->insertar(dDAO,dir3);
+*/	this->insertar(dDAO,dir1);
+/*	this->insertar(dDAO,dir3);
 	this->insertar(dDAO,dir6);
 	this->insertar(dDAO,dir2);
 	this->insertar(dDAO,dir4);
@@ -94,7 +94,7 @@ int TestDirectorioDAO::test(){
 	for(it2=lista2.begin();it2!=lista2.end();it2++){
 		this->print(&(*it2));
 	}
-
+*/
 
 	std::cout << "- - - That's All Folks! - - -" << std::endl;
 	return 0;
@@ -115,7 +115,7 @@ int TestDirectorioDAO::test2(){
 	}
 */
 
-	std::cout << "The Beggining..." << std::endl;
+/*	std::cout << "The Beggining..." << std::endl;
 	for(int i=0; i<10000; i++){
 
 		Date* date = Date::valueOf(13,3,87,13,33,33);
@@ -129,6 +129,24 @@ int TestDirectorioDAO::test2(){
 //	Date* newDate = Date::valueOf(26,01,99,13,59);
 //	this->update(dDAO,3578,newDate);
 	this->getById(dDAO,3578);
+*/
+
+	Date* date1 = Date::valueOf(13,3,87,13,33,33);
+	Directorio* dir1 = new Directorio(2, "andres/directorio1", date1);
+	this->print(dir1);
+
+	this->borrar(dDAO,1);
+
+	this->insertar(dDAO,dir1);
+
+	std::cout << "" << std::endl;
+	std::cout << "Recorrido de la lista ordenada por Fecha de Modificacion" << std::endl;
+	list<Directorio> lista = dDAO->getDirsSortedByFechaModif();
+	list<Directorio>::iterator it;
+	for(it=lista.begin();it!=lista.end();it++){
+		this->print(&(*it));
+	}
+
 
 	std::cout << "- - - That's All Folks! - - -" << std::endl;
 	return 0;

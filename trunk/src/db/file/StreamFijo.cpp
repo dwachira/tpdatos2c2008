@@ -101,8 +101,24 @@ void StreamFijo::cerrar(){
 
 	this->modo = 0;							//si la cant de reg es >100 y el factor
 	this->archivo.close();					//de carga es mayor al 50% (mas de la mitad
-	grabarAdmin();							//de los registros estan vacios), reorganizo
-	if(this->cant_reg > 100 && this->cant_vacios > 49){
+											//de los registros estan vacios), reorganizo
+	if(this->cant_reg == this->cant_vacios){
+		this->cant_reg = 0;
+		this->cant_vacios = 0;
+	}
+
+	grabarAdmin();
+
+	//esto estaba programado para ser eficiente y llegado un punto en el que
+	//el factor de carga indica que hay demasiados espacios libres, se procede
+	//a reorganizar el archivo moviendo los registros con datos a un nuevo
+	//archivo que reemplaza al original.
+	//
+	//Sin embargo, de suceder esto, se perderian las referencias de los indices
+	//a los registros almacenados. Por este motivo se decidio dejarla de lado y
+	//de este modo no se corre ningun riesgo con el indice en cuestion.
+
+/*	if(this->cant_reg > 100 && this->cant_vacios > 49){
 		float factor_de_carga = this->cant_vacios / ((float) this->cant_reg);
 		if(factor_de_carga > 0.5){		//se debe reorganizar el archivo
 			char* nombreExtra = (char*) malloc (strlen(this->nombre)+5);
@@ -135,7 +151,7 @@ void StreamFijo::cerrar(){
 			remove(this->nombre);				//en el que no hay espacios vacios
 			rename(nombreExtra,this->nombre);
 		}
-	}
+	}*/
 }
 
 unsigned long int StreamFijo::escribir(void* buffer){
@@ -159,10 +175,10 @@ bool StreamFijo::leer(void* buffer, unsigned long int nro_reg){
 	if(this->modo != READ)	// si no se abrio para lectura, error
 		return false;
 
-	if(nro_reg < 1 || nro_reg > this->cant_reg)		//los registros van del 1 al N
-		return false;								//con N la cantidad total
-
 	unsigned long int offset = (nro_reg - 1) * (this->size_reg+1) + this->size_header;
+	this->archivo.seekg(0, ios_base::end);
+	if(offset < this->size_header || offset >= this->archivo.tellg())
+		return false;			//se intenta acceder a un offset "restringido"
 
 	char aux;
 	this->archivo.seekg(offset, ios_base::beg);
@@ -180,10 +196,10 @@ bool StreamFijo::actualizar(void* buffer, unsigned long int nro_reg){
 	if(this->modo != UPDATE)
 		return false;
 
-	if(nro_reg < 1 || nro_reg > this->cant_reg)
-		return false;
-
 	unsigned long int offset = (nro_reg - 1) * (this->size_reg+1) + this->size_header;
+	this->archivo.seekg(0, ios_base::end);
+	if(offset < this->size_header || offset >= this->archivo.tellg())
+		return false;			//se intenta acceder a un offset "restringido"
 
 	char aux;
 	this->archivo.seekg(offset, ios_base::beg);
@@ -213,17 +229,20 @@ unsigned long int StreamFijo::leerProximo(void* buffer){
 		return 0;
 
 	unsigned long int offsetLeido = this->archivo.tellg();
-	unsigned long int size = this->size_header + (this->size_reg+1) * this->cant_reg;
-	if(offsetLeido >= size)
+
+	this->archivo.seekg(0, ios_base::end);
+	unsigned long int final = this->archivo.tellg();
+	if(offsetLeido >= final)
 		return 0;			//estoy parado al final del archivo
 
+	this->archivo.seekg(offsetLeido, ios_base::beg);
 	char aux;
 	this->archivo.read(&aux,1);
 	while(aux != '1'){									//si no es flag 'ocupado', muevo
 		this->archivo.seekg(offsetLeido + this->size_reg + 1);
 														//para adelante el tamaño de un
 		offsetLeido = this->archivo.tellg();			//registro mas su flag de estado
-		if(offsetLeido >= size)						//si me pase del limite indico
+		if(offsetLeido >= final)						//si me pase del limite indico
 			return 0;									//que hubo error... sino
 		this->archivo.read(&aux,1);						//vuelvo a leer y repito el ciclo
 	}
@@ -238,10 +257,11 @@ bool StreamFijo::borrar(unsigned long int nro_reg){
 	if(this->modo != DELETE)
 		return false;
 
-	if(nro_reg < 1 || nro_reg > this->cant_reg)
-		return false;
-
 	unsigned long int offset = (nro_reg - 1) * (this->size_reg+1) + this->size_header;
+	this->archivo.seekg(0, ios_base::end);
+	if(offset < this->size_header || offset >= this->archivo.tellg())
+		return false;			//se intenta acceder a un offset "restringido"
+
 	this->archivo.seekp(offset, ios_base::beg);
 	this->archivo.write("0",1);
 
