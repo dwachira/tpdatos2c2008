@@ -4,7 +4,6 @@
  *  Created on: 10/09/2008
  *      Author: andres
  */
-
 #include "StreamFijo.h"
 #include <string.h>
 #include <stdlib.h>
@@ -74,9 +73,12 @@ bool StreamFijo::abrir(int newModo){
 		return false;
 	leerAdmin();
 
+//OJO... PARA ESCRIBIR DEBO ABRIR PARA RD-WR PORQUE CUANDO EL ARCHIVO QUEDA
+//VACIO, SE MARCA COMO QUE ESTA VACIO Y EMPIEZO A SOBREESCRIBIR LOS DATOS 
+//QUE HABIA ANTES... ENTONCES SI ESTA PARA WRITE SOLO NO SE PUEDE
 	if(newModo == WRITE){					//si queria escritura, lo cierro y abro,
 		this->archivo.close();				//y ya recupere la cabecera
-		this->archivo.open(this->nombre, fstream::binary | ios::out | ios::app);
+		this->archivo.open(this->nombre, fstream::binary | ios::out | ios::in);
 		if(! this->archivo.is_open())
 			return false;
 	}
@@ -109,7 +111,7 @@ void StreamFijo::cerrar(){
 
 	grabarAdmin();
 
-	//esto estaba programado para ser eficiente y llegado un punto en el que
+	//esto estaba programado para ser mas eficiente y llegado un punto en el que
 	//el factor de carga indica que hay demasiados espacios libres, se procede
 	//a reorganizar el archivo moviendo los registros con datos a un nuevo
 	//archivo que reemplaza al original.
@@ -155,11 +157,19 @@ void StreamFijo::cerrar(){
 }
 
 unsigned long int StreamFijo::escribir(void* buffer){
-
+	
 	if(this->modo != WRITE)	// si no se abrio para escritura, error
 		return 0;
 
-	this->archivo.seekp(0, ios_base::end);
+	unsigned long int final = this->cant_reg*(this->size_reg+1) + this->size_header;
+	this->archivo.seekp(final, ios_base::beg);
+	//de este modo, si hay 30 registros, del 0 al 29, me posiciono al inicio del
+	//que sera el registro numero 30, basandome en la informacion de los atributos
+	//y no en el tamaño del archivo que puede sufrir cambios durante el proceso
+	//de ejecucion del blowfish por rellenar con ceros.
+	//sino comentar y dejar la instruccion siguiente:
+//	this->archivo.seekp(0, ios_base::end);
+
 	unsigned long int offset = this->archivo.tellp();	// recupero la posicion actual de escritura
 
 	this->archivo.write("1",1);		//escritura del flag que indica registro ocupado
@@ -176,8 +186,9 @@ bool StreamFijo::leer(void* buffer, unsigned long int nro_reg){
 		return false;
 
 	unsigned long int offset = (nro_reg - 1) * (this->size_reg+1) + this->size_header;
-	this->archivo.seekg(0, ios_base::end);
-	if(offset < this->size_header || offset >= this->archivo.tellg())
+	unsigned long int final = this->cant_reg*(this->size_reg+1) + this->size_header;
+
+	if(offset < this->size_header || offset >= final)
 		return false;			//se intenta acceder a un offset "restringido"
 
 	char aux;
@@ -197,8 +208,9 @@ bool StreamFijo::actualizar(void* buffer, unsigned long int nro_reg){
 		return false;
 
 	unsigned long int offset = (nro_reg - 1) * (this->size_reg+1) + this->size_header;
-	this->archivo.seekg(0, ios_base::end);
-	if(offset < this->size_header || offset >= this->archivo.tellg())
+	unsigned long int final = this->cant_reg*(this->size_reg+1) + this->size_header;
+	
+	if(offset < this->size_header || offset >= final)
 		return false;			//se intenta acceder a un offset "restringido"
 
 	char aux;
@@ -229,9 +241,8 @@ unsigned long int StreamFijo::leerProximo(void* buffer){
 		return 0;
 
 	unsigned long int offsetLeido = this->archivo.tellg();
+	unsigned long int final = this->cant_reg*(this->size_reg+1) + this->size_header;
 
-	this->archivo.seekg(0, ios_base::end);
-	unsigned long int final = this->archivo.tellg();
 	if(offsetLeido >= final)
 		return 0;			//estoy parado al final del archivo
 
@@ -258,8 +269,9 @@ bool StreamFijo::borrar(unsigned long int nro_reg){
 		return false;
 
 	unsigned long int offset = (nro_reg - 1) * (this->size_reg+1) + this->size_header;
-	this->archivo.seekg(0, ios_base::end);
-	if(offset < this->size_header || offset >= this->archivo.tellg())
+	unsigned long int final = this->cant_reg*(this->size_reg+1) + this->size_header;
+
+	if(offset < this->size_header || offset >= final)
 		return false;			//se intenta acceder a un offset "restringido"
 
 	this->archivo.seekp(offset, ios_base::beg);
@@ -273,10 +285,15 @@ bool StreamFijo::borrar(unsigned long int nro_reg){
 
 
 unsigned long int StreamFijo::getPosLibre(){
-	this->abrir(WRITE);
+	
+/*	this->abrir(WRITE);
 	this->archivo.seekp(0, ios_base::end);
 	unsigned long int offset = this->archivo.tellp();
 	this->cerrar();
+	unsigned long int nro_reg = ((offset - this->size_header) / (this->size_reg+1)) + 1;
+	return nro_reg;
+*/
+	unsigned long int offset = this->cant_reg*(this->size_reg+1) + this->size_header;
 	unsigned long int nro_reg = ((offset - this->size_header) / (this->size_reg+1)) + 1;
 	return nro_reg;
 }
