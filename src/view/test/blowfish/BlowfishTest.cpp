@@ -32,7 +32,7 @@ int BlowfishTest::test() {
 	fe = fopen("/home/gsenno/workspaceC++/tpDatos/Stegno/test_data/prueba_entrada.txt", "rb");
 	fs = fopen("/home/gsenno/workspaceC++/tpDatos/Stegno/test_data/enc.txt", "wb");
 	while((bytesLeidos = fread(buffer, 1, 8, fe))){
-		std::string en = crypto->encrypt(buffer,8);
+		std::string en = crypto->encrypt(buffer,bytesLeidos);
 		fwrite(en.data(),1,en.size(),fs);
 	}
 
