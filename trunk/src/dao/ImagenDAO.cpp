@@ -122,7 +122,9 @@ void ImagenDAO::borrar(unsigned int id){
 
 
 		//elimino el nombre de la imagen del archivo de regs de long variable
+		this->stream->abrir(DELETE);
 		this->stream->borrar(buffer->offset_nombre);
+		this->stream->cerrar();
 	}
 }
 

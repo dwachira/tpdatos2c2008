@@ -116,7 +116,9 @@ void MensajeDAO::borrar(unsigned int id){
 		this->index_Tamanio->eliminar((double) buffer->tamanio,reg.getOffset());
 
 		//elimino el nombre del mensaje del archivo de regs de long variable
+		this->stream->abrir(DELETE);
 		this->stream->borrar(buffer->offset_nombre);
+		this->stream->cerrar();
 	}
 }
 
