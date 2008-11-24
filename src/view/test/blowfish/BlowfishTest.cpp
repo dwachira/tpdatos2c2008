@@ -29,8 +29,8 @@ int BlowfishTest::test() {
 	char buffer[8];
 	int bytesLeidos;
 
-	fe = fopen("/home/gsenno/workspaceC++/tpDatos/Stegno/test_data/prueba_entrada.txt", "rb");
-	fs = fopen("/home/gsenno/workspaceC++/tpDatos/Stegno/test_data/enc.txt", "wb");
+	fe = fopen(__TEST_DIR__"/prueba_entrada.txt", "rb");
+	fs = fopen(__TEST_DIR__"/enc.txt", "wb");
 	while((bytesLeidos = fread(buffer, 1, 8, fe))){
 		std::string en = crypto->encrypt(buffer,bytesLeidos);
 		fwrite(en.data(),1,en.size(),fs);
@@ -40,8 +40,8 @@ int BlowfishTest::test() {
 	fclose(fs);
 
 	crypto->inicializar("betolanza");
-	fe = fopen("/home/gsenno/workspaceC++/tpDatos/Stegno/test_data/enc.txt", "rb");
-	fs = fopen("/home/gsenno/workspaceC++/tpDatos/Stegno/test_data/salidaenc.txt", "wb");
+	fe = fopen(__TEST_DIR__"/enc.txt", "rb");
+	fs = fopen(__TEST_DIR__"/salidaenc.txt", "wb");
 	while((bytesLeidos = fread(buffer, 1, 8, fe))){
 		QWord msj(buffer,bytesLeidos);
 		QWord en = crypto->desencrypt(msj);
