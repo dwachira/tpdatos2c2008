@@ -124,7 +124,9 @@ void DirectorioDAO::borrar(unsigned int id){
 		this->index_FechaModif->eliminar(claveCompuestaFecha, reg.getOffset());
 
 		//elimino el nombre del directorio del archivo de regs de long variable
+		this->stream->abrir(DELETE);
 		this->stream->borrar(buffer->offset_path);
+		this->stream->cerrar();
 	}
 }
 
