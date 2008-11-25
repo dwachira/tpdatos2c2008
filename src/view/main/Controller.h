@@ -37,7 +37,7 @@ private:
 public:
 
 	Controller() : loggedIn(false) {
-		authBusiness = new AuthBusiness(__BASE_DIR__);
+		authBusiness = new AuthBusiness(PACKAGE_DATA_DIR);
 	}
 
 	void agregarMensaje(std::string& filename);

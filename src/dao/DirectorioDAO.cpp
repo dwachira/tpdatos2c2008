@@ -17,11 +17,11 @@ namespace dao {
 
 DirectorioDAO::DirectorioDAO(){
 
-	this->index_Prim = new Indice(__BASE_DIR__"/INDEX_DIR_Prim.idx", false);
-	this->index_FechaModif = new Indice(__BASE_DIR__"/INDEX_DIR_FechaModif.idx", true);
+	this->index_Prim = new Indice(PACKAGE_DATA_DIR"/INDEX_DIR_Prim.idx", false);
+	this->index_FechaModif = new Indice(PACKAGE_DATA_DIR"/INDEX_DIR_FechaModif.idx", true);
 
-	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_DIR.str", sizeof(REG_DIR));
-	this->stream = new StreamVariable(__BASE_DIR__"/STREAM_DIR.str");
+	this->archivo = new StreamFijo(PACKAGE_DATA_DIR"/STREAMFIJO_DIR.str", sizeof(REG_DIR));
+	this->stream = new StreamVariable(PACKAGE_DATA_DIR"/STREAM_DIR.str");
 }
 
 DirectorioDAO::~DirectorioDAO(){

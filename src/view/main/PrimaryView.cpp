@@ -1,21 +1,17 @@
 #include "PrimaryView.h"
-#include "UseCaseValidator.h"
 
 #include <iostream>
 #include <string>
 #include <map>
 using namespace std;
 
-PrimaryView::PrimaryView() {
-}
-
 void PrimaryView::start() {
 	string command = "";
-	UseCaseValidator aUseCaseValidator(controller);
+
 	char buffer[MAX_LINE];
 	while (command.compare("quit") != 0) {
 		cout << "herodotus> ";
-		cin.getline(buffer, MAX_LINE);
+		input.getline(buffer, MAX_LINE);
 		command.assign(buffer);
 		int posFirstSpace = command.find_first_of(" ");
 		string action = command.substr(0, posFirstSpace);

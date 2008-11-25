@@ -16,12 +16,12 @@ namespace dao {
 
 ImagenDAO::ImagenDAO(){
 
-	this->index_Prim = new Indice(__BASE_DIR__"/INDEX_IMG_Prim.idx", false);
-	this->index_Espacio = new Indice(__BASE_DIR__"/INDEX_IMG_Espacio.idx", true);
-	this->index_Directorio = new Indice(__BASE_DIR__"/INDEX_IMG_Directorio.idx", true);
+	this->index_Prim = new Indice(PACKAGE_DATA_DIR"/INDEX_IMG_Prim.idx", false);
+	this->index_Espacio = new Indice(PACKAGE_DATA_DIR"/INDEX_IMG_Espacio.idx", true);
+	this->index_Directorio = new Indice(PACKAGE_DATA_DIR"/INDEX_IMG_Directorio.idx", true);
 
-	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_IMG.str", sizeof(REG_IMG));
-	this->stream = new StreamVariable(__BASE_DIR__"/STREAM_IMG.str");
+	this->archivo = new StreamFijo(PACKAGE_DATA_DIR"/STREAMFIJO_IMG.str", sizeof(REG_IMG));
+	this->stream = new StreamVariable(PACKAGE_DATA_DIR"/STREAM_IMG.str");
 }
 
 ImagenDAO::~ImagenDAO(){

@@ -29,7 +29,7 @@ using namespace dao;
 
 namespace business {
 
-std::string MensajeManager::TMP_COMPRESSED_FILE_NAME  = __BASE_DIR__"/tmp_file";
+std::string MensajeManager::TMP_COMPRESSED_FILE_NAME  = PACKAGE_DATA_DIR"/tmp_file";
 
 bool compararParticionesPorIdImagen(Particion& iz, Particion& der) {
 	return iz.getID_Img() < der.getID_Img();
