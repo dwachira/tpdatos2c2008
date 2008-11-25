@@ -68,8 +68,7 @@ void UseCaseValidator::execute(string action, string firstParameter,
 		}
 		case 11: {
 			std::cout<<"Los comandos posibles son: "<<std::endl;
-			std::cout<<"\nComandos posibles: "<<std::endl;
-			std::cout<<"addDirectory <directorio>"<<std::endl;
+			std::cout<<"\naddDirectory <directorio>"<<std::endl;
 			std::cout<<"removeDirectory <directorio>"<<std::endl;
 			std::cout<<"addFile <nombre_archivo>"<<std::endl;
 			std::cout<<"removeFile <nombre_archivo>"<<std::endl;
