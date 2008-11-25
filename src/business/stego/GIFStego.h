@@ -5,12 +5,12 @@
 /**
  * GIFStego.h
  * Redefine los metodos de LSBStego para poder realizar las operaciones considerando
- * la paleta de colores y los indices 
+ * la paleta de colores y los indices
  */
 class GIFStego: public LSBStegoBusiness
 {
 	public:
-	
+
 		GIFStego();
 		GIFStego(std::string filename);
 		virtual unsigned long int setMessage(unsigned long int first_bit,const char* mensaje,unsigned long int size);
@@ -18,7 +18,7 @@ class GIFStego: public LSBStegoBusiness
 		virtual unsigned long int getFreeSpace();
 		virtual unsigned int getFirstFreeBit();
 		virtual ~GIFStego();
-		
+
 };
 
 #endif /*GIFSTEGO_H_*/

@@ -5,11 +5,11 @@
 /**
  * PNGStego.h
  * Redefine los metodos de LSBStego para poder realizar las operaciones considerando
- * el canal alpha en caso de que se utilice el metodo optimizado (STEGO_BASICO=0) 
+ * el canal alpha en caso de que se utilice el metodo optimizado (STEGO_BASICO=0)
  */
 class PNGStego:public LSBStegoBusiness
 {
-private:	
+private:
     unsigned long int getTransparentPixels();
     bool isFirstPixelTransparent();
 public:

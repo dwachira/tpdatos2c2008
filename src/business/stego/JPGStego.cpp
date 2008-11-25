@@ -2,7 +2,7 @@
 #include "jpeglib.h"
 JPGStego::JPGStego(std::string filename):LossyCompressStegoBusiness(filename)
 {
-	
+
 }
 unsigned int JPGStego::getQuality()const{
 unsigned int quality=0;
@@ -10,29 +10,30 @@ long value,sum;
 register long j,i;
 struct jpeg_decompress_struct jpeg_info;
 FILE *pFile;
-    
+
       if((pFile = fopen(filename.c_str(), "rb"))!= NULL){
-               
-           // Create an error handler
+
+           // Creacion de un error handler
            jpeg_error_mgr jerr;
 
-           // Have our compression info object point to the error handler address
+           // Se apunta la info de compresion al error handler
            jpeg_info.err = jpeg_std_error(&jerr);
-        
-           // Initialize the decompression object
+
+           // Inicializacion del objecto de descompresion
            jpeg_create_decompress(&jpeg_info);
-        
-          // Specify the data source (Our file pointer)        
-          jpeg_stdio_src(&jpeg_info, pFile);
-           // Read in the header of the jpeg file
-          jpeg_read_header(&jpeg_info, TRUE);
-    
-          // Start to decompress the jpeg file with our compression info
-          jpeg_start_decompress(&jpeg_info);
-   
-    
+
+           // especificacion del archivo
+           jpeg_stdio_src(&jpeg_info, pFile);
+           // Lectura del header del archivo jpeg
+           jpeg_read_header(&jpeg_info, TRUE);
+
+           // Inicia la descompresion
+           jpeg_start_decompress(&jpeg_info);
+
+
     /*
-      Determine the JPEG compression quality from the quantization tables.
+      Determinacion del quality de jpeg mediante la tablas
+      de quantization .
     */
     sum=0;
     for (i=0; i < NUM_QUANT_TBLS; i++)
@@ -85,7 +86,7 @@ FILE *pFile;
              continue;
            if ((value <= hash[i]) && (sum <= sums[i]))
              quality=(unsigned long) i+1;
-           
+
            break;
          }
        }
@@ -130,16 +131,16 @@ FILE *pFile;
              if ((value < hash[i]) && (sum < sums[i]))
                continue;
              quality=(unsigned long) i+1;
-            
+
              break;
            }
          }
-                 
- // This releases all the stored memory for reading and decoding the jpeg
- jpeg_destroy_decompress(&jpeg_info);
-        
- // Close the file pointer that opened the file
- fclose(pFile);
+
+    // Liberacion de recursos
+    jpeg_destroy_decompress(&jpeg_info);
+
+    // Liberacion de recursos
+    fclose(pFile);
  }
 	return quality;
 }

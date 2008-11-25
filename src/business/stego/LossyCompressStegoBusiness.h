@@ -15,12 +15,12 @@
 class LossyCompressStegoBusiness: public StegoBusiness
 {
 	private:
-	
-    	unsigned long int free_space;
-    	unsigned long int compress_size;
-    
+
+    	unsigned long int free_space;//espacio libre en la imagen
+    	unsigned long int compress_size;//comienzo del espacio libre
+
 	public:
-	
+
     	LossyCompressStegoBusiness();
 		LossyCompressStegoBusiness(std::string filename);
 		virtual unsigned long int setMessage(unsigned long int first_pos,const char* mensaje,unsigned long int size);
@@ -31,7 +31,7 @@ class LossyCompressStegoBusiness: public StegoBusiness
 		virtual unsigned long int getFreeSpace();
 		virtual unsigned int getFirstFreeBit();
 		virtual ~LossyCompressStegoBusiness();
-		
+
 };
 
 #endif /*LOSSYCOMPRESSSTEGOBUSINESS_H_*/

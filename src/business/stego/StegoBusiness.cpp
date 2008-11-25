@@ -4,11 +4,11 @@ StegoBusiness::StegoBusiness(){};
 
 StegoBusiness::StegoBusiness(std::string filename):filename(filename)
 {
-	
+
 }
 std::string& StegoBusiness::getFilename()
 {
- return this->filename;	
+ return this->filename;
 }
 
 
