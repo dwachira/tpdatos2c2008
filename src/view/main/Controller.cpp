@@ -44,7 +44,7 @@ void Controller::agregarDirectorio(std::string& path) {
 void Controller::removerDirectorio(std::string& path) {
 	try {
 		if (directorioManager->directorioEnUso(path)) {
-			if(this->confirmar(REMOVERDIRECTORIO)){
+			if(this->confirmar(REMOVERDIRECTORIO)) {
 				mensajeManager->quitarMensajesEnDirectorio(path);
 				directorioManager->removerDirectorio(path);
 			}
@@ -73,7 +73,7 @@ void Controller::obtenerMensaje(std::string& filename, std::string& pathDestino)
 	} catch (RecursoInaccesibleException e) {
 		std::cout<<"No se puede escribir en el destino."<<std::endl;
 	} catch (ImagenFaltanteException e) {
-		if(this->confirmar(OBTENERMSG)){
+		if(this->confirmar(OBTENERMSG)) {
 			this->removerMensaje(filename);
 		}
 	}
@@ -81,20 +81,28 @@ void Controller::obtenerMensaje(std::string& filename, std::string& pathDestino)
 
 void Controller::mostrarDirectorios() {
 	list<string> directorios = directorioManager->getDirectorios();
-	for (list<string>::iterator it = directorios.begin(); it
-			!= directorios.end(); it++) {
-		std::cout<<*it<<std::endl;
+	if (directorios.size() != 0) {
+		for (list<string>::iterator it = directorios.begin(); it
+				!= directorios.end(); it++) {
+			std::cout<<*it<<std::endl;
+		}
+	} else {
+		std::cout<<"No se ha agregado ningun directorio."<<std::endl;
 	}
 }
 
 void Controller::mostrarMensajes() {
 	list<string> mensajes = mensajeManager->getMensajes();
-	for (list<string>::iterator it = mensajes.begin(); it != mensajes.end(); it++) {
-		std::cout<<*it<<std::endl;
+	if (mensajes.size() != 0) {
+		for (list<string>::iterator it = mensajes.begin(); it != mensajes.end(); it++) {
+			std::cout<<*it<<std::endl;
+		}
+	} else {
+		std::cout<<"No se ha agregado ningun mensaje."<<std::endl;
 	}
 }
 
-bool Controller::login(string& password){
+bool Controller::login(string& password) {
 	loggedIn = authBusiness->login(password);
 	if (loggedIn) {
 		this->managerDao = new dao::ManagerDAO();
@@ -103,18 +111,21 @@ bool Controller::login(string& password){
 		this->trieDao->loadTrie(MENSAJES);
 		this->trieDao->loadTrie(IMAGENES);
 		this->directorioManager = new DirectorioManager(*this->managerDao,*this->trieDao);
-		this->mensajeManager = new MensajeManager(*this->managerDao,*this->directorioManager,*this->trieDao,password);
+		this->mensajeManager
+				= new MensajeManager(*this->managerDao,*this->directorioManager,*this->trieDao,password);
 		std::cout<<"Acaba de ingresar al sístema."<<std::endl;
-	}
-	else{
+	} else {
 		std::cout<<"Contraseña invalida."<<std::endl;
 	}
 	return loggedIn;
 }
 
-void Controller::changePassword(std::string& oldPassword, std::string& newPassword) {
-	if (!authBusiness->changePass(oldPassword,newPassword))
-		std::cout<<"El password ingresado como oldPassword no coincide con el almacenado."<<std::endl;
+void Controller::changePassword(std::string& oldPassword,
+		std::string& newPassword) {
+	if (!authBusiness->changePass(oldPassword, newPassword))
+		std::cout
+				<<"El password ingresado como oldPassword no coincide con el almacenado."
+				<<std::endl;
 
 }
 
