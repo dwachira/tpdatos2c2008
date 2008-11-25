@@ -3,7 +3,7 @@
 
 GIFStego::GIFStego(std::string filename):LSBStegoBusiness(filename)
 {
-	
+
 }
 
 //si uso el lsb sobre la paleta --->devolver cero
@@ -14,21 +14,21 @@ unsigned int GIFStego::getFirstFreeBit(){
 	    if(((!imagen.isGrayScale())&&(imagen.getPaletteSize()<=16))||(imagen.isAnimated())) return 0;
 	    return (8-this->enable_bpp);
 	}
-	else 
+	else
 	    return 0;
-	
+
 }
 
 unsigned long int GIFStego::getFreeSpace(){
-	
- if ( !STEGO_BASICO ){      		
- 	if((imagen.getPaletteSize()>16)&&(!imagen.isAnimated())) 	 
-     	return ( ((imagen.getHeight())*(imagen.getWidth()))/8 );	
+
+ if ( !STEGO_BASICO ){
+ 	if((imagen.getPaletteSize()>16)&&(!imagen.isAnimated()))
+     	return ( ((imagen.getHeight())*(imagen.getWidth()))/8 );//lsb sobre los indices
  }
- 
-    return (imagen.getPaletteSize()*3)/8;	
+    //lsb sobre la paleta de colores
+    return (imagen.getPaletteSize()*3)/8;
 }
- 
+
 unsigned long int GIFStego::setMessage(unsigned long int first_pos,const char* mensaje,unsigned long int size)
 {
 unsigned int last_pos;
@@ -40,18 +40,18 @@ if(!error){
      	   last_pos=palette.doIndexesLSB(pixel,mensaje,size)+first_pos;
   	  	}
   	  	else last_pos= palette.doPaletteLSB(first_pos,mensaje,size);
-  	  	
+
 	  }else
 	       last_pos= palette.doPaletteLSB(first_pos,mensaje,size);
-	 
+
   }
-  return last_pos;	
+  return last_pos;
 }
 
 std::string GIFStego::getMessage(unsigned long int first_bit,unsigned long int longitud){
-std::string mensaje;	
+std::string mensaje;
 
-if(!error) {	
+if(!error) {
 	if ( !STEGO_BASICO ){
 		if((imagen.getPaletteSize()>16)&&(!imagen.isAnimated())){
 			Pixel pixel;
@@ -61,9 +61,9 @@ if(!error) {
 	        mensaje.append(palette.getMessageFromPalette(first_bit,longitud));
 	}else
             mensaje.append(palette.getMessageFromPalette(first_bit,longitud));
-   
+
      }
-return mensaje;	
+return mensaje;
 }
 
 GIFStego::~GIFStego(){

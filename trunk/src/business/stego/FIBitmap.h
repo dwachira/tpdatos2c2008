@@ -15,19 +15,20 @@
 class FIBitmap
 {
 	private:
-    
+
     	FIBitmap(const FIBitmap&);
     	FIBitmap & operator=(const FIBitmap&);
-  
+
     	/*Representacion de la imagen*/
     	FIBITMAP *imagen;
     	std::string filename;
     	FREE_IMAGE_FORMAT format;
     	bool error;
+    	/*Datos extraidos de la imagen*/
     	unsigned int bpp,pitch,height,width,color_type,palette_size,palette_offset;
-    	
+
 	public:
-	
+
 		FIBitmap();
 		FIBitmap(std::string filename);
 		std::string getFilename()const{ return filename;}
@@ -43,22 +44,26 @@ class FIBitmap
 		BYTE* getBits();
 		BYTE getPixelIndex(unsigned int x,unsigned int y)const;
 		void setPixelIndex(unsigned int x,unsigned int y,BYTE* new_pixel_index);
-		RGBQUAD getBackgroundColor()const; 
-		void setBackgroundColor(RGBQUAD background);    	 
+		RGBQUAD getBackgroundColor()const;
+		void setBackgroundColor(RGBQUAD background);
 		bool hasBackgroundColor()const;
     	BYTE* getTransparencyTable();
 		int getTransparencyCount()const;
 		bool isTransparent()const;
-		int getTransparentIndex()const;	
+		int getTransparentIndex()const;
 		void setTransparentIndex(int index);
 		void setBackgroundColorIndex(int new_index);
+		/*Mapeo entre los indices de la imagen*/
 		int applyPaletteIndexMapping(BYTE*srcindices, BYTE *dstindices);
+		/*Mapeo entre los los indices de la paleta de colores*/
 		int applyColorMapping(RGBQUAD *srccolors, RGBQUAD *dstcolors);
 		void applyColorMapping(RGBQUAD *srccolors,unsigned int count,unsigned int from=0);
 		int getPaletteOffset();
+		/*Determina si la imagen es en escala de grises*/
 		bool isGrayScale()const;
+		/*Determina si el gif es animado*/
 		bool isAnimated()const;
-	
+
 		bool load(int flag=0);
 		void save(int perc=0);
 		virtual ~FIBitmap();
