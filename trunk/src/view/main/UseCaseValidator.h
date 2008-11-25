@@ -7,6 +7,8 @@
 #include "Controller.h"
 using namespace std;
 
+#define DEFAULTPASSWORD "admin"
+
 class UseCaseValidator
 {
 private:

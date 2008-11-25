@@ -63,6 +63,15 @@ void UseCaseValidator::execute(string action, string firstParameter,
 		case 10: {
 			if (controller.login(firstParameter)) {
 				login = true;
+				if(firstParameter.compare(DEFAULTPASSWORD) == 0){
+					string newPassword = "";
+					char buffer[MAX_LINE];
+					std::cout<<"Se está logueando con la contraseña por defecto, "
+						"ingrese su nuevo password: "<<std::endl;
+					cin.getline(buffer, MAX_LINE);
+					newPassword.assign(buffer);
+					controller.changePassword(firstParameter, newPassword);
+				}
 			}
 			break;
 		}
