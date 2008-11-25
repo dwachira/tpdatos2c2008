@@ -9,11 +9,11 @@
 #include <string>
 #include <iostream>
 
-#define BITS 12                   /* Cantidad de bits para la tabla*/
+#define BITS 14                   /* Cantidad de bits para la tabla*/
 #define SHIFT (BITS-8)
 #define MAX_VALUE (1 << BITS) - 1
 #define MAX_CODE MAX_VALUE - 1
-#define TABLA 4094
+#define TABLA 16380
 
 
 using namespace std;
