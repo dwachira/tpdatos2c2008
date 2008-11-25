@@ -33,7 +33,7 @@ void Controller::agregarDirectorio(std::string& path) {
 		directorioManager->agregarDirectorio(path);
 	} catch (RecursoInaccesibleException e) {
 		std::cout<<"No se puede acceder al directorio."
-		"Compruebe que lo haya escrito bien y que, ademas, tenga"
+		"Compruebe que lo haya escrito bien y que, ademas, tenga "
 		"permisos de escritura sobre el mismo"<<std::endl;
 
 	} catch (EntidadYaExistenteException e) {

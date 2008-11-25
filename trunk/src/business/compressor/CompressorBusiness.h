@@ -9,9 +9,11 @@
 #include <string>
 #include <iostream>
 
-#define BITS 14                   /* Cantidad de bits para la tabla*/
-#define SHIFT (BITS-8)
-#define MAX_VALUE (1 << BITS) - 1
+#ifndef BITS_FOR_TABLE
+#define BITS_FOR_TABLE 24
+#endif
+#define SHIFT (BITS_FOR_TABLE-8)
+#define MAX_VALUE (1 << BITS_FOR_TABLE) - 1
 #define MAX_CODE MAX_VALUE - 1
 #define TABLA 16380
 

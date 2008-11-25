@@ -14,12 +14,12 @@ namespace dao {
 
 ParticionDAO::ParticionDAO(){
 
-	this->index_Prim = new Indice(__BASE_DIR__"/INDEX_PART_Prim.idx", false);
-	this->index_Img = new Indice(__BASE_DIR__"/INDEX_PART_Img.idx", true);
-	this->index_Txt = new Indice(__BASE_DIR__"/INDEX_PART_Txt.idx", true);
-	this->index_Libres = new Indice(__BASE_DIR__"/INDEX_PART_Lib.idx", true);
+	this->index_Prim = new Indice(PACKAGE_DATA_DIR"/INDEX_PART_Prim.idx", false);
+	this->index_Img = new Indice(PACKAGE_DATA_DIR"/INDEX_PART_Img.idx", true);
+	this->index_Txt = new Indice(PACKAGE_DATA_DIR"/INDEX_PART_Txt.idx", true);
+	this->index_Libres = new Indice(PACKAGE_DATA_DIR"/INDEX_PART_Lib.idx", true);
 
-	this->archivo = new StreamFijo(__BASE_DIR__"/STREAMFIJO_PART.str", sizeof(REG_PART));
+	this->archivo = new StreamFijo(PACKAGE_DATA_DIR"/STREAMFIJO_PART.str", sizeof(REG_PART));
 }
 
 ParticionDAO::~ParticionDAO(){

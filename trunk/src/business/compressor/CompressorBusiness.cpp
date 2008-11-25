@@ -141,9 +141,9 @@ unsigned int code=0;
     buffer |= (unsigned long) getc(input) << (BITS_ARQUITECTURA-8-j);
     j += 8;
   }
-  code=buffer >> (BITS_ARQUITECTURA-BITS);
-  buffer <<= BITS;
-  j -= BITS;
+  code=buffer >> (BITS_ARQUITECTURA-BITS_FOR_TABLE);
+  buffer <<= BITS_FOR_TABLE;
+  j -= BITS_FOR_TABLE;
   return(code);
 }
 
@@ -151,8 +151,8 @@ unsigned int code=0;
 
 void CompressorBusiness::put_code(unsigned int code,FILE *output)
 {
-  buffer |= (unsigned long) code << (BITS_ARQUITECTURA-BITS-j);
-  j += BITS;
+  buffer |= (unsigned long) code << (BITS_ARQUITECTURA-BITS_FOR_TABLE-j);
+  j += BITS_FOR_TABLE;
   while (j >= 8)
   {
     putc(buffer >> (BITS_ARQUITECTURA-8),output);

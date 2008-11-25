@@ -25,7 +25,7 @@ int AuthTest::test() {
 	md5wrapper hasheador;
 	std::string hash = hasheador.getHashFromString("admin");
 
-	AuthBusiness auth(__BASE_DIR__"/");
+	AuthBusiness auth(PACKAGE_DATA_DIR"/");
 	std::cout << "Se ingresara una contraseña incorrecta 'upalala'"  << std::endl;
 	if (!auth.login("upalala")){
 		std::cout << "Contraseña incorrecta 'upalala'"  << std::endl;
