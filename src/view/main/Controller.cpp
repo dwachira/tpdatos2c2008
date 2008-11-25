@@ -120,13 +120,20 @@ bool Controller::login(string& password) {
 	return loggedIn;
 }
 
-void Controller::changePassword(std::string& oldPassword,
-		std::string& newPassword) {
-	if (!authBusiness->changePass(oldPassword, newPassword))
-		std::cout
-				<<"El password ingresado como oldPassword no coincide con el almacenado."
-				<<std::endl;
+bool Controller::validatePassword(const std::string& password) {
+	bool result = true;
+	if ((password.size() < MIN_PASS_LENGTH)||(password.size() > MAX_PASS_LENGTH)) {
+		std::cout<<"La longitud del password debe ser de 4 a 6 caracteres."<<std::endl;
+		result = false;
+	}
+	return result;
+}
 
+void Controller::changePassword(std::string& oldPassword, std::string& newPassword) {
+	if (validatePassword(newPassword)) {
+		if (!authBusiness->changePass(oldPassword,newPassword))
+			std::cout<<"El password ingresado como oldPassword no coincide con el almacenado."<<std::endl;
+	}
 }
 
 bool Controller::confirmar(string pregunta) {
