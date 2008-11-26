@@ -123,7 +123,7 @@ bool Controller::login(string& password) {
 bool Controller::validatePassword(const std::string& password) {
 	bool result = true;
 	if ((password.size() < MIN_PASS_LENGTH)||(password.size() > MAX_PASS_LENGTH)) {
-		std::cout<<"La longitud del password debe ser de 4 a 6 caracteres."<<std::endl;
+		std::cout<<"La longitud del password debe ser de "<<MIN_PASS_LENGTH<<" a "<<MAX_PASS_LENGTH<<" caracteres."<<std::endl;
 		result = false;
 	}
 	return result;

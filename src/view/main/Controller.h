@@ -10,9 +10,9 @@
 
 #define MAX_LINE 250
 #define REMOVERDIRECTORIO "El directorio que desea remover contiene imagenes que contienen texto guardado.\n¿Desea eliminarlo? (Se eliminaran los mensajes que en él estaban guardados)(s/n)."
-#define OBTENERMSG "No se ah podido obtener el mensaje deseado ya que hay un archivo faltante.\n¿Desea eliminar las otras partes del mensaje? (s/n)."
-#define MIN_PASS_LENGTH 4
-#define MAX_PASS_LENGTH 6
+#define OBTENERMSG "No se ha podido obtener el mensaje deseado ya que hay un archivo faltante.\n¿Desea eliminar las otras partes del mensaje? (s/n)."
+#define MIN_PASS_LENGTH 6
+#define MAX_PASS_LENGTH 15
 
 #include "../../business/directorios/DirectorioManager.h"
 #include "../../business/mensajes/MensajeManager.h"
@@ -58,7 +58,7 @@ public:
 	void changePassword(std::string& oldPassword, std::string& newPassword);
 
 	bool validatePassword(const std::string& password);
-	
+
 	virtual ~Controller();
 };
 
