@@ -5,7 +5,8 @@
 
 using namespace business;
 
-UseCaseValidator::UseCaseValidator(Controller& aController) : controller(aController) {
+UseCaseValidator::UseCaseValidator(Controller& aController) :
+	controller(aController) {
 	login = false;
 }
 
@@ -63,14 +64,20 @@ void UseCaseValidator::execute(string action, string firstParameter,
 		case 10: {
 			if (controller.login(firstParameter)) {
 				login = true;
-				if(firstParameter.compare(DEFAULTPASSWORD) == 0){
+				if (firstParameter.compare(DEFAULTPASSWORD) == 0) {
 					string newPassword = "";
 					char buffer[MAX_LINE];
-					std::cout<<"Se está logueando con la contraseña por defecto, "
-						"ingrese su nuevo password: "<<std::endl;
-					cin.getline(buffer, MAX_LINE);
-					newPassword.assign(buffer);
-					controller.changePassword(firstParameter, newPassword);
+					bool passwordOk = false;
+					while (!passwordOk) {
+						std::cout<<"Se está logueando con la contraseña por defecto, "
+									"ingrese su nuevo password: ";
+						cin.getline(buffer, MAX_LINE);
+						newPassword.assign(buffer);
+						passwordOk = controller.validatePassword(newPassword);
+						if (passwordOk) {
+							controller.changePassword(firstParameter,newPassword);
+						}
+					}
 				}
 			}
 			break;
@@ -84,7 +91,8 @@ void UseCaseValidator::execute(string action, string firstParameter,
 			std::cout<<"getFile <nombre_archivo> <ruta_destino>"<<std::endl;
 			std::cout<<"showFiles"<<std::endl;
 			std::cout<<"showDirectories"<<std::endl;
-			std::cout<<"changePassword <old_password> <new_password>"<<std::endl;
+			std::cout<<"changePassword <old_password> <new_password>"
+					<<std::endl;
 			std::cout<<"quit"<<std::endl;
 			std::cout<<"login"<<std::endl;
 			std::cout<<"help"<<std::endl;
@@ -94,9 +102,10 @@ void UseCaseValidator::execute(string action, string firstParameter,
 			std::cout<<"ingresa \"help\" o \"-h\" para ayuda."<<std::endl;
 		}
 		}
-	}
-	else{
-		std::cout<<"Hasta no loguearse no podrá utilizar el sístema. ('ĺogin' para loguearse)"<<std::endl;
+	} else {
+		std::cout
+				<<"Hasta no loguearse no podrá utilizar el sístema. ('ĺogin' para loguearse)"
+				<<std::endl;
 	}
 
 }

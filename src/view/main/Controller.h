@@ -32,7 +32,6 @@ private:
 	AuthBusiness* authBusiness;
 	bool loggedIn;
 	bool confirmar(string pregunta);
-	bool validatePassword(const std::string& password);
 
 public:
 
@@ -58,6 +57,8 @@ public:
 
 	void changePassword(std::string& oldPassword, std::string& newPassword);
 
+	bool validatePassword(const std::string& password);
+	
 	virtual ~Controller();
 };
 
