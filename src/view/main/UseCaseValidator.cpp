@@ -69,7 +69,7 @@ void UseCaseValidator::execute(string action, string firstParameter,
 					char buffer[MAX_LINE];
 					bool passwordOk = false;
 					while (!passwordOk) {
-						std::cout<<"Se está logueando con la contraseña por defecto, "
+						std::cout<<"  Se está logueando con la contraseña por defecto, "
 									"ingrese su nuevo password: ";
 						cin.getline(buffer, MAX_LINE);
 						newPassword.assign(buffer);
@@ -83,28 +83,28 @@ void UseCaseValidator::execute(string action, string firstParameter,
 			break;
 		}
 		case 11: {
-			std::cout<<"Los comandos posibles son: "<<std::endl;
-			std::cout<<"\naddDirectory <directorio>"<<std::endl;
-			std::cout<<"removeDirectory <directorio>"<<std::endl;
-			std::cout<<"addFile <nombre_archivo>"<<std::endl;
-			std::cout<<"removeFile <nombre_archivo>"<<std::endl;
-			std::cout<<"getFile <nombre_archivo> <ruta_destino>"<<std::endl;
-			std::cout<<"showFiles"<<std::endl;
-			std::cout<<"showDirectories"<<std::endl;
-			std::cout<<"changePassword <old_password> <new_password>"
+			std::cout<<"  Los comandos posibles son: "<<std::endl;
+			std::cout<<"\n    addDirectory <directorio>"<<std::endl;
+			std::cout<<"    removeDirectory <directorio>"<<std::endl;
+			std::cout<<"    addFile <nombre_archivo>"<<std::endl;
+			std::cout<<"    removeFile <nombre_archivo>"<<std::endl;
+			std::cout<<"    getFile <nombre_archivo> <ruta_destino>"<<std::endl;
+			std::cout<<"    showFiles"<<std::endl;
+			std::cout<<"    showDirectories"<<std::endl;
+			std::cout<<"    changePassword <old_password> <new_password>"
 					<<std::endl;
-			std::cout<<"quit"<<std::endl;
-			std::cout<<"login"<<std::endl;
-			std::cout<<"help"<<std::endl;
+			std::cout<<"    quit"<<std::endl;
+			std::cout<<"    login"<<std::endl;
+			std::cout<<"    help"<<std::endl;
 			break;
 		}
 		default: {
-			std::cout<<"ingresa \"help\" o \"-h\" para ayuda."<<std::endl;
+			std::cout<<"  Ingrese \"help\" o \"-h\" para ayuda."<<std::endl;
 		}
 		}
 	} else {
 		std::cout
-				<<"Hasta no loguearse no podrá utilizar el sístema. ('ĺogin' para loguearse)"
+				<<"  Hasta no loguearse no podrá utilizar el sístema. ('ĺogin' para loguearse)"
 				<<std::endl;
 	}
 

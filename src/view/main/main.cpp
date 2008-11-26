@@ -15,7 +15,7 @@ int main(int argc, char* argv[]){
 				while (memcmp(buffer,"quit",4) != 0) {
 					input.getline(buffer,250);
 					action << buffer << "\nquit\n";
-					cout<<"Ejecutando comando: "<<buffer<<std::endl;
+					cout<<"  Ejecutando comando: "<<buffer<<std::endl;
 					mainApp.start();
 					cout<<std::endl;
 					char c;
