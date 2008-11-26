@@ -1,10 +1,10 @@
 #include "BitsUtils.h"
-#include <iostream>
+
 
 namespace util{
 
 	BitsUtils::BitsUtils(){
-	
+
 	}
 
 	BitsUtils:: ~BitsUtils(){}
@@ -26,7 +26,7 @@ namespace util{
  */
 	void BitsUtils::toBase(int num,int base,std::string&  binary){
 
-		if(num<base) 
+		if(num<base)
   			binary.append(StringUtils::toString(num));
 		else{
         	toBase(num/base,base,binary);
@@ -34,7 +34,7 @@ namespace util{
 		}
 
 	}
-	
+
 
 }
 
