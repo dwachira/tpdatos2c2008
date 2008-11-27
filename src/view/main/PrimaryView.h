@@ -28,7 +28,7 @@ public:
 	bool isLoggedIn() {
 		return loggedIn;
 	}
-	bool executeLogin(std::string pass) {
+	void executeLogin(std::string pass) {
 		aUseCaseValidator.execute("login",pass,"");
 	}
 	virtual ~PrimaryView();
