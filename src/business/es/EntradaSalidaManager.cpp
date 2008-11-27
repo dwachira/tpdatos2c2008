@@ -21,6 +21,13 @@ bool EntradaSalidaManager::recursoEsAccesible(std::string path) {
 	return true;
 }
 
+bool EntradaSalidaManager::esUnDirectorio(std::string path) {
+	struct stat fileStats;
+	if ((lstat(path.data(),&fileStats) != -1)&&(S_ISDIR(fileStats.st_mode)))
+		return true;
+	return false;
+}
+
 EntradaSalidaManager::~EntradaSalidaManager() {
 	// TODO Auto-generated destructor stub
 }

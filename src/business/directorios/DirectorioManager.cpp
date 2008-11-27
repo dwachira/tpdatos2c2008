@@ -47,7 +47,7 @@ void DirectorioManager::agregarDirectorio(const std::string& path)
 {
 
 	if (trieDao.getIndice(DIRECTORIOS,path) == 0) {
-		if (EntradaSalidaManager::recursoEsAccesible(path)) {
+		if (EntradaSalidaManager::esUnDirectorio(path)) {
 			Directorio unDirectorio(path);
 			unDirectorio.setFechaUltimaModificacion(getFechaModificacionActual(unDirectorio));
 			directorioDAO.insert(unDirectorio);

@@ -37,7 +37,7 @@ public:
 											directorioManager(directorioMan), trieDao(trie), userPass(pass){}
 	/*@throw EspacioInsuficienteException, RecursoInaccesibleException*/
 	void agregarMensaje(std::string filename);
-	void quitarMensaje(std::string& filename);
+	void quitarMensaje(const std::string& filename);
 	void quitarMensajesEnDirectorio(std::string& dirpath);
 	void quitarMensaje(Mensaje& mensaje);
 	void obtenerMensaje(std::string filename, std::string destino);
