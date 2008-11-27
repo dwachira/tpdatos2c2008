@@ -29,10 +29,10 @@ private:
 	static void encryptFile(BlowfishCrypto * crypto,string path,string file);
 	/** Ejecutar la funcion pasada por paramentro, con los archivos pertenecientes al path*/
 	void executeFunctionInPath(string& path,BlowfishCrypto * crypto,void (* Funcion)(BlowfishCrypto * crypto,string,string));
+	bool checkPass(const string& pass);
 	void deleteInPath(string& pathDelete);
 public:
 	AuthBusiness(const string& systemPath);
-	bool checkPass(const string& pass);
 	virtual ~AuthBusiness();
 	/** Retornar true, si se puedo logear el usuario*/
 	bool login(const string& pass);

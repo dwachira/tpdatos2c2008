@@ -19,9 +19,6 @@ private:
 public:
 	UseCaseValidator(Controller& aController);
 	void execute(string action, string firstParameter,string secondParameter);
-	bool isLoggedIn() {
-		return login;
-	}
 	virtual ~UseCaseValidator();
 };
 
