@@ -33,13 +33,13 @@ void PrimaryView::start() {
 
 std::string PrimaryView::doNcursesLoggin() {
 	NcursesConsoleManager ncursesConsole;
+	string result = " ";
 	string command = "";
 	ncursesConsole.write("Bienvenido al inicio de sesion en Herodotus. Ingrese \"login <password>\" para comensar.\n");
 	ncursesConsole.write("herodotus> ");
 	command = ncursesConsole.readUserCommand();
 	if (command.compare("quit") == 0) {
 		wantsToQuit = true;
-		return;
 	}
 	else {
 		int posFirstSpace = command.find_first_of(" ");
@@ -51,12 +51,15 @@ std::string PrimaryView::doNcursesLoggin() {
 		if (action.compare("login") == 0) {
 			if (controller.getAuthBusiness()->checkPass(firstParameter)) {
 				loggedIn = true;
-				return firstParameter;
+				ncursesConsole.write(firstParameter);
+				ncursesConsole.readLine();
+				result = firstParameter;
 			}
 			else
 				ncursesConsole.write("  Contraseña invalida.\n");
 		}
 	}
+	return result;
 }
 
 PrimaryView::~PrimaryView() {
