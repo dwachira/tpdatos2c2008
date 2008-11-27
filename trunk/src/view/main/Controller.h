@@ -38,11 +38,7 @@ public:
 	Controller() : loggedIn(false) {
 		authBusiness = new AuthBusiness(PACKAGE_DATA_DIR);
 	}
-	
-	AuthBusiness* getAuthBusiness() {
-		return authBusiness;
-	}
-	
+
 	void agregarMensaje(std::string& filename);
 
 	void agregarDirectorio(std::string& path);

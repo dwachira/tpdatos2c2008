@@ -26,14 +26,7 @@ int main(int argc, char* argv[]){
 	}
 	else {
 		PrimaryView mainApp;
-		std::string pass("");
-		while ((!mainApp.isLoggedIn())&&(!mainApp.isWantsToQuit())) {
-			pass = mainApp.doNcursesLoggin();
-		}
-		if (mainApp.isLoggedIn()) {
-			mainApp.executeLogin(pass);
-			mainApp.start();
-		}
+		mainApp.start();
 	}
 
 }
