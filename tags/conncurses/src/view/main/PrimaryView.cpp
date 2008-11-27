@@ -37,8 +37,10 @@ std::string PrimaryView::doNcursesLoggin() {
 	ncursesConsole.write("Bienvenido al inicio de sesion en Herodotus. Ingrese \"login <password>\" para comensar.\n");
 	ncursesConsole.write("herodotus> ");
 	command = ncursesConsole.readUserCommand();
-	if (command.compare("quit") == 0)
+	if (command.compare("quit") == 0) {
 		wantsToQuit = true;
+		return;
+	}
 	else {
 		int posFirstSpace = command.find_first_of(" ");
 		string action = command.substr(0, posFirstSpace);
