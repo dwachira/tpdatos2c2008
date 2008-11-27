@@ -21,12 +21,15 @@ public:
 	}
 	PrimaryView(std::istream& is) : input(is), aUseCaseValidator(controller) {}
 	void start();
-	void doNcursesLoggin();
+	std::string doNcursesLoggin();
 	bool isWantsToQuit() {
 		return wantsToQuit;
 	}
 	bool isLoggedIn() {
 		return loggedIn;
+	}
+	bool executeLogin(std::string pass) {
+		aUseCaseValidator.execute("login",pass,"");
 	}
 	virtual ~PrimaryView();
 };

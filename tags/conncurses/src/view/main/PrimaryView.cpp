@@ -31,7 +31,7 @@ void PrimaryView::start() {
 	}
 }
 
-void PrimaryView::doNcursesLoggin() {
+std::string PrimaryView::doNcursesLoggin() {
 	NcursesConsoleManager ncursesConsole;
 	string command = "";
 	ncursesConsole.write("Bienvenido al inicio de sesion en Herodotus. Ingrese \"login <password>\" para comensar.\n");
@@ -47,11 +47,12 @@ void PrimaryView::doNcursesLoggin() {
 				-posFirstSpace-1);
 		string secondParameter = command.substr(posSecondSpace+1);
 		if (action.compare("login") == 0) {
-			if (controller.getAuthBusiness()->checkPass(firstParameter)) 
-				aUseCaseValidator.execute(action, firstParameter,secondParameter);
+			if (controller.getAuthBusiness()->checkPass(firstParameter)) {
+				loggedIn = true;
+				return firstParameter;
+			}
 			else
 				ncursesConsole.write("  Contraseña invalida.\n");
-			loggedIn = aUseCaseValidator.isLoggedIn();
 		}
 	}
 }
