@@ -26,7 +26,11 @@ int main(int argc, char* argv[]){
 	}
 	else {
 		PrimaryView mainApp;
-		mainApp.start();
+		while ((!mainApp.isLoggedIn())&&(!mainApp.isWantsToQuit())) {
+			mainApp.doNcursesLoggin();
+		}
+		if (mainApp.isLoggedIn())
+			mainApp.start();
 	}
 
 }
