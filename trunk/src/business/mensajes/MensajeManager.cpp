@@ -198,19 +198,17 @@ void MensajeManager::agregarMensaje(std::string filename)
 
 void MensajeManager::quitarMensajesEnDirectorio(std::string& dirpath) {
 	unsigned int dirId = trieDao.getIndice(DIRECTORIOS,dirpath);
-
+	vector<int> mensajesAborrar;
 	if (dirId != 0) {
 		Directorio* directory = directorioManager.getDirectorioDao().getDirById(dirId);
-
 		list<Imagen> imagenes = imagenDao.getImgsByDirectorio(directory->getID());
-
+		
 		for(list<Imagen>::iterator it = imagenes.begin(); it != imagenes.end(); it++) {
 			list<Particion> particiones = particionDao.getPartsByImg((*it).getID());
 			for (list<Particion>::iterator it2 = particiones.begin(); it2 != particiones.end(); it2++) {
 				Particion& particion = *it2;
 				const Mensaje& mensaje = mensajeDao.getMsjById(particion.getID_Txt());
-				trieDao.deleteCadena(MENSAJES,mensaje.getNombre());
-				mensajeDao.borrar(mensaje);
+				quitarMensaje(mensaje.getNombre());				
 			}
 		}
 		delete directory;
@@ -220,7 +218,7 @@ void MensajeManager::quitarMensajesEnDirectorio(std::string& dirpath) {
 		throw EntidadInexistenteException();
 }
 
-void MensajeManager::quitarMensaje(std::string& filename)
+void MensajeManager::quitarMensaje(const std::string& filename)
 {
 	int mensajeId = trieDao.getIndice(MENSAJES,filename);
 	if (mensajeId == 0)

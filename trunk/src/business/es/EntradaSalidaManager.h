@@ -14,6 +14,7 @@ class EntradaSalidaManager {
 public:
 	EntradaSalidaManager();
 	static bool recursoEsAccesible(std::string path);
+	static bool esUnDirectorio(std::string path);
 	virtual ~EntradaSalidaManager();
 };
 
