@@ -105,6 +105,7 @@ int CompressorBusiness::decompress(FILE *input,FILE *output){
 
 			}else{ old_code=(char)old_character;
 			old_code.append(old_code);
+			text=old_code;
 			}
 			i=0;
 			while (i< old_code.size()){
