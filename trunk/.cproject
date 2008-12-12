@@ -46,7 +46,7 @@
 <tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.2101874073" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
 <tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.963107295" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 <option id="gnu.cpp.link.option.libs.93612490" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-<listOptionValue builtIn="false" value="jpeg"/>
+<listOptionValue builtIn="false" value="Magick++"/>
 <listOptionValue builtIn="false" value="freeimage"/>
 </option>
 <option id="gnu.cpp.link.option.paths.2004282643" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths"/>
