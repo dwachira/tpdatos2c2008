@@ -17,40 +17,57 @@ unsigned int LossyCompressStegoBusiness::getFirstFreeBit(){
  */
 bool LossyCompressStegoBusiness::generateSpace()
 {
-/*Cargo la imagen */
-FIBitmap imagen(this->filename);
+unsigned int veces=0;
+bool space_generated=false;
+unsigned int original_size;
+std::fstream imageFile;
 
-bool error=imagen.load();
-/*Si la imagen se cargo correctamente*/
- if(!error){
- 	 unsigned int original_size;
- 	 std::fstream imageFile;
-	 imageFile.open(this->filename.c_str(), std::fstream::in | std::fstream::binary);
-	 if(imageFile.is_open()){
-	   imageFile.seekg(0, std::ios::end); // Ir al final del fichero
-       original_size=imageFile.tellg();
-       imageFile.close();
-	   /* Guardo la imagen cambiandole el nivel de compresion para generar
-	    * espacio al final de la misma
-	    */
-	   imagen.save(getQuality()*PERC);
+    /*Calculo el espacio original en la imagen*/
+ 	imageFile.open(this->filename.c_str(), std::fstream::in | std::fstream::binary);
+ 	if(imageFile.is_open()){
+ 		imageFile.seekg(0, std::ios::end); // Ir al final del fichero
+ 		original_size=imageFile.tellg();
+ 		imageFile.close();
+    }else return false;
 
-	   /*Reabro la imagen y me posiciono al final para completar el espacio
-	    * que le falta*/
-	 }else return false;
+ 		/*Cargo la imagen */
+ 		FIBitmap imagen(this->filename);
+ 		bool error=imagen.load();
+ 		int quality=getQuality();
+ 		int quality_original=quality;
+ 		if(!error){
+ 			while((veces<5)&&(!space_generated)){//mientras no se genere espacio libre
 
-     /*Calculo el tamaño del nuevo archivo y completo hasta llegar a su tamaño original*/
-	 imageFile.open(filename.c_str(), std::fstream::in |std::fstream::out| std::fstream::binary);
-	 if(imageFile.is_open()){
-	   imageFile.seekg(0, std::ios::end); // Ir al final del fichero
-	   compress_size=imageFile.tellg();
-	   free_space=original_size-compress_size;
-       /*Completar con bytes en cero*/
-       for(unsigned int i=0;i<free_space;i++) imageFile.put((char)0);
-       imageFile.close();
-	 }else return false;
+ 				/* Guardo la imagen cambiandole el nivel de compresion para generar
+ 				 * espacio al final de la misma
+ 				 */
 
- }else return false;
+ 				imagen.save(quality*PERC);
+ 				 /*Calculo el tamaño del nuevo archivo y completo hasta llegar a su tamaño original*/
+ 					 imageFile.open(filename.c_str(), std::fstream::in |std::fstream::out| std::fstream::binary);
+ 					 if(imageFile.is_open()){
+ 					   imageFile.seekg(0, std::ios::end); // Ir al final del fichero
+ 					   compress_size=imageFile.tellg();
+ 					   free_space=original_size-compress_size;
+ 				       /*Completar con bytes en cero*/
+ 				       if(compress_size<original_size){
+ 				          for(unsigned int i=0;i<free_space;i++) imageFile.put((char)0);
+ 				          space_generated=true;
+ 				       }else {
+ 				    	  space_generated=false;
+ 				    	  veces++;
+ 				    	  quality=getQuality();
+ 				       }
+ 				          imageFile.close();
+ 				    }else return false;
+ 			}
+ 			/*Se intento comprimir pero no se pudo-->no la uso y vuelvo al estado inicial*/
+ 			if(veces>=5){
+ 				imagen.save(quality_original);
+ 				free_space=0;
+ 			}
+ 		}else return false;
+
   	 return true;
 }
 //la primera vez que se invoque para una determinada imagen se debera pasar: compress_size=original_Size-free_space
