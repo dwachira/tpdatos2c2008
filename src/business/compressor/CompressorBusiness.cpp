@@ -75,10 +75,13 @@ int CompressorBusiness::decompress(FILE *input,FILE *output){
 	character=get_code(input);
 	old_code=(char)character;
 	putc(character,output);
+
 	old_character=character;
 	while ((character=get_code(input)) != (unsigned) MAX_VALUE){
+
 		if (character< 256){
 			putc(character,output);
+
 			text=(char)character;
 			old_code.append(text);
 
@@ -96,15 +99,17 @@ int CompressorBusiness::decompress(FILE *input,FILE *output){
 				}
 
 			}else{//caso especial
-				if (old_character > 256){
+				if (old_character >= 256){
 				map<int,string>::iterator it = map_decompress.find(old_character);
 				old_code= it->second;
 				text=old_code;
 				text.append(old_code.substr(0,1));
 				old_code=text;
 
-			}else{ old_code=(char)old_character;
-			old_code.append(old_code);
+			}else{ string especialcode;
+			especialcode=(char)old_character;
+				//old_code.append(old_code);
+			old_code.append(especialcode);
 			text=old_code;
 			}
 			i=0;
